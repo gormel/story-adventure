@@ -1,0 +1,4 @@
+{
+    "zig.formattingProvider": "off",
+    "zig.zls.enableAutofix": false
+}

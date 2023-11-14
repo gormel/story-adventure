@@ -1,0 +1,19 @@
+.{
+    .paths = .{
+        "src",
+        "build.zig",
+        "build.zig.zon",
+    },
+    .name = "story-adventure",
+    .version = "0.1.0",
+    .dependencies = .{
+        .raylib = .{
+            .url = "https://github.com/raysan5/raylib/archive/6094869e3e845e90e1e8ae41b98e889fb3e13e78.tar.gz",
+            .hash = "12203b7a16bcf8d7fe4c9990a46d92b6f2e35531a4b82eb3bdf8ba4a0dbcc5f21415",
+        },
+        .zig_ecs = .{
+            .url = "https://github.com/prime31/zig-ecs/archive/102c89962b0d08d7ade089f38cdff07cb8d8016d.tar.gz",
+            .hash = "1220ea2dc27bdf9d117f26bea24ec4a955506f5018b56a57973a0533e0e5f2792292",
+        },
+    }
+}
