@@ -27,8 +27,8 @@ pub fn build(b: *std.Build) !void {
 
 
     const this_dir = std.fs.path.dirname(@src().file) orelse ".";
-    const res_source = try std.fs.path.join(std.heap.page_allocator , &[_][] const u8 { this_dir, "src", "resources" });
-    const res_install_subdir = try std.fs.path.join(std.heap.page_allocator , &[_][] const u8 { "bin", "resources" });
+    const res_source = b.pathJoin(&.{ this_dir, "src", "resources" });
+    const res_install_subdir = b.pathJoin(&.{ "bin", "resources" });
     const add_resources = b.addInstallDirectory(.{
         .source_dir = .{ .path = res_source },
         .install_dir = .{ .custom = "" },
@@ -41,6 +41,10 @@ pub fn build(b: *std.Build) !void {
         .optimize = raylib_optimize,
     });
     exe.linkLibrary(raylib_dep.artifact("raylib"));
+    const raylib_path_fragment = b.pathJoin(&.{ "src", "code", "raylib.zig" });
+    const raylib_module = b.addModule("raylib", .{ .source_file = .{ .path = raylib_path_fragment } });
+    _ = exe.addModule("raylib", raylib_module);
+    //exe.addPa
 
     const ecs = b.dependency("zig_ecs", .{
         .target = target,
