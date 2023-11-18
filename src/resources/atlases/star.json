@@ -1,0 +1,12 @@
+{
+    "tex": "resources/textures/star.png",
+    "sprites": [
+        {
+            "name": "star",
+            "x": 0,
+            "y": 0,
+            "w": 64,
+            "h": 64
+        }
+    ]
+}

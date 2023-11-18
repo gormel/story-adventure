@@ -3,25 +3,17 @@ const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const cmp = @import("components.zig");
 const Destroyed = @import("../core/components.zig").Destroyed;
+const rs = @import("../../engine/resources.zig");
 
-pub fn load_resource(reg: *ecs.Registry) void {
+pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var view = reg.view(.{ cmp.Resource }, .{ cmp.Sprite });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const res = view.getConst(cmp.Resource, entity);
-        const tex = rl.LoadTexture(res.path.ptr);
-        const rect = rl.Rectangle { .x = 0, .y = 0, .width = @floatFromInt(tex.width), .height = @floatFromInt(tex.height) };
-        reg.add(entity, cmp.Sprite{ .tex = tex, .rect = rect });
+        const res_c = view.getConst(cmp.Resource, entity);
+        reg.add(entity, cmp.Sprite {
+            .sprite = try res.load_sprite(res_c.atlas_path, res_c.sprite)
+        });
         reg.remove(cmp.Resource, entity);
-    }
-}
-
-pub fn free_sprite(reg: *ecs.Registry) void {
-    var view = reg.view(.{ cmp.Sprite, Destroyed }, .{ });
-    var iter = view.entityIterator();
-    while (iter.next()) |entity| {
-        var sprite = view.get(cmp.Sprite, entity);
-        rl.UnloadTexture(sprite.tex);
     }
 }
 
@@ -54,9 +46,9 @@ pub fn render_sprite(reg: *ecs.Registry) void {
         }
         const target_rect = rl.Rectangle {
             .x = pos.x, .y = pos.y,
-            .width = sprite.rect.width * scale_x,
-            .height = sprite.rect.height * scale_y
+            .width = sprite.sprite.rect.width * scale_x,
+            .height = sprite.sprite.rect.height * scale_y
         };
-        rl.DrawTexturePro(sprite.tex, sprite.rect, target_rect, origin, angle, rl.WHITE);
+        rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, angle, rl.WHITE);
     }
 }

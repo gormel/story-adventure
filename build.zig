@@ -62,4 +62,23 @@ pub fn build(b: *std.Build) !void {
     }
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
+
+    const test_step = b.step("test", "Run unit tests");
+    test_step.dependOn(&exe.step);
+    const code_root_path = b.pathJoin(&.{ this_dir, "src", "code" });
+    var code_root = try std.fs.openIterableDirAbsolute(code_root_path, .{});
+    var it = try code_root.walk(b.allocator);
+    defer it.deinit();
+    while (try it.next()) | entry | {
+        if (entry.kind == .file) {
+            const unit_tests = b.addTest(.{
+                .root_source_file = .{ .path = b.pathJoin(&.{ code_root_path,  entry.path }) },
+                .target = target,
+                .optimize = optimize,
+            });
+
+            const run_unit_tests = b.addRunArtifact(unit_tests);
+            test_step.dependOn(&run_unit_tests.step);
+        }
+    }
 }

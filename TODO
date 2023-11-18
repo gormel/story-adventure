@@ -1,6 +1,4 @@
 fea: parent-child transform
-fea: texture/resource cache
-fea: atlases
 fea: input systems
 fea: sprite click systems
 fea: scene file
