@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/zig-out/bin/story-adventure.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/zig-out/bin",
             "environment": [],
             "externalConsole": false,
             "preLaunchTask": "build",

@@ -3,7 +3,11 @@ const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const cmp = @import("components.zig");
 const Destroyed = @import("../core/components.zig").Destroyed;
+const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
 const rs = @import("../../engine/resources.zig");
+const qu = @import("../../engine/queue.zig");
+
+const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
 pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var view = reg.view(.{ cmp.Resource }, .{ cmp.Sprite });
@@ -17,38 +21,254 @@ pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
     }
 }
 
-pub fn render_sprite(reg: *ecs.Registry) void {
-    var view = reg.view(.{ cmp.Sprite, cmp.Position }, .{ });
-    var iter = view.entityIterator();
-    while (iter.next()) |entity| {
-        const sprite = view.getConst(cmp.Sprite, entity);
-        const pos = view.getConst(cmp.Position, entity);
+fn rotate(x: f32, y: f32, a: f32) struct{ x: f32, y:f32 } {
+    const rad = std.math.degreesToRadians(f32, -a);
+    const cos = std.math.cos(rad);
+    const sin = std.math.sin(rad);
+    return .{
+        .x = x * cos + y * sin,
+        .y = -x * sin + y * cos,
+    };
+}
 
-        var angle: f32 = 0;
-        if (reg.has(cmp.Rotation, entity)) {
-            const rot = reg.getConst(cmp.Rotation, entity);
-            angle = rot.a;
+fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentGlobalTransform || error {OutOfMemory})!void {
+    if (reg.tryGet(cmp.Parent, entity)) |parent| {
+        if (
+               !reg.has(cmp.GlobalPosition, parent.entity)
+            or !reg.has(cmp.GlobalRotation, parent.entity)
+            or !reg.has(cmp.GlobalScale, parent.entity)
+        ) {
+            return error.NoParentGlobalTransform;
         }
 
-        var origin = rl.Vector2 { .x = 0, .y = 0 };
-        if (reg.has(cmp.SpriteOffset, entity)) {
-            const offset = reg.getConst(cmp.SpriteOffset, entity);
-            origin.x = offset.x;
-            origin.y = offset.y;
+        const parent_position = reg.getConst(cmp.GlobalPosition, parent.entity);
+        const parent_rotation = reg.getConst(cmp.GlobalRotation, parent.entity);
+        const parent_scale = reg.getConst(cmp.GlobalScale, parent.entity);
+
+        if (reg.tryGet(cmp.Position, entity)) |local_position| {
+            const rotated = rotate(local_position.x * parent_scale.x, local_position.y * parent_scale.y, parent_rotation.a);
+            reg.addOrReplace(entity, cmp.GlobalPosition {
+                .x = parent_position.x + rotated.x,
+                .y = parent_position.y + rotated.y,
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalPosition {
+                .x = parent_position.x,
+                .y = parent_position.y,
+            });
         }
 
-        var scale_x: f32 = 1;
-        var scale_y: f32 = 1;
-        if (reg.has(cmp.Scale, entity)) {
-            const scale = reg.getConst(cmp.Scale, entity);
-            scale_x = scale.x;
-            scale_y = scale.y;
+        if (reg.tryGet(cmp.Scale, entity)) |local_scale| {
+            reg.addOrReplace(entity, cmp.GlobalScale {
+                .x = parent_scale.x * local_scale.x,
+                .y = parent_scale.y * local_scale.y,
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalScale {
+                .x = parent_scale.x,
+                .y = parent_scale.y,
+            });
         }
-        const target_rect = rl.Rectangle {
-            .x = pos.x, .y = pos.y,
-            .width = sprite.sprite.rect.width * scale_x,
-            .height = sprite.sprite.rect.height * scale_y
-        };
-        rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, angle, rl.WHITE);
+
+        if (reg.tryGet(cmp.Rotation, entity)) |local_rotation| {
+            reg.addOrReplace(entity, cmp.GlobalRotation {
+                .a = local_rotation.a + parent_rotation.a
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalRotation { .a = parent_rotation.a });
+        }
+        
+    } else {
+        if (reg.tryGet(cmp.Position, entity)) |local_position| {
+            reg.addOrReplace(entity, cmp.GlobalPosition {
+                .x = local_position.x,
+                .y = local_position.y,
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalPosition { .x = 0, .y = 0 });
+        }
+
+        if (reg.tryGet(cmp.Scale, entity)) |local_scale| {
+            reg.addOrReplace(entity, cmp.GlobalScale {
+                .x = local_scale.x,
+                .y = local_scale.y,
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalScale { .x = 1, .y = 1 });
+        }
+
+        if (reg.tryGet(cmp.Rotation, entity)) |local_rotation| {
+            reg.addOrReplace(entity, cmp.GlobalRotation {
+                .a = local_rotation.a,
+            });
+        } else {
+            reg.addOrReplace(entity, cmp.GlobalRotation { .a = 0 });
+        }
+    }
+
+    if (reg.tryGet(cmp.Children, entity)) |children| {
+        for (children.children.items) |child| {
+            try do_update_global_transform(reg, child);
+        }
+    }
+}
+
+fn topo_sort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
+    var queue = qu.Queue(ecs.Entity).init(allocator);
+    defer queue.deinit();
+    try queue.enqueue(entity);
+    while (queue.dequeue()) |cur_entity| {
+        try out_list.append(cur_entity);
+        if (reg.tryGet(cmp.Children, cur_entity)) |children| {
+            for (children.children.items) |child_entity| {
+                try queue.enqueue(child_entity);
+            }
+        }
+    }
+}
+
+fn index_of(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
+    return
+        for(slice, 0..) |now_value, index| {
+            if (now_value == value) {
+                break index;
+            }
+        } else null;
+}
+
+fn detach_parent(reg: *ecs.Registry, entity: ecs.Entity) !void {
+    const parent = reg.getConst(cmp.Parent, entity);
+    var parent_children = reg.get(cmp.Children, parent.entity);
+    while (index_of(ecs.Entity, parent_children.children.items, entity))|at_idx| {
+        _ = parent_children.children.swapRemove(at_idx);
+    }
+    reg.remove(cmp.Parent, entity);
+}
+
+pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var detach_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ });
+    var detach_iter = detach_view.entityIterator();
+    while (detach_iter.next()) |entity| {
+        const attach = detach_view.getConst(cmp.AttachTo, entity);
+        const parent = detach_view.getConst(cmp.Parent, entity);
+        if (attach.target != parent.entity) {
+            try detach_parent(reg, entity);
+        } else {
+            reg.remove(cmp.AttachTo, entity);
+        }
+    }
+
+    var attach_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent });
+    var attach_iter = attach_view.entityIterator();
+    while (attach_iter.next()) |entity| {
+        const attach = attach_view.getConst(cmp.AttachTo, entity);
+        if (attach.target) |target_entity| {
+            reg.add(entity, cmp.Parent { .entity = target_entity });
+            if (reg.tryGet(cmp.Children, target_entity)) |parent_children| {
+                try parent_children.children.append(entity);
+            } else {
+                var parent_children = cmp.Children {
+                    .children = std.ArrayList(ecs.Entity).init(allocator)
+                };
+                try parent_children.children.append(entity);
+                reg.add(target_entity, parent_children);
+            }
+        }
+
+        if (!reg.has(cmp.UpdateGlobalTransform, entity)) {
+            reg.add(entity, cmp.UpdateGlobalTransform {});
+        }
+
+        if (!reg.has(cmp.GameObject, entity)) {
+            reg.add(entity, cmp.GameObject {});
+        }
+
+        reg.remove(cmp.AttachTo, entity);
+    }
+}
+
+pub fn update_global_transform(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
+    var fltr_upd_view = reg.view(.{ cmp.UpdateGlobalTransform, cmp.Parent }, .{ });
+    var fltr_upd_iter = fltr_upd_view.entityIterator();
+    while (fltr_upd_iter.next()) |entity| {
+        const parent = fltr_upd_view.getConst(cmp.Parent, entity);
+        if (reg.has(cmp.UpdateGlobalTransform, parent.entity)) {
+            reg.add(entity, cmp.NotUpdateGlobalTransform {});
+        }
+    }
+
+    var not_upd_view = reg.view(.{ cmp.UpdateGlobalTransform, cmp.NotUpdateGlobalTransform }, .{ });
+    var not_upd_iter = not_upd_view.entityIterator();
+    while (not_upd_iter.next()) |entity| {
+        reg.remove(cmp.UpdateGlobalTransform, entity);
+    }
+
+    var cln_upd_view = reg.view(.{ cmp.NotUpdateGlobalTransform }, .{ });
+    var cln_upd_iter = cln_upd_view.entityIterator();
+    while (cln_upd_iter.next()) |entity| {
+        reg.remove(cmp.NotUpdateGlobalTransform, entity);
+    }
+    
+    var updated = false;
+    var update_view = reg.view(.{ cmp.UpdateGlobalTransform }, .{ });
+    var update_iter = update_view.entityIterator();
+    while (update_iter.next()) |entity| {
+        try do_update_global_transform(reg, entity);
+        reg.remove(cmp.UpdateGlobalTransform, entity);
+        updated = true;
+    }
+    
+    if (updated) {
+        render_list.clearRetainingCapacity();
+        var root_view = reg.view(.{ cmp.GameObject }, .{ cmp.Parent });
+        var root_iter = root_view.entityIterator();
+        while (root_iter.next()) |entity| {
+            try topo_sort(reg, entity, render_list, allocator);
+        }
+    }
+}
+
+pub fn destroy_children(reg: *ecs.Registry) !void {
+    var parent_view = reg.view(.{ Destroyed, cmp.Parent }, .{ });
+    var parent_iter = parent_view.entityIterator();
+    while (parent_iter.next()) |entity| {
+        try detach_parent(reg, entity);
+    }
+    
+    var children_view = reg.view(.{ Destroyed, cmp.Children }, .{ });
+    var children_iter = children_view.entityIterator();
+    while (children_iter.next()) |entity| {
+        var children = children_view.get(cmp.Children, entity);
+        for (children.children.items) |child_entity| {
+            reg.add(child_entity, DestroyNextFrame {});
+        }
+    }
+}
+
+pub fn render_sprite(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {
+    var group = reg.group(.{ cmp.Sprite, cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{});
+    for (render_list.items) |entity| {
+        if (group.contains(entity)) {
+            const sprite = group.getConst(cmp.Sprite, entity);
+            const pos = group.getConst(cmp.GlobalPosition, entity);
+            const rot = reg.getConst(cmp.GlobalRotation, entity);
+            const scale = reg.getConst(cmp.GlobalScale, entity);
+
+            std.log.info("{}: {}", .{ entity, rot.a });
+
+            var origin = rl.Vector2 { .x = 0, .y = 0 };
+            if (reg.has(cmp.SpriteOffset, entity)) {
+                const offset = reg.getConst(cmp.SpriteOffset, entity);
+                origin.x = offset.x;
+                origin.y = offset.y;
+            }
+
+            const target_rect = rl.Rectangle {
+                .x = pos.x, .y = pos.y,
+                .width = sprite.sprite.rect.width * scale.x,
+                .height = sprite.sprite.rect.height * scale.y
+            };
+            rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
+        }
     }
 }
