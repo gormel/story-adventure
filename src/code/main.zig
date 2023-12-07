@@ -2,10 +2,15 @@ const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const render_systems = @import("ecs/render/systems.zig");
-const core_systems = @import("ecs/core/systems.zig");
 const rcmp = @import("ecs/render/components.zig");
+const core_systems = @import("ecs/core/systems.zig");
 const ccmp = @import("ecs/core/components.zig");
+const input_systems = @import("ecs/input/systems.zig");
+const icmp = @import("ecs/input/components.zig");
 const rs = @import("engine/resources.zig");
+
+const ClearInput = struct {};
+const Tag = struct {};
 
 pub fn main() !void {
     // Initialization
@@ -31,27 +36,15 @@ pub fn main() !void {
 
     var render_list = std.ArrayList(ecs.Entity).init(arena);
 
+    const inp = reg.create();
+    reg.add(inp, icmp.MousePositionTracker {});
+    reg.add(inp, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+
+    const inp1 = reg.create();
+    reg.add(inp1, ClearInput { });
+    reg.add(inp1, icmp.KeyInputTracker { .key = rl.KEY_D });
+
     const path = try std.fs.path.join(arena, &.{ "resources", "atlases", "star.json" });
-
-    const r = reg.create();
-    reg.add(r, rcmp.Position { .x = screenWidth / 2, .y = screenHeight / 2 });
-    reg.add(r, rcmp.Rotation { .a = 45 });
-    reg.add(r, rcmp.Scale { .x = 2, .y = 1 });
-    reg.add(r, rcmp.AttachTo { .target = null });
-
-    const e = reg.create();
-    reg.add(e, rcmp.Resource { .atlas_path = path, .sprite = "star" });
-    reg.add(e, rcmp.Position { .x = -32, .y = 0 });
-    reg.add(e, rcmp.SpriteOffset { .x = 32, .y = 32 });
-    reg.add(e, rcmp.AttachTo { .target = r });
-    //reg.add(e, rcmp.Scale { .x = 0.5, .y = 1 });
-
-    const e1 = reg.create();
-    reg.add(e1, rcmp.Resource { .atlas_path = path, .sprite = "star" });
-    reg.add(e1, rcmp.Position { .x = 32, .y = 0 });
-    reg.add(e1, rcmp.SpriteOffset { .x = 32, .y = 32 });
-    reg.add(e1, rcmp.AttachTo { .target = r });
-    reg.add(e1, rcmp.Scale { .x = 0.5, .y = 1 });
 
     var timer = try std.time.Timer.start();
     // Main game loop
@@ -60,10 +53,35 @@ pub fn main() !void {
         const dt = @as(f32, @floatFromInt(timer.read())) / @as(f32, @floatFromInt(std.time.ns_per_s));
         timer.reset();
 
-        var rotation = reg.get(rcmp.Rotation, r);
-        rotation.a += 90 * dt;
-        reg.add(r, rcmp.UpdateGlobalTransform {});
-        std.log.info("0: {}", .{rotation.a});
+        var view1 = reg.view(.{ ClearInput, icmp.InputPressed }, .{});
+        var iter1 = view1.entityIterator();
+        while (iter1.next()) |_| {
+            var del_view = reg.view(.{ Tag }, .{ ccmp.Destroyed });
+            var del_iter = del_view.entityIterator();
+            while (del_iter.next()) |del_entity| {
+                reg.add(del_entity, ccmp.Destroyed {});
+            }
+        }
+
+        var view = reg.view(.{ icmp.MousePositionInput, icmp.InputPressed }, .{});
+        var iter = view.entityIterator();
+        while (iter.next()) |entity| {
+            const mpos = reg.getConst(icmp.MousePositionInput, entity);
+
+            const e = reg.create();
+            reg.add(e, rcmp.Resource { .atlas_path = path, .sprite = "star" });
+            reg.add(e, rcmp.Position { .x = @as(f32, @floatFromInt(mpos.x)), .y = @as(f32, @floatFromInt(mpos.y)) });
+            reg.add(e, rcmp.AttachTo { .target = null });
+            reg.add(e, rcmp.SpriteOffset { .x = 32, .y = 32 });
+            reg.add(e, ccmp.Timer { .time = 2 });
+            reg.add(e, ccmp.DestroyByTimer {});
+            reg.add(e, Tag {});
+        }
+
+        input_systems.capture(&reg);
+
+        core_systems.timer(&reg, dt);
+        core_systems.destroy_by_timer(&reg);
 
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);
@@ -77,6 +95,7 @@ pub fn main() !void {
         try render_systems.render_sprite(&reg, &render_list);
 
         try render_systems.destroy_children(&reg);
+        //destroy triggers
         core_systems.destroy(&reg);
     }
 }

@@ -174,15 +174,23 @@ pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
                 reg.add(target_entity, parent_children);
             }
         }
+    }
 
-        if (!reg.has(cmp.UpdateGlobalTransform, entity)) {
-            reg.add(entity, cmp.UpdateGlobalTransform {});
-        }
+    var update_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent, cmp.UpdateGlobalTransform });
+    var update_iter = update_view.entityIterator();
+    while (update_iter.next()) |entity| {
+        reg.add(entity, cmp.UpdateGlobalTransform {});
+    }
 
-        if (!reg.has(cmp.GameObject, entity)) {
-            reg.add(entity, cmp.GameObject {});
-        }
+    var init_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent, cmp.GameObject });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        reg.add(entity, cmp.GameObject {});
+    }
 
+    var cleaup_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent, });
+    var cleaup_iter = cleaup_view.entityIterator();
+    while (cleaup_iter.next()) |entity| {
         reg.remove(cmp.AttachTo, entity);
     }
 }
@@ -253,8 +261,6 @@ pub fn render_sprite(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)
             const pos = group.getConst(cmp.GlobalPosition, entity);
             const rot = reg.getConst(cmp.GlobalRotation, entity);
             const scale = reg.getConst(cmp.GlobalScale, entity);
-
-            std.log.info("{}: {}", .{ entity, rot.a });
 
             var origin = rl.Vector2 { .x = 0, .y = 0 };
             if (reg.has(cmp.SpriteOffset, entity)) {
