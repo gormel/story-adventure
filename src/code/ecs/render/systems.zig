@@ -106,6 +106,10 @@ fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentG
         }
     }
 
+    if (!reg.has(cmp.GlobalTransformUpdated, entity)) {
+        reg.add(entity, cmp.GlobalTransformUpdated {});
+    }
+
     if (reg.tryGet(cmp.Children, entity)) |children| {
         for (children.children.items) |child| {
             try do_update_global_transform(reg, child);
@@ -215,6 +219,12 @@ pub fn update_global_transform(reg: *ecs.Registry, render_list: *std.ArrayList(e
     var cln_upd_iter = cln_upd_view.entityIterator();
     while (cln_upd_iter.next()) |entity| {
         reg.remove(cmp.NotUpdateGlobalTransform, entity);
+    }
+
+    var cln_upded_view = reg.view(.{ cmp.GlobalTransformUpdated }, .{ });
+    var cln_upded_iter = cln_upded_view.entityIterator();
+    while (cln_upded_iter.next()) |entity| {
+        reg.remove(cmp.GlobalTransformUpdated, entity);
     }
     
     var updated = false;

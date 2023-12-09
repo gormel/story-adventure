@@ -12,6 +12,7 @@ pub const Children = struct { children: std.ArrayList(ecs.Entity) };
 pub const Parent = struct { entity: ecs.Entity };
 pub const AttachTo = struct { target: ?ecs.Entity };
 pub const UpdateGlobalTransform = struct {};
+pub const GlobalTransformUpdated = struct {};
 pub const NotUpdateGlobalTransform = struct {};
 
 pub const Position = struct { x: f32, y: f32 };

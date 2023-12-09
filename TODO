@@ -1,5 +1,4 @@
 fea: sprite click systems
-    fea: global transform changed event
 fea: render animations
 fea: scene file
 fea: scene editor
