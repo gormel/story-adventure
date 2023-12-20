@@ -1,6 +1,7 @@
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const cmp = @import("components.zig");
+const std = @import("std");
 
 pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var pressed_iter = reg.entityIterator(cmp.InputPressed);
