@@ -39,6 +39,7 @@ pub fn main() !void {
     const inp = reg.create();
     reg.add(inp, icmp.MousePositionTracker {});
     reg.add(inp, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+    reg.add(inp, icmp.TapTracker { .delay = 0.3 });
 
     const inp1 = reg.create();
     reg.add(inp1, ClearInput { });
@@ -63,7 +64,7 @@ pub fn main() !void {
             }
         }
 
-        var view = reg.view(.{ icmp.MousePositionInput, icmp.InputPressed }, .{});
+        var view = reg.view(.{ icmp.MousePositionInput, icmp.InputTap }, .{});
         var iter = view.entityIterator();
         while (iter.next()) |entity| {
             const mpos = reg.getConst(icmp.MousePositionInput, entity);
@@ -78,7 +79,7 @@ pub fn main() !void {
             reg.add(e, Tag {});
         }
 
-        input_systems.capture(&reg);
+        input_systems.capture(&reg, dt);
 
         core_systems.timer(&reg, dt);
         core_systems.destroy_by_timer(&reg);

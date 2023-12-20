@@ -2,7 +2,7 @@ const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const cmp = @import("components.zig");
 
-pub fn capture(reg: *ecs.Registry) void {
+pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var pressed_iter = reg.entityIterator(cmp.InputPressed);
     while (pressed_iter.next()) |entity| {
         reg.remove(cmp.InputPressed, entity);
@@ -16,6 +16,11 @@ pub fn capture(reg: *ecs.Registry) void {
     var mpos_iter = reg.entityIterator(cmp.MousePositionChanged);
     while (mpos_iter.next()) |entity| {
         reg.remove(cmp.MousePositionChanged, entity);
+    }
+
+    var tap_iter = reg.entityIterator(cmp.InputTap);
+    while (tap_iter.next()) |entity| {
+        reg.remove(cmp.InputTap, entity);
     }
 
     const mouse_delta = rl.GetMouseDelta();
@@ -71,5 +76,28 @@ pub fn capture(reg: *ecs.Registry) void {
             reg.add(entity, cmp.InputReleased {});
             reg.remove(cmp.InputDown, entity);
         }
+    }
+
+    var tap_reg_view = reg.view(.{ cmp.InputPressed, cmp.TapTracker }, .{ cmp.TapCandidate });
+    var tap_reg_iter = tap_reg_view.entityIterator();
+    while (tap_reg_iter.next()) |entity| {
+        const tracker = reg.getConst(cmp.TapTracker, entity);
+        reg.add(entity, cmp.TapCandidate { .time_remain = tracker.delay });
+    }
+
+    var candidate_iter = reg.entityIterator(cmp.TapCandidate);
+    while (candidate_iter.next()) |entity| {
+        const candidate = reg.get(cmp.TapCandidate, entity);
+        candidate.time_remain -= dt;
+        if (candidate.time_remain <= 0) {
+            reg.remove(cmp.TapCandidate, entity);
+        }
+    }
+
+    var set_tap_view = reg.view(.{ cmp.TapTracker, cmp.TapCandidate, cmp.InputReleased }, .{});
+    var set_tap_iter = set_tap_view.entityIterator();
+    while (set_tap_iter.next()) |entity| {
+        reg.remove(cmp.TapCandidate, entity);
+        reg.add(entity, cmp.InputTap {});
     }
 }
