@@ -1,6 +1,10 @@
+const rl = @import("raylib");
+
 pub const MousePositionTracker = struct {};
+pub const MouseOverTracker = struct { rect: rl.Rectangle };
 pub const MousePositionInput = struct { x: i32 = 0, y: i32 = 0 };
 pub const MousePositionChanged = struct { };
+pub const MouseOver = struct { };
 
 pub const MouseButtonTracker = struct { button: i32 };
 

@@ -2,6 +2,31 @@ const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const cmp = @import("components.zig");
 const std = @import("std");
+const rcmp = @import("../render/components.zig");
+const utils = @import("../../engine/utils.zig");
+
+fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
+    const position = reg.getConst(cmp.MousePositionInput, entity);
+    const tracker = reg.getConst(cmp.MouseOverTracker, entity);
+
+    var x = @as(f32, @floatFromInt(position.x));
+    var y = @as(f32, @floatFromInt(position.y));
+
+    if (reg.tryGetConst(rcmp.GlobalRotation, entity)) |g_rotation| {
+        utils.rotate(&x, &y, -g_rotation.a);
+    }
+
+    if (reg.tryGetConst(rcmp.GlobalScale, entity)) |g_scale| {
+        x = x / g_scale.x;
+        y = y / g_scale.y;
+    }
+
+    if (reg.tryGetConst(rcmp.GlobalPosition, entity)) |g_position| {
+        x = x - g_position.x;
+        y = y - g_position.y;
+    }
+    return rl.CheckCollisionPointRec(rl.Vector2 { .x = x, .y = y }, tracker.rect);
+}
 
 pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var pressed_iter = reg.entityIterator(cmp.InputPressed);
@@ -36,6 +61,23 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
 
         if (mouse_delta.x != 0 or mouse_delta.y != 0) {
             reg.add(entity, cmp.MousePositionChanged {});
+        }
+    }
+
+    var add_over_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker }, .{ cmp.MouseOver });
+    var add_over_iter = add_over_view.entityIterator();
+    while (add_over_iter.next()) |entity| {
+        if (mouse_over(reg, entity)) {
+            std.debug.print("OVER", .{});
+            reg.add(entity, cmp.MouseOver {});
+        }
+    }
+
+    var rem_over_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker, cmp.MouseOver }, .{});
+    var rem_over_iter = rem_over_view.entityIterator();
+    while (rem_over_iter.next()) |entity| {
+        if (!mouse_over(reg, entity)) {
+            reg.remove(cmp.MouseOver, entity);
         }
     }
 

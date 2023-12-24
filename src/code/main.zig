@@ -9,8 +9,8 @@ const input_systems = @import("ecs/input/systems.zig");
 const icmp = @import("ecs/input/components.zig");
 const rs = @import("engine/resources.zig");
 
-const ClearInput = struct {};
-const Tag = struct {};
+const Root = struct {};
+const Btn = struct {};
 
 pub fn main() !void {
     // Initialization
@@ -21,7 +21,7 @@ pub fn main() !void {
     rl.InitWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.CloseWindow(); // Close window and OpenGL context
 
-    rl.SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+    rl.SetTargetFPS(144); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     const allocator = std.heap.page_allocator;
@@ -36,16 +36,35 @@ pub fn main() !void {
 
     var render_list = std.ArrayList(ecs.Entity).init(arena);
 
-    const inp = reg.create();
-    reg.add(inp, icmp.MousePositionTracker {});
-    reg.add(inp, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
-    reg.add(inp, icmp.TapTracker { .delay = 0.3 });
-
-    const inp1 = reg.create();
-    reg.add(inp1, ClearInput { });
-    reg.add(inp1, icmp.KeyInputTracker { .key = rl.KEY_D });
+    //debug init
 
     const path = try std.fs.path.join(arena, &.{ "resources", "atlases", "star.json" });
+
+    const root_ety = reg.create();
+    reg.add(root_ety, rcmp.AttachTo { .target = null });
+    reg.add(root_ety, rcmp.Position { .x = screenWidth / 2, .y = screenHeight / 2 });
+    reg.add(root_ety, rcmp.Rotation { .a = 0 });
+    reg.add(root_ety, Root {});
+
+    const btn1_ety = reg.create();
+    reg.add(btn1_ety, rcmp.Resource { .atlas_path = path, .sprite = "star" });
+    reg.add(btn1_ety, rcmp.AttachTo { .target = root_ety });
+    reg.add(btn1_ety, rcmp.Position { .x = 64, .y = 0 });
+    reg.add(btn1_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
+    reg.add(btn1_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
+    reg.add(btn1_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+    reg.add(btn1_ety, Btn {});
+
+    const btn2_ety = reg.create();
+    reg.add(btn2_ety, rcmp.Resource { .atlas_path = path, .sprite = "star" });
+    reg.add(btn2_ety, rcmp.AttachTo { .target = root_ety });
+    reg.add(btn2_ety, rcmp.Position { .x = -64, .y = 0 });
+    reg.add(btn2_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
+    reg.add(btn1_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
+    reg.add(btn2_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+    reg.add(btn2_ety, Btn {});
+
+    //debug init end
 
     var timer = try std.time.Timer.start();
     // Main game loop
@@ -54,30 +73,23 @@ pub fn main() !void {
         const dt = @as(f32, @floatFromInt(timer.read())) / @as(f32, @floatFromInt(std.time.ns_per_s));
         timer.reset();
 
-        var view1 = reg.view(.{ ClearInput, icmp.InputPressed }, .{});
-        var iter1 = view1.entityIterator();
-        while (iter1.next()) |_| {
-            var del_view = reg.view(.{ Tag }, .{ ccmp.Destroyed });
-            var del_iter = del_view.entityIterator();
-            while (del_iter.next()) |del_entity| {
-                reg.add(del_entity, ccmp.Destroyed {});
-            }
+        //debug logic
+        
+        var rt_view = reg.view(.{ rcmp.Rotation, Root }, .{ rcmp.UpdateGlobalTransform });
+        var rt_iter = rt_view.entityIterator();
+        while (rt_iter.next()) |entity| {
+            var rot = rt_view.get(rcmp.Rotation, entity);
+            rot.a += 0 * dt;
+            reg.add(entity, rcmp.UpdateGlobalTransform {});
         }
 
-        var view = reg.view(.{ icmp.MousePositionInput, icmp.InputTap }, .{});
-        var iter = view.entityIterator();
-        while (iter.next()) |entity| {
-            const mpos = reg.getConst(icmp.MousePositionInput, entity);
-
-            const e = reg.create();
-            reg.add(e, rcmp.Resource { .atlas_path = path, .sprite = "star" });
-            reg.add(e, rcmp.Position { .x = @as(f32, @floatFromInt(mpos.x)), .y = @as(f32, @floatFromInt(mpos.y)) });
-            reg.add(e, rcmp.AttachTo { .target = null });
-            reg.add(e, rcmp.SpriteOffset { .x = 32, .y = 32 });
-            reg.add(e, ccmp.Timer { .time = 2 });
-            reg.add(e, ccmp.DestroyByTimer {});
-            reg.add(e, Tag {});
+        var prs_view = reg.view(.{ Btn, icmp.MouseOver }, .{});
+        var prs_iter = prs_view.entityIterator();
+        while (prs_iter.next()) |entity| {
+            std.debug.print("Pressed: {0}", .{ entity });
         }
+
+        //debug logic end
 
         input_systems.capture(&reg, dt);
 

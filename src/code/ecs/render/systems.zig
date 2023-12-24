@@ -6,6 +6,7 @@ const Destroyed = @import("../core/components.zig").Destroyed;
 const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
 const rs = @import("../../engine/resources.zig");
 const qu = @import("../../engine/queue.zig");
+const utils = @import("../../engine/utils.zig");
 
 const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
@@ -19,16 +20,6 @@ pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
         });
         reg.remove(cmp.Resource, entity);
     }
-}
-
-fn rotate(x: f32, y: f32, a: f32) struct{ x: f32, y:f32 } {
-    const rad = std.math.degreesToRadians(f32, -a);
-    const cos = std.math.cos(rad);
-    const sin = std.math.sin(rad);
-    return .{
-        .x = x * cos + y * sin,
-        .y = -x * sin + y * cos,
-    };
 }
 
 fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentGlobalTransform || error {OutOfMemory})!void {
@@ -46,10 +37,12 @@ fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentG
         const parent_scale = reg.getConst(cmp.GlobalScale, parent.entity);
 
         if (reg.tryGet(cmp.Position, entity)) |local_position| {
-            const rotated = rotate(local_position.x * parent_scale.x, local_position.y * parent_scale.y, parent_rotation.a);
+            var rx = local_position.x * parent_scale.x;
+            var ry = local_position.y * parent_scale.y;
+            utils.rotate(&rx, &ry, parent_rotation.a);
             reg.addOrReplace(entity, cmp.GlobalPosition {
-                .x = parent_position.x + rotated.x,
-                .y = parent_position.y + rotated.y,
+                .x = parent_position.x + rx,
+                .y = parent_position.y + ry,
             });
         } else {
             reg.addOrReplace(entity, cmp.GlobalPosition {
