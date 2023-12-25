@@ -60,7 +60,7 @@ pub fn main() !void {
     reg.add(btn2_ety, rcmp.AttachTo { .target = root_ety });
     reg.add(btn2_ety, rcmp.Position { .x = -64, .y = 0 });
     reg.add(btn2_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
-    reg.add(btn1_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
+    reg.add(btn2_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
     reg.add(btn2_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
     reg.add(btn2_ety, Btn {});
 
