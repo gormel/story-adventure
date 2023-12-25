@@ -43,7 +43,7 @@ pub fn main() !void {
     const root_ety = reg.create();
     reg.add(root_ety, rcmp.AttachTo { .target = null });
     reg.add(root_ety, rcmp.Position { .x = screenWidth / 2, .y = screenHeight / 2 });
-    reg.add(root_ety, rcmp.Rotation { .a = 0 });
+    reg.add(root_ety, rcmp.Rotation { .a = 45 });
     reg.add(root_ety, Root {});
 
     const btn1_ety = reg.create();
@@ -53,6 +53,7 @@ pub fn main() !void {
     reg.add(btn1_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
     reg.add(btn1_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
     reg.add(btn1_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+    reg.add(btn1_ety, icmp.MousePositionTracker { });
     reg.add(btn1_ety, Btn {});
 
     const btn2_ety = reg.create();
@@ -62,6 +63,7 @@ pub fn main() !void {
     reg.add(btn2_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
     reg.add(btn2_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
     reg.add(btn2_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+    reg.add(btn2_ety, icmp.MousePositionTracker { });
     reg.add(btn2_ety, Btn {});
 
     //debug init end
@@ -79,14 +81,14 @@ pub fn main() !void {
         var rt_iter = rt_view.entityIterator();
         while (rt_iter.next()) |entity| {
             var rot = rt_view.get(rcmp.Rotation, entity);
-            rot.a += 0 * dt;
+            rot.a += 45 * dt;
             reg.add(entity, rcmp.UpdateGlobalTransform {});
         }
 
-        var prs_view = reg.view(.{ Btn, icmp.MouseOver }, .{});
+        var prs_view = reg.view(.{ Btn, icmp.MouseOver, icmp.InputPressed }, .{});
         var prs_iter = prs_view.entityIterator();
         while (prs_iter.next()) |entity| {
-            std.debug.print("Pressed: {0}", .{ entity });
+            std.debug.print("Pressed: {0}\n", .{ entity });
         }
 
         //debug logic end

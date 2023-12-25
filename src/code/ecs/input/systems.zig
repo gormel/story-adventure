@@ -12,8 +12,9 @@ fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
     var x = @as(f32, @floatFromInt(position.x));
     var y = @as(f32, @floatFromInt(position.y));
 
-    if (reg.tryGetConst(rcmp.GlobalRotation, entity)) |g_rotation| {
-        utils.rotate(&x, &y, -g_rotation.a);
+    if (reg.tryGetConst(rcmp.GlobalPosition, entity)) |g_position| {
+        x = x - g_position.x;
+        y = y - g_position.y;
     }
 
     if (reg.tryGetConst(rcmp.GlobalScale, entity)) |g_scale| {
@@ -21,10 +22,10 @@ fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
         y = y / g_scale.y;
     }
 
-    if (reg.tryGetConst(rcmp.GlobalPosition, entity)) |g_position| {
-        x = x - g_position.x;
-        y = y - g_position.y;
+    if (reg.tryGetConst(rcmp.GlobalRotation, entity)) |g_rotation| {
+        utils.rotate(&x, &y, -g_rotation.a);
     }
+
     return rl.CheckCollisionPointRec(rl.Vector2 { .x = x, .y = y }, tracker.rect);
 }
 
@@ -64,18 +65,33 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
         }
     }
 
-    var add_over_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker }, .{ cmp.MouseOver });
-    var add_over_iter = add_over_view.entityIterator();
-    while (add_over_iter.next()) |entity| {
+    var add_over_ms_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker }, .{ cmp.MouseOver });
+    var add_over_ms_iter = add_over_ms_view.entityIterator();
+    while (add_over_ms_iter.next()) |entity| {
         if (mouse_over(reg, entity)) {
-            std.debug.print("OVER", .{});
             reg.add(entity, cmp.MouseOver {});
         }
     }
 
-    var rem_over_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker, cmp.MouseOver }, .{});
-    var rem_over_iter = rem_over_view.entityIterator();
-    while (rem_over_iter.next()) |entity| {
+    var add_over_trns_view = reg.view(.{ cmp.MousePositionInput, rcmp.GlobalTransformUpdated, cmp.MouseOverTracker }, .{ cmp.MouseOver });
+    var add_over_trns_iter = add_over_trns_view.entityIterator();
+    while (add_over_trns_iter.next()) |entity| {
+        if (mouse_over(reg, entity)) {
+            reg.add(entity, cmp.MouseOver {});
+        }
+    }
+
+    var rem_over_ms_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker, cmp.MouseOver }, .{});
+    var rem_over_ms_iter = rem_over_ms_view.entityIterator();
+    while (rem_over_ms_iter.next()) |entity| {
+        if (!mouse_over(reg, entity)) {
+            reg.remove(cmp.MouseOver, entity);
+        }
+    }
+
+    var rem_over_trns_view = reg.view(.{ cmp.MousePositionInput, rcmp.GlobalTransformUpdated, cmp.MouseOverTracker, cmp.MouseOver }, .{});
+    var rem_over_trns_iter = rem_over_trns_view.entityIterator();
+    while (rem_over_trns_iter.next()) |entity| {
         if (!mouse_over(reg, entity)) {
             reg.remove(cmp.MouseOver, entity);
         }
