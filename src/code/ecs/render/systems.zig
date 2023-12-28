@@ -11,14 +11,14 @@ const utils = @import("../../engine/utils.zig");
 const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
 pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
-    var view = reg.view(.{ cmp.Resource }, .{ cmp.Sprite });
+    var view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        const res_c = view.getConst(cmp.Resource, entity);
+        const res_c = view.getConst(cmp.SpriteResource, entity);
         reg.add(entity, cmp.Sprite {
             .sprite = try res.load_sprite(res_c.atlas_path, res_c.sprite)
         });
-        reg.remove(cmp.Resource, entity);
+        reg.remove(cmp.SpriteResource, entity);
     }
 }
 

@@ -7,12 +7,16 @@ const core_systems = @import("ecs/core/systems.zig");
 const ccmp = @import("ecs/core/components.zig");
 const input_systems = @import("ecs/input/systems.zig");
 const icmp = @import("ecs/input/components.zig");
+const scene_systems = @import("ecs/scene/systems.zig");
+const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 
 const Root = struct {};
 const Btn = struct {};
 
 pub fn main() !void {
+    //std.debug.print("{}", .{ scene_systems.scene_components });
+    
     // Initialization
     //--------------------------------------------------------------------------------------
     const screenWidth = 800;
@@ -38,33 +42,10 @@ pub fn main() !void {
 
     //debug init
 
-    const path = try std.fs.path.join(arena, &.{ "resources", "atlases", "star.json" });
-
-    const root_ety = reg.create();
-    reg.add(root_ety, rcmp.AttachTo { .target = null });
-    reg.add(root_ety, rcmp.Position { .x = screenWidth / 2, .y = screenHeight / 2 });
-    reg.add(root_ety, rcmp.Rotation { .a = 45 });
-    reg.add(root_ety, Root {});
-
-    const btn1_ety = reg.create();
-    reg.add(btn1_ety, rcmp.Resource { .atlas_path = path, .sprite = "star" });
-    reg.add(btn1_ety, rcmp.AttachTo { .target = root_ety });
-    reg.add(btn1_ety, rcmp.Position { .x = 64, .y = 0 });
-    reg.add(btn1_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
-    reg.add(btn1_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
-    reg.add(btn1_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
-    reg.add(btn1_ety, icmp.MousePositionTracker { });
-    reg.add(btn1_ety, Btn {});
-
-    const btn2_ety = reg.create();
-    reg.add(btn2_ety, rcmp.Resource { .atlas_path = path, .sprite = "star" });
-    reg.add(btn2_ety, rcmp.AttachTo { .target = root_ety });
-    reg.add(btn2_ety, rcmp.Position { .x = -64, .y = 0 });
-    reg.add(btn2_ety, rcmp.SpriteOffset { .x = 32, .y = 32 });
-    reg.add(btn2_ety, icmp.MouseOverTracker { .rect = rl.Rectangle { .x = -32, .y = -32, .width = 64, .height = 64 } });
-    reg.add(btn2_ety, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
-    reg.add(btn2_ety, icmp.MousePositionTracker { });
-    reg.add(btn2_ety, Btn {});
+    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "test_scene.json" });
+    var scene_entity = reg.create();
+    reg.add(scene_entity, scmp.SceneResource { .scene_path = path });
+    reg.add(scene_entity, rcmp.AttachTo { .target = null });
 
     //debug init end
 
@@ -77,20 +58,6 @@ pub fn main() !void {
 
         //debug logic
         
-        var rt_view = reg.view(.{ rcmp.Rotation, Root }, .{ rcmp.UpdateGlobalTransform });
-        var rt_iter = rt_view.entityIterator();
-        while (rt_iter.next()) |entity| {
-            var rot = rt_view.get(rcmp.Rotation, entity);
-            rot.a += 45 * dt;
-            reg.add(entity, rcmp.UpdateGlobalTransform {});
-        }
-
-        var prs_view = reg.view(.{ Btn, icmp.MouseOver, icmp.InputPressed }, .{});
-        var prs_iter = prs_view.entityIterator();
-        while (prs_iter.next()) |entity| {
-            std.debug.print("Pressed: {0}\n", .{ entity });
-        }
-
         //debug logic end
 
         input_systems.capture(&reg, dt);
@@ -98,6 +65,7 @@ pub fn main() !void {
         core_systems.timer(&reg, dt);
         core_systems.destroy_by_timer(&reg);
 
+        try scene_systems.load_scene(arena, &reg, &res);
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);
         try render_systems.update_global_transform(&reg, &render_list, arena);

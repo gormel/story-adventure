@@ -1,0 +1,43 @@
+[
+    {
+        "ecs.render.components.Position": { "x": 100, "y": 150 },
+        "ecs.render.components.Rotation": { "a": 0 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.render.components.SpriteResource": {
+            "atlas_path": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "__children__": []
+    },
+    {
+        "ecs.render.components.Position": { "x": 200, "y": 150 },
+        "ecs.render.components.Rotation": { "a": 45 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.render.components.SpriteResource": {
+            "atlas_path": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "__children__": [
+            {
+                "ecs.render.components.Position": { "x": 100, "y": 150 },
+                "ecs.render.components.Rotation": { "a": 0 },
+                "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                "ecs.render.components.SpriteResource": {
+                    "atlas_path": "resources/atlases/star.json",
+                    "sprite": "star"
+                },
+                "__children__": []
+            }
+        ]
+    },
+    {
+        "ecs.render.components.Position": { "x": 300, "y": 150 },
+        "ecs.render.components.Rotation": { "a": 0 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.render.components.SpriteResource": {
+            "atlas_path": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "__children__": []
+    }
+]

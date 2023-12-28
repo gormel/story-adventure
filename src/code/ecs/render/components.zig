@@ -3,7 +3,7 @@ const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const sp = @import("../../engine/sprite.zig");
 
-pub const Resource = struct { atlas_path: []const u8, sprite: []const u8 };
+pub const SpriteResource = struct { atlas_path: []const u8, sprite: []const u8 };
 pub const Sprite = struct { sprite: sp.Sprite };
 pub const SpriteOffset = struct { x: f32, y: f32 };
 

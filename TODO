@@ -1,3 +1,5 @@
-fea: render animations
-fea: scene file
 fea: scene editor
+* problem: не все компоненты надо сохранять в сцену
+* problem: надо сохранять SpriteResource, который удаляется
+fea: render animations
+ref: resources to @embedFile()

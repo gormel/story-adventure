@@ -1,0 +1,29 @@
+atlas:
+{
+    "tex": "resources/textures/star.png",
+    "sprites": [
+        {
+            "name": "star",
+            "x": 0,
+            "y": 0,
+            "w": 64,
+            "h": 64
+        }
+    ]
+}
+
+scene:
+[
+    {
+        "ecs.render.components.Position": { "x": 5, "y": 6 },
+        "ecs.render.components.Rotation": { "a": 45 },
+        "ecs.render.components.Resource": { "atlas_path": "...", "sprite": "star" },
+        ...
+        "__children__": [ //RESERVED
+            { ... },
+            { ... },
+            ...
+        ]
+    },
+    ...
+]

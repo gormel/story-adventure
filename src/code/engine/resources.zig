@@ -9,15 +9,43 @@ pub const Resources = struct {
     };
 
     atlases: std.StringHashMap(Atlas),
+    jsons: std.StringHashMap(std.json.Value),
+    json_texts: std.ArrayList([]u8),
     allocator: std.mem.Allocator,
 
     pub fn init(allocator: std.mem.Allocator) Resources {
         return Resources {
             .allocator = allocator,
-            .atlases = std.StringHashMap(Atlas).init(allocator)
+            .atlases = std.StringHashMap(Atlas).init(allocator),
+            .jsons = std.StringHashMap(std.json.Value).init(allocator),
+            .json_texts = std.ArrayList([]u8).init(allocator),
         };
     }
     
+    pub fn load_json(self: *Resources, json_path: []const u8) !std.json.Value {
+        if (self.jsons.get(json_path)) |json| {
+            return json;
+        } else {
+            const exe_dir = try std.fs.selfExeDirPathAlloc(self.allocator);
+            defer self.allocator.free(exe_dir);
+            const absolute_json_path = try std.fs.path.join(self.allocator, &.{ exe_dir, json_path });
+            defer self.allocator.free(absolute_json_path);
+
+            const file = try std.fs.openFileAbsolute(absolute_json_path, .{});
+            defer file.close();
+            const text = try file.readToEndAlloc(self.allocator, 1024 * 5);
+            try self.json_texts.append(text);
+            var scanner = std.json.Scanner.initCompleteInput(self.allocator, text);
+            defer scanner.deinit();
+            const json = try std.json.Value.jsonParse(self.allocator, &scanner, .{});
+
+            try self.jsons.put(json_path, json);
+
+            return json;
+        }
+        unreachable;
+    }
+
     pub fn load_sprite(self: *Resources, atlas_path: []const u8, sprite_name: []const u8) !sp.Sprite {
         var atlas = self.atlases.get(atlas_path);
         if (atlas == null) {
@@ -27,6 +55,7 @@ pub const Resources = struct {
             defer self.allocator.free(absolute_atlas_path);
 
             const file = try std.fs.openFileAbsolute(absolute_atlas_path, .{});
+            defer file.close();
             const text = try file.readToEndAlloc(self.allocator, 1024 * 5);
             defer self.allocator.free(text);
             const json = try std.json.parseFromSlice(sp.AtlasCfg, self.allocator, text, .{});
@@ -65,6 +94,12 @@ pub const Resources = struct {
             pair.value_ptr.cfg.deinit();
         }
         self.atlases.deinit();
+
+        self.jsons.deinit();
+
+        for (self.json_texts.items) |str| {
+            self.allocator.free(str);
+        }
     }
 };
 
