@@ -32,7 +32,7 @@
                 "ecs.render.components.Position": { "x": 200, "y": 150 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
-                "ecs.render.components.SolidRect": {
+                "ecs.gui.components.InitButton": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 255, "g": 0, "b": 255, "a": 255 }
                 },

@@ -5,6 +5,7 @@ const cmp = @import("components.zig");
 const rs = @import("../../engine/resources.zig");
 
 const rcmp = @import("../render/components.zig");
+const gcmp = @import("../gui/components.zig");
 
 pub const scene_components = .{
     rcmp.Position,
@@ -12,6 +13,8 @@ pub const scene_components = .{
     rcmp.Scale,
     rcmp.SpriteResource,
     rcmp.SolidRect,
+
+    gcmp.InitButton,
 };
 
 const children_field = "__children__";

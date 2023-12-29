@@ -1,5 +1,5 @@
 fea: gui
-* button
+* button+
 * linear layout
 ** element size
 ** layout element

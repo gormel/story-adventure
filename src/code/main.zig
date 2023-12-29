@@ -9,6 +9,7 @@ const input_systems = @import("ecs/input/systems.zig");
 const icmp = @import("ecs/input/components.zig");
 const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
+const gui_systems = @import("ecs/gui/systems.zig");
 const rs = @import("engine/resources.zig");
 
 const Root = struct {};
@@ -70,6 +71,9 @@ pub fn main() !void {
         try render_systems.attach_to(&reg, arena);
         try render_systems.update_global_transform(&reg, &render_list, arena);
         render_systems.set_solid_rect_color(&reg);
+
+        gui_systems.button(&reg);
+
         rl.BeginDrawing();
         defer rl.EndDrawing();
 
