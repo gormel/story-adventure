@@ -1,3 +1,9 @@
+fea: gui
+* button
+* linear layout
+** element size
+** layout element
+* label
 fea: scene editor
 * problem: не все компоненты надо сохранять в сцену
 * problem: надо сохранять SpriteResource, который удаляется

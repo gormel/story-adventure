@@ -7,6 +7,11 @@ pub const SpriteResource = struct { atlas_path: []const u8, sprite: []const u8 }
 pub const Sprite = struct { sprite: sp.Sprite };
 pub const SpriteOffset = struct { x: f32, y: f32 };
 
+pub const SolidRect = struct { rect: rl.Rectangle, color: rl.Color };
+pub const SolidRectOffset = struct { x: f32, y: f32 };
+pub const SetSolidRectColor = struct { color: rl.Color };
+pub const SolidColorRectUpdated = struct {};
+
 pub const GameObject = struct {};
 pub const Children = struct { children: std.ArrayList(ecs.Entity) };
 pub const Parent = struct { entity: ecs.Entity };

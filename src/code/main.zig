@@ -16,7 +16,7 @@ const Btn = struct {};
 
 pub fn main() !void {
     //std.debug.print("{}", .{ scene_systems.scene_components });
-    
+
     // Initialization
     //--------------------------------------------------------------------------------------
     const screenWidth = 800;
@@ -69,13 +69,13 @@ pub fn main() !void {
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);
         try render_systems.update_global_transform(&reg, &render_list, arena);
-
+        render_systems.set_solid_rect_color(&reg);
         rl.BeginDrawing();
         defer rl.EndDrawing();
 
         rl.ClearBackground(rl.WHITE);
 
-        try render_systems.render_sprite(&reg, &render_list);
+        try render_systems.render(&reg, &render_list);
 
         try render_systems.destroy_children(&reg);
         //destroy triggers

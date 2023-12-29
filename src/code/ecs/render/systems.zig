@@ -256,28 +256,83 @@ pub fn destroy_children(reg: *ecs.Registry) !void {
     }
 }
 
-pub fn render_sprite(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {
-    var group = reg.group(.{ cmp.Sprite, cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{});
+pub fn set_solid_rect_color(reg: *ecs.Registry) void {
+    var clear_view = reg.view(.{ cmp.SolidColorRectUpdated }, .{});
+    var clear_iter = clear_view.entityIterator();
+    while (clear_iter.next()) |entity| {
+        reg.remove(cmp.SolidColorRectUpdated, entity);
+    }
+
+    var view = reg.view(.{ cmp.SetSolidRectColor, cmp.SolidRect }, .{ cmp.SolidColorRectUpdated });
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+       var rect = view.get(cmp.SolidRect, entity);
+       const set = view.getConst(cmp.SetSolidRectColor, entity);
+
+       rect.color = set.color;
+       reg.remove(cmp.SetSolidRectColor, entity);
+       reg.add(entity, cmp.SolidColorRectUpdated {});
+    }
+}
+
+fn render_sprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
+    const sprite = reg.getConst(cmp.Sprite, entity);
+    const pos = reg.getConst(cmp.GlobalPosition, entity);
+    const rot = reg.getConst(cmp.GlobalRotation, entity);
+    const scale = reg.getConst(cmp.GlobalScale, entity);
+
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    if (reg.has(cmp.SpriteOffset, entity)) {
+        const offset = reg.getConst(cmp.SpriteOffset, entity);
+        origin.x = offset.x;
+        origin.y = offset.y;
+    }
+
+    const target_rect = rl.Rectangle {
+        .x = pos.x, .y = pos.y,
+        .width = sprite.sprite.rect.width * scale.x,
+        .height = sprite.sprite.rect.height * scale.y
+    };
+    rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
+}
+
+fn render_solid_rect(reg: *ecs.Registry, entity: ecs.Entity) !void {
+    const rect = reg.getConst(cmp.SolidRect, entity);
+    const pos = reg.getConst(cmp.GlobalPosition, entity);
+    const rot = reg.getConst(cmp.GlobalRotation, entity);
+    const scale = reg.getConst(cmp.GlobalScale, entity);
+
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    if (reg.has(cmp.SolidRectOffset, entity)) {
+        const offset = reg.getConst(cmp.SolidRectOffset, entity);
+        origin.x = offset.x;
+        origin.y = offset.y;
+    }
+
+    const target_rect = rl.Rectangle {
+        .x = pos.x, .y = pos.y,
+        .width = rect.rect.width * scale.x,
+        .height = rect.rect.height * scale.y
+    };
+
+    rl.DrawRectanglePro(target_rect, origin, rot.a, rect.color);
+}
+
+const render_fns = .{
+    .{ .cmp = cmp.Sprite, .func = render_sprite },
+    .{ .cmp = cmp.SolidRect, .func = render_solid_rect },
+};
+
+pub fn render(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {
+    const group = reg.group(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{});
     for (render_list.items) |entity| {
-        if (group.contains(entity)) {
-            const sprite = group.getConst(cmp.Sprite, entity);
-            const pos = group.getConst(cmp.GlobalPosition, entity);
-            const rot = reg.getConst(cmp.GlobalRotation, entity);
-            const scale = reg.getConst(cmp.GlobalScale, entity);
-
-            var origin = rl.Vector2 { .x = 0, .y = 0 };
-            if (reg.has(cmp.SpriteOffset, entity)) {
-                const offset = reg.getConst(cmp.SpriteOffset, entity);
-                origin.x = offset.x;
-                origin.y = offset.y;
+        inline for (render_fns) |map| {
+            if (
+                reg.has(map.cmp, entity)
+                and group.contains(entity)
+            ) {
+                try map.func(reg, entity);
             }
-
-            const target_rect = rl.Rectangle {
-                .x = pos.x, .y = pos.y,
-                .width = sprite.sprite.rect.width * scale.x,
-                .height = sprite.sprite.rect.height * scale.y
-            };
-            rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
         }
     }
 }

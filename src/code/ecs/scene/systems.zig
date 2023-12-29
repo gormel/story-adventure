@@ -11,6 +11,7 @@ pub const scene_components = .{
     rcmp.Rotation,
     rcmp.Scale,
     rcmp.SpriteResource,
+    rcmp.SolidRect,
 };
 
 const children_field = "__children__";
