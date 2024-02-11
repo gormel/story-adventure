@@ -1,9 +1,7 @@
-fea: gui
-* button+
-* linear layout+
-* label
 fea: scene editor
-* problem: не все компоненты надо сохранять в сцену
 * problem: надо сохранять SpriteResource, который удаляется
-fea: render animations
+** solve: отдельные компоненты для загрузки из сцены (SceneButton, SceneSprite) (в приложении - удалять + вешать нужный инит, в редакторе - игнорировать) +
+** solve: конвертация компонентов по мапе (cmp -> fn(cmp) write_cmp) -
+fea: flipbook animations
 ref: resources to @embedFile()
+fea: tween animations

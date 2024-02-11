@@ -12,6 +12,13 @@ pub const SolidRectOffset = struct { x: f32, y: f32 };
 pub const SetSolidRectColor = struct { color: rl.Color };
 pub const SolidColorRectUpdated = struct {};
 
+pub const Text = struct { text: []const u8, color: rl.Color, size: f32 };
+pub const TextOffset = struct { x: f32, y: f32 };
+pub const SetTextColor = struct { color: rl.Color };
+pub const TextColorUpdated = struct {};
+pub const SetTextValue = struct { text: []const u8 };
+pub const TextValueUpdated = struct {};
+
 pub const GameObject = struct {};
 pub const Children = struct { children: std.ArrayList(ecs.Entity) };
 pub const Parent = struct { entity: ecs.Entity };

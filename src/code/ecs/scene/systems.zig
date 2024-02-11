@@ -13,6 +13,7 @@ pub const scene_components = .{
     rcmp.Scale,
     rcmp.SpriteResource,
     rcmp.SolidRect,
+    rcmp.Text,
 
     gcmp.InitButton,
     gcmp.LinearLayout,

@@ -73,6 +73,7 @@ pub fn main() !void {
         try render_systems.attach_to(&reg, arena);
         try render_systems.update_global_transform(&reg, &render_list, arena);
         render_systems.set_solid_rect_color(&reg);
+        render_systems.set_text_params(&reg);
 
         gui_systems.button(&reg);
         try gui_systems.linear_layout(&reg, &children_buffer);

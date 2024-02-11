@@ -275,6 +275,43 @@ pub fn set_solid_rect_color(reg: *ecs.Registry) void {
     }
 }
 
+pub fn set_text_params(reg: *ecs.Registry) void {
+    var clear_color_view = reg.view(.{ cmp.TextColorUpdated }, .{});
+    var clear_color_iter = clear_color_view.entityIterator();
+    while (clear_color_iter.next()) |entity| {
+        reg.remove(cmp.TextColorUpdated, entity);
+    }
+
+    var clear_value_view = reg.view(.{ cmp.TextValueUpdated }, .{});
+    var clear_value_iter = clear_value_view.entityIterator();
+    while (clear_value_iter.next()) |entity| {
+        reg.remove(cmp.TextValueUpdated, entity);
+    }
+
+    var color_view = reg.view(.{ cmp.SetTextColor, cmp.Text }, .{ cmp.TextColorUpdated });
+    var color_iter = color_view.entityIterator();
+    while (color_iter.next()) |entity| {
+       var text = color_view.get(cmp.Text, entity);
+       const set = color_view.getConst(cmp.SetTextColor, entity);
+
+       text.color = set.color;
+       reg.remove(cmp.SetTextColor, entity);
+       reg.add(entity, cmp.TextColorUpdated {});
+    }
+
+    var value_view = reg.view(.{ cmp.SetTextValue, cmp.Text }, .{ cmp.TextValueUpdated });
+    var value_iter = value_view.entityIterator();
+    while (value_iter.next()) |entity| {
+       var text = value_view.get(cmp.Text, entity);
+       const set = value_view.getConst(cmp.SetTextValue, entity);
+
+       text.text = set.text;
+       reg.remove(cmp.SetTextValue, entity);
+       reg.add(entity, cmp.TextValueUpdated {});
+    }
+
+}
+
 fn render_sprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const sprite = reg.getConst(cmp.Sprite, entity);
     const pos = reg.getConst(cmp.GlobalPosition, entity);
@@ -316,9 +353,27 @@ fn render_solid_rect(reg: *ecs.Registry, entity: ecs.Entity) !void {
     rl.DrawRectanglePro(target_rect, origin, rot.a, rect.color);
 }
 
+fn render_text(reg: *ecs.Registry, entity: ecs.Entity) !void {
+    const text = reg.getConst(cmp.Text, entity);
+    const pos = reg.getConst(cmp.GlobalPosition, entity);
+    const rot = reg.getConst(cmp.GlobalRotation, entity);
+    //const scale = reg.getConst(cmp.GlobalScale, entity);
+
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    if (reg.tryGetConst(cmp.TextOffset, entity)) |offset| {
+        origin.x = offset.x;
+        origin.y = offset.y;
+    }
+
+    var position = rl.Vector2 { .x = pos.x, .y = pos.y };
+
+    rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 10, text.color);
+}
+
 const render_fns = .{
     .{ .cmp = cmp.Sprite, .func = render_sprite },
     .{ .cmp = cmp.SolidRect, .func = render_solid_rect },
+    .{ .cmp = cmp.Text, .func = render_text },
 };
 
 pub fn render(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {

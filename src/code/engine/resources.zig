@@ -33,7 +33,7 @@ pub const Resources = struct {
 
             const file = try std.fs.openFileAbsolute(absolute_json_path, .{});
             defer file.close();
-            const text = try file.readToEndAlloc(self.allocator, 1024 * 5);
+            const text = try file.readToEndAlloc(self.allocator, 1024 * 1024 * 5);
             try self.json_texts.append(text);
             var scanner = std.json.Scanner.initCompleteInput(self.allocator, text);
             defer scanner.deinit();
