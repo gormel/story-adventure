@@ -282,8 +282,7 @@ fn render_sprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
     var origin = rl.Vector2 { .x = 0, .y = 0 };
-    if (reg.has(cmp.SpriteOffset, entity)) {
-        const offset = reg.getConst(cmp.SpriteOffset, entity);
+    if (reg.tryGetConst(cmp.SpriteOffset, entity)) |offset| {
         origin.x = offset.x;
         origin.y = offset.y;
     }
@@ -303,8 +302,7 @@ fn render_solid_rect(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
     var origin = rl.Vector2 { .x = 0, .y = 0 };
-    if (reg.has(cmp.SolidRectOffset, entity)) {
-        const offset = reg.getConst(cmp.SolidRectOffset, entity);
+    if (reg.tryGetConst(cmp.SolidRectOffset, entity)) |offset| {
         origin.x = offset.x;
         origin.y = offset.y;
     }

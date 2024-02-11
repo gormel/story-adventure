@@ -10,6 +10,7 @@ const icmp = @import("ecs/input/components.zig");
 const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const gui_systems = @import("ecs/gui/systems.zig");
+const gcmp = @import("ecs/gui/components.zig");
 const rs = @import("engine/resources.zig");
 
 const Root = struct {};
@@ -40,6 +41,7 @@ pub fn main() !void {
     defer reg.deinit();
 
     var render_list = std.ArrayList(ecs.Entity).init(arena);
+    var children_buffer = std.ArrayList(gui_systems.ChildEntry).init(arena);
 
     //debug init
 
@@ -73,6 +75,7 @@ pub fn main() !void {
         render_systems.set_solid_rect_color(&reg);
 
         gui_systems.button(&reg);
+        try gui_systems.linear_layout(&reg, &children_buffer);
 
         rl.BeginDrawing();
         defer rl.EndDrawing();
@@ -83,6 +86,7 @@ pub fn main() !void {
 
         try render_systems.destroy_children(&reg);
         //destroy triggers
+        gui_systems.linear_layout_on_destroy(&reg);
         core_systems.destroy(&reg);
     }
 }

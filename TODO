@@ -1,8 +1,6 @@
 fea: gui
 * button+
-* linear layout
-** element size
-** layout element
+* linear layout+
 * label
 fea: scene editor
 * problem: не все компоненты надо сохранять в сцену

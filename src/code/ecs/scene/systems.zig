@@ -15,6 +15,8 @@ pub const scene_components = .{
     rcmp.SolidRect,
 
     gcmp.InitButton,
+    gcmp.LinearLayout,
+    gcmp.InitLayoutElement,
 };
 
 const children_field = "__children__";

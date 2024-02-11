@@ -26,7 +26,10 @@ fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
         utils.rotate(&x, &y, -g_rotation.a);
     }
 
-    return rl.CheckCollisionPointRec(rl.Vector2 { .x = x, .y = y }, tracker.rect);
+    var target_rect = tracker.rect;
+    target_rect.x = 0;
+    target_rect.y = 0;
+    return rl.CheckCollisionPointRec(rl.Vector2 { .x = x, .y = y }, target_rect);
 }
 
 pub fn capture(reg: *ecs.Registry, dt: f32) void {
