@@ -17,3 +17,4 @@ pub const RefreshLinearLayout = struct {};
 pub const LinearLayout = struct { dir: LayoutDirection, size: i32 };
 pub const InitLayoutElement = struct { width: f32, height: f32, idx: i32 = -1 };
 pub const LayoutElement = struct { width: f32, height: f32, idx: i32 };
+pub const Collapsed = struct {};

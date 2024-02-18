@@ -14,10 +14,13 @@ pub const scene_components = .{
     rcmp.SpriteResource,
     rcmp.SolidRect,
     rcmp.Text,
+    rcmp.Disabled,
+    rcmp.Hidden,
 
     gcmp.InitButton,
     gcmp.LinearLayout,
     gcmp.InitLayoutElement,
+    gcmp.Collapsed,
 };
 
 const children_field = "__children__";

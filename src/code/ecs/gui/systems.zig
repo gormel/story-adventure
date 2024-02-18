@@ -102,16 +102,18 @@ pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEn
 
         children_buffer.clearRetainingCapacity();
         for (children.children.items) |child_entity| {
-            if (reg.tryGet(cmp.LayoutElement, child_entity)) |element| {
-                if (element.idx == -1) {
-                    element.idx = last_idx;
-                    last_idx += 1;
-                }
+            if (!reg.has(cmp.Collapsed, child_entity)) {
+                if (reg.tryGet(cmp.LayoutElement, child_entity)) |element| {
+                    if (element.idx == -1) {
+                        element.idx = last_idx;
+                        last_idx += 1;
+                    }
 
-                try children_buffer.append(ChildEntry {
-                    .idx = element.idx,
-                    .ety = child_entity
-                });
+                    try children_buffer.append(ChildEntry {
+                        .idx = element.idx,
+                        .ety = child_entity
+                    });
+                }
             }
         }
 

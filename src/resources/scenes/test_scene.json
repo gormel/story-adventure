@@ -82,6 +82,8 @@
                 "ecs.render.components.Position": { "x": 0, "y": 0 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                "ecs.render.components.Disabled": { },
+                "ecs.gui.components.Collapsed": { },
                 "ecs.render.components.Text": {
                     "text": "3",
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },

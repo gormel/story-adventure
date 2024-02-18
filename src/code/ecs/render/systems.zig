@@ -113,12 +113,16 @@ fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentG
 fn topo_sort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
     var queue = qu.Queue(ecs.Entity).init(allocator);
     defer queue.deinit();
-    try queue.enqueue(entity);
+    if (!reg.has(cmp.Disabled, entity)) {
+        try queue.enqueue(entity);
+    }
     while (queue.dequeue()) |cur_entity| {
         try out_list.append(cur_entity);
         if (reg.tryGet(cmp.Children, cur_entity)) |children| {
             for (children.children.items) |child_entity| {
-                try queue.enqueue(child_entity);
+                if (!reg.has(cmp.Disabled, child_entity)) {
+                    try queue.enqueue(child_entity);
+                }
             }
         }
     }
@@ -377,7 +381,7 @@ const render_fns = .{
 };
 
 pub fn render(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {
-    const group = reg.group(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{});
+    const group = reg.group(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{ cmp.Hidden });
     for (render_list.items) |entity| {
         inline for (render_fns) |map| {
             if (

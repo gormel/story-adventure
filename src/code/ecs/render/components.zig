@@ -34,3 +34,6 @@ pub const Rotation = struct { a: f32 };
 pub const GlobalPosition = struct { x: f32, y: f32 };
 pub const GlobalScale = struct { x: f32, y: f32 };
 pub const GlobalRotation = struct { a: f32 };
+
+pub const Hidden = struct {};
+pub const Disabled = struct {};
