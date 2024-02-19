@@ -1,7 +1,4 @@
 fea: scene editor
-* problem: надо сохранять SpriteResource, который удаляется
-** solve: отдельные компоненты для загрузки из сцены (SceneButton, SceneSprite) (в приложении - удалять + вешать нужный инит, в редакторе - игнорировать) +
-** solve: конвертация компонентов по мапе (cmp -> fn(cmp) write_cmp) -
 fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations

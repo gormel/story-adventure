@@ -1,0 +1,1 @@
+pub const EditorScene = struct {};

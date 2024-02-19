@@ -3,7 +3,7 @@
         "ecs.render.components.Position": { "x": 100, "y": 150 },
         "ecs.render.components.Rotation": { "a": 0 },
         "ecs.render.components.Scale": { "x": 1, "y": 1 },
-        "ecs.render.components.SpriteResource": {
+        "ecs.scene.components.Sprite": {
             "atlas_path": "resources/atlases/star.json",
             "sprite": "star"
         },
@@ -13,7 +13,7 @@
         "ecs.render.components.Position": { "x": 200, "y": 150 },
         "ecs.render.components.Rotation": { "a": 45 },
         "ecs.render.components.Scale": { "x": 1, "y": 1 },
-        "ecs.render.components.SpriteResource": {
+        "ecs.scene.components.Sprite": {
             "atlas_path": "resources/atlases/star.json",
             "sprite": "star"
         },
@@ -22,7 +22,7 @@
                 "ecs.render.components.Position": { "x": 100, "y": 150 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
-                "ecs.render.components.SpriteResource": {
+                "ecs.scene.components.Sprite": {
                     "atlas_path": "resources/atlases/star.json",
                     "sprite": "star"
                 },
@@ -32,7 +32,7 @@
                 "ecs.render.components.Position": { "x": 200, "y": 150 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 255, "g": 0, "b": 255, "a": 255 }
                 },
@@ -55,11 +55,11 @@
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },
                     "size": 10
                 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 100, "g": 100, "b": 100, "a": 255 }
                 },
-                "ecs.gui.components.InitLayoutElement": { "width": 60, "height": 60, "idx": 1 },
+                "ecs.scene.components.LayoutElement": { "width": 60, "height": 60, "idx": 1 },
                 "__children__": []
             },
             {
@@ -71,11 +71,11 @@
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },
                     "size": 10
                 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 120, "g": 120, "b": 120, "a": 255 }
                 },
-                "ecs.gui.components.InitLayoutElement": { "width": 60, "height": 60, "idx": 2 },
+                "ecs.scene.components.LayoutElement": { "width": 60, "height": 60, "idx": 2 },
                 "__children__": []
             },
             {
@@ -89,11 +89,11 @@
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },
                     "size": 10
                 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 140, "g": 140, "b": 140, "a": 255 }
                 },
-                "ecs.gui.components.InitLayoutElement": { "width": 60, "height": 60, "idx": 3 },
+                "ecs.scene.components.LayoutElement": { "width": 60, "height": 60, "idx": 3 },
                 "__children__": []
             },
             {
@@ -105,11 +105,11 @@
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },
                     "size": 10
                 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 160, "g": 160, "b": 160, "a": 255 }
                 },
-                "ecs.gui.components.InitLayoutElement": { "width": 60, "height": 60, "idx": 4 },
+                "ecs.scene.components.LayoutElement": { "width": 60, "height": 60, "idx": 4 },
                 "__children__": []
             },
             {
@@ -121,11 +121,11 @@
                     "color": { "r": 0, "g": 0, "b": 0, "a": 255 },
                     "size": 10
                 },
-                "ecs.gui.components.InitButton": {
+                "ecs.scene.components.Button": {
                     "rect": { "x": 0, "y": 0, "width": 50, "height": 50 },
                     "color": { "r": 180, "g": 180, "b": 180, "a": 255 }
                 },
-                "ecs.gui.components.InitLayoutElement": { "width": 60, "height": 60, "idx": 5 },
+                "ecs.scene.components.LayoutElement": { "width": 60, "height": 60, "idx": 5 },
                 "__children__": []
             }
         ]

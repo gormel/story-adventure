@@ -68,7 +68,8 @@ pub fn main() !void {
         core_systems.timer(&reg, dt);
         core_systems.destroy_by_timer(&reg);
 
-        try scene_systems.load_scene(arena, &reg, &res);
+        try scene_systems.load_scene(&reg, arena, &res);
+        scene_systems.apply_inits(&reg);
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);
         try render_systems.update_global_transform(&reg, &render_list, arena);

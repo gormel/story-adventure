@@ -11,16 +11,17 @@ pub const scene_components = .{
     rcmp.Position,
     rcmp.Rotation,
     rcmp.Scale,
-    rcmp.SpriteResource,
     rcmp.SolidRect,
     rcmp.Text,
     rcmp.Disabled,
     rcmp.Hidden,
 
-    gcmp.InitButton,
     gcmp.LinearLayout,
-    gcmp.InitLayoutElement,
     gcmp.Collapsed,
+
+    cmp.Sprite,
+    cmp.Button,
+    cmp.LayoutElement,
 };
 
 const children_field = "__children__";
@@ -49,7 +50,7 @@ fn load_game_object(
     }
 }
 
-pub fn load_scene(allocator: std.mem.Allocator, reg: *ecs.Registry, res: *rs.Resources) !void {
+pub fn load_scene(reg: *ecs.Registry, allocator: std.mem.Allocator, res: *rs.Resources) !void {
     var view = reg.view(.{ cmp.SceneResource }, .{ cmp.Scene });
     var it = view.entityIterator();
     while (it.next()) |entity| {
@@ -63,5 +64,44 @@ pub fn load_scene(allocator: std.mem.Allocator, reg: *ecs.Registry, res: *rs.Res
         }
 
         reg.remove(cmp.SceneResource, entity);
+    }
+}
+
+pub fn apply_inits(reg: *ecs.Registry) void {
+    var sprite_view = reg.view(.{ cmp.Sprite }, .{ cmp.SpriteLoaded });
+    var sprite_iter = sprite_view.entityIterator();
+    while (sprite_iter.next()) |entity| {
+        const sprite = sprite_view.getConst(cmp.Sprite, entity);
+        reg.add(entity, rcmp.SpriteResource {
+            .atlas_path = sprite.atlas_path,
+            .sprite = sprite.sprite,
+        });
+
+        reg.add(entity, cmp.SpriteLoaded {});
+    }
+
+    var button_view = reg.view(.{ cmp.Button }, .{ cmp.ButtonLoaded });
+    var button_iter = button_view.entityIterator();
+    while (button_iter.next()) |entity| {
+        const button = button_view.getConst(cmp.Button, entity);
+        reg.add(entity, gcmp.InitButton {
+            .color = button.color,
+            .rect = button.rect,
+        });
+
+        reg.add(entity, cmp.ButtonLoaded {});
+    }
+    
+    var element_view = reg.view(.{ cmp.LayoutElement }, .{ cmp.LayoutElementLoaded });
+    var element_iter = element_view.entityIterator();
+    while (element_iter.next()) |entity| {
+        const element = element_view.getConst(cmp.LayoutElement, entity);
+        reg.add(entity, gcmp.InitLayoutElement {
+            .width = element.width,
+            .height = element.height,
+            .idx = element.idx,
+        });
+
+        reg.add(entity, cmp.LayoutElementLoaded {});
     }
 }
