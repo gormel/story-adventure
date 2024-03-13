@@ -1,1 +1,59 @@
-[]
+[
+    {
+        "ecs.render.components.Position": { "x": 10, "y": 10 },
+        "ecs.render.components.Rotation": { "a": 0 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.gui.components.LinearLayout": { "dir": "TOP_DOWN" },
+        "__children__": [
+            {
+                "ecs.render.components.Position": { "x": 0, "y": 0 },
+                "ecs.render.components.Rotation": { "a": 0 },
+                "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                "ecs.render.components.Scissor": { "width": 200, "height": 250 },
+                "ecs.render.components.SolidRect": {
+                    "rect": { "x": 0, "y": 0, "width": 200, "height": 250 },
+                    "color": { "r": 56, "g": 122, "b": 223, "a": 128 }
+                },
+                "ecs.scene.components.LayoutElement": { "width": 200, "height": 260, "idx": 1 },
+                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 250 } },
+                "__children__": [
+                    {
+                        "ecs.render.components.Position": { "x": 0, "y": 0 },
+                        "ecs.render.components.Rotation": { "a": 0 },
+                        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                        "ecs.editor.components.ComponentPanel": { },
+                        "__children__": []
+                    }
+                ]
+            },
+            {
+                "ecs.render.components.Position": { "x": 0, "y": 0 },
+                "ecs.render.components.Rotation": { "a": 0 },
+                "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                "ecs.render.components.Scissor": { "width": 200, "height": 400 },
+                "ecs.render.components.SolidRect": {
+                    "rect": { "x": 0, "y": 0, "width": 200, "height": 400 },
+                    "color": { "r": 56, "g": 122, "b": 223, "a": 128 }
+                },
+                "ecs.scene.components.LayoutElement": { "width": 200, "height": 410, "idx": 2 },
+                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 250 } },
+                "__children__": [
+                    {
+                        "ecs.render.components.Position": { "x": 0, "y": 0 },
+                        "ecs.render.components.Rotation": { "a": 0 },
+                        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                        "ecs.editor.components.GameObjectPanel": { },
+                        "__children__": []
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "ecs.render.components.Position": { "x": 220, "y": 270 },
+        "ecs.render.components.Rotation": { "a": 0 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.editor.components.NewEntityButton": { },
+        "__children__": []
+    }
+]

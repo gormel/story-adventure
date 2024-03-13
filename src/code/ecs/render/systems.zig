@@ -177,13 +177,13 @@ pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         }
     }
 
-    var update_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent, cmp.UpdateGlobalTransform });
+    var update_view = reg.view(.{ cmp.AttachTo }, .{ cmp.UpdateGlobalTransform, cmp.Parent });
     var update_iter = update_view.entityIterator();
     while (update_iter.next()) |entity| {
         reg.add(entity, cmp.UpdateGlobalTransform {});
     }
 
-    var init_view = reg.view(.{ cmp.AttachTo }, .{ cmp.Parent, cmp.GameObject });
+    var init_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ cmp.GameObject });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
         reg.add(entity, cmp.GameObject {});
@@ -196,7 +196,7 @@ pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     }
 }
 
-pub fn update_global_transform(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
+pub fn update_global_transform(reg: *ecs.Registry) !void {
     var fltr_upd_view = reg.view(.{ cmp.UpdateGlobalTransform, cmp.Parent }, .{ });
     var fltr_upd_iter = fltr_upd_view.entityIterator();
     while (fltr_upd_iter.next()) |entity| {
@@ -232,15 +232,6 @@ pub fn update_global_transform(reg: *ecs.Registry, render_list: *std.ArrayList(e
         reg.remove(cmp.UpdateGlobalTransform, entity);
         updated = true;
     }
-    
-    if (updated) {
-        render_list.clearRetainingCapacity();
-        var root_view = reg.view(.{ cmp.GameObject }, .{ cmp.Parent });
-        var root_iter = root_view.entityIterator();
-        while (root_iter.next()) |entity| {
-            try topo_sort(reg, entity, render_list, allocator);
-        }
-    }
 }
 
 pub fn destroy_children(reg: *ecs.Registry) !void {
@@ -256,6 +247,9 @@ pub fn destroy_children(reg: *ecs.Registry) !void {
         var children = children_view.get(cmp.Children, entity);
         for (children.children.items) |child_entity| {
             reg.add(child_entity, DestroyNextFrame {});
+            if (reg.has(cmp.Parent, child_entity)) {
+                reg.remove(cmp.Parent, child_entity);
+            }
         }
     }
 }
@@ -371,7 +365,7 @@ fn render_text(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
     var position = rl.Vector2 { .x = pos.x, .y = pos.y };
 
-    rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 10, text.color);
+    rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, text.color);
 }
 
 const render_fns = .{
@@ -380,16 +374,46 @@ const render_fns = .{
     .{ .cmp = cmp.Text, .func = render_text },
 };
 
-pub fn render(reg: *ecs.Registry, render_list: *std.ArrayList(ecs.Entity)) !void {
+fn render_object(reg: *ecs.Registry, entity: ecs.Entity) void {
     const group = reg.group(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{ cmp.Hidden });
-    for (render_list.items) |entity| {
-        inline for (render_fns) |map| {
-            if (
-                reg.has(map.cmp, entity)
-                and group.contains(entity)
-            ) {
-                try map.func(reg, entity);
-            }
+    inline for (render_fns) |map| {
+        if (
+            reg.has(map.cmp, entity)
+            and group.contains(entity)
+        ) {
+            try map.func(reg, entity);
         }
+    }
+
+    var shold_end_scissor = false;
+    if (reg.tryGetConst(cmp.Scissor, entity)) |scissor| {
+        const pos = reg.getConst(cmp.GlobalPosition, entity);
+        const scale = reg.getConst(cmp.GlobalScale, entity);
+
+        rl.BeginScissorMode(
+            @as(i32, @intFromFloat(pos.x)),
+            @as(i32, @intFromFloat(pos.y)),
+            @as(i32, @intFromFloat(scissor.width * scale.x)),
+            @as(i32, @intFromFloat(scissor.height * scale.y)),
+        );
+
+        shold_end_scissor = true;
+    }
+    if (reg.tryGetConst(cmp.Children, entity)) |children| {
+        for (children.children.items) |child_entity| {
+            render_object(reg, child_entity);
+        }
+    }
+
+    if (shold_end_scissor) {
+        rl.EndScissorMode();
+    }
+}
+
+pub fn render(reg: *ecs.Registry) !void {
+    var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        render_object(reg, entity);
     }
 }

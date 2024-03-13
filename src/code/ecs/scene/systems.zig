@@ -6,6 +6,7 @@ const rs = @import("../../engine/resources.zig");
 
 const rcmp = @import("../render/components.zig");
 const gcmp = @import("../gui/components.zig");
+const ecmp = @import("../editor/components.zig");
 
 pub const scene_components = .{
     rcmp.Position,
@@ -15,6 +16,7 @@ pub const scene_components = .{
     rcmp.Text,
     rcmp.Disabled,
     rcmp.Hidden,
+    rcmp.Scissor,
 
     gcmp.LinearLayout,
     gcmp.Collapsed,
@@ -22,6 +24,12 @@ pub const scene_components = .{
     cmp.Sprite,
     cmp.Button,
     cmp.LayoutElement,
+    cmp.Scroll,
+    cmp.ObjectName,
+
+    ecmp.GameObjectPanel,
+    ecmp.ComponentPanel,
+    ecmp.NewEntityButton,
 };
 
 const children_field = "__children__";
@@ -90,6 +98,19 @@ pub fn apply_inits(reg: *ecs.Registry) void {
         });
 
         reg.add(entity, cmp.ButtonLoaded {});
+    }
+
+    var scroll_view = reg.view(.{ cmp.Scroll }, .{ cmp.ScrollLoaded });
+    var scroll_iter = scroll_view.entityIterator();
+    while (scroll_iter.next()) |entity| {
+        const scroll = scroll_view.getConst(cmp.Scroll, entity);
+        reg.add(entity, gcmp.InitScroll {
+            .view_area = scroll.view_area,
+            .dir = scroll.dir,
+            .speed = scroll.speed,
+        });
+
+        reg.add(entity, cmp.ScrollLoaded {});
     }
     
     var element_view = reg.view(.{ cmp.LayoutElement }, .{ cmp.LayoutElementLoaded });

@@ -12,6 +12,7 @@ const scmp = @import("ecs/scene/components.zig");
 const gui_systems = @import("ecs/gui/systems.zig");
 const gcmp = @import("ecs/gui/components.zig");
 const rs = @import("engine/resources.zig");
+const editor_systems = @import("ecs/editor/systems.zig");
 
 const Root = struct {};
 const Btn = struct {};
@@ -21,8 +22,8 @@ pub fn main() !void {
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    const screenWidth = 800;
-    const screenHeight = 450;
+    const screenWidth = 1280;
+    const screenHeight = 768;
 
     rl.InitWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.CloseWindow(); // Close window and OpenGL context
@@ -40,12 +41,11 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
-    var render_list = std.ArrayList(ecs.Entity).init(arena);
     var children_buffer = std.ArrayList(gui_systems.ChildEntry).init(arena);
 
     //debug init
 
-    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "test_scene.json" });
+    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
     var scene_entity = reg.create();
     reg.add(scene_entity, scmp.SceneResource { .scene_path = path });
     reg.add(scene_entity, rcmp.AttachTo { .target = null });
@@ -70,25 +70,31 @@ pub fn main() !void {
 
         try scene_systems.load_scene(&reg, arena, &res);
         scene_systems.apply_inits(&reg);
+        editor_systems.init(&reg);
+        editor_systems.new_entity_button(&reg);
+        editor_systems.components_panel(&reg);
+        try editor_systems.game_object_panel(&reg, arena);
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);
-        try render_systems.update_global_transform(&reg, &render_list, arena);
+        try render_systems.update_global_transform(&reg);
         render_systems.set_solid_rect_color(&reg);
         render_systems.set_text_params(&reg);
 
         gui_systems.button(&reg);
         try gui_systems.linear_layout(&reg, &children_buffer);
+        gui_systems.process_scroll(&reg);
 
         rl.BeginDrawing();
-        defer rl.EndDrawing();
-
         rl.ClearBackground(rl.WHITE);
 
-        try render_systems.render(&reg, &render_list);
+        try render_systems.render(&reg);
 
-        try render_systems.destroy_children(&reg);
+        rl.EndDrawing();
+
         //destroy triggers
         gui_systems.linear_layout_on_destroy(&reg);
+        editor_systems.game_object_panel_on_destroy(&reg);
+        try render_systems.destroy_children(&reg);
         core_systems.destroy(&reg);
     }
 }

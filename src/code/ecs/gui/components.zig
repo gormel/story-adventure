@@ -13,8 +13,15 @@ pub const LayoutDirection = enum(u8) {
     DOWN_TOP = 4,
 };
 
+pub const ScrollDirection = enum(u8) {
+    VERTICAL = 1,
+    HORIZONTAL = 2,
+};
+
 pub const RefreshLinearLayout = struct {};
-pub const LinearLayout = struct { dir: LayoutDirection, size: i32 };
+pub const LinearLayout = struct { dir: LayoutDirection, size: i32 = 0 };
 pub const InitLayoutElement = struct { width: f32, height: f32, idx: i32 = -1 };
 pub const LayoutElement = struct { width: f32, height: f32, idx: i32 };
 pub const Collapsed = struct {};
+pub const InitScroll = struct { view_area: rl.Rectangle, dir: ScrollDirection = ScrollDirection.VERTICAL, speed: f32 = 10 };
+pub const Scroll = struct { view_area: rl.Rectangle, dir: ScrollDirection, speed: f32 };

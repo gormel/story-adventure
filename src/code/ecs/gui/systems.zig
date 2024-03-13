@@ -6,6 +6,8 @@ const rcmp = @import("../render/components.zig");
 const icmp = @import("../input/components.zig");
 const ccmp = @import("../core/components.zig");
 
+const BTN_CLICK_MUL = 0.8;
+
 pub fn button(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ cmp.InitButton }, .{ cmp.Button });
     var init_iter = init_view.entityIterator();
@@ -36,9 +38,9 @@ pub fn button(reg: *ecs.Registry) void {
         const btn = pressed_view.getConst(cmp.Button, entity);
         reg.add(entity, rcmp.SetSolidRectColor {
             .color = .{ 
-                .r = @intFromFloat(@as(f32, @floatFromInt(btn.color.r)) * 0.9),
-                .g = @intFromFloat(@as(f32, @floatFromInt(btn.color.g)) * 0.9),
-                .b = @intFromFloat(@as(f32, @floatFromInt(btn.color.b)) * 0.9),
+                .r = @intFromFloat(@as(f32, @floatFromInt(btn.color.r)) * BTN_CLICK_MUL),
+                .g = @intFromFloat(@as(f32, @floatFromInt(btn.color.g)) * BTN_CLICK_MUL),
+                .b = @intFromFloat(@as(f32, @floatFromInt(btn.color.b)) * BTN_CLICK_MUL),
                 .a = btn.color.a,
             }
         });
@@ -120,34 +122,37 @@ pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEn
         var offset: f32 = 0.0;
         std.sort.pdq(ChildEntry, children_buffer.items, {}, compare_entry);
         for (children_buffer.items) |entry| {
-            if (reg.tryGet(rcmp.Position, entry.ety)) |position| {
-                if (reg.tryGetConst(cmp.LayoutElement, entry.ety)) |element| {
-                    switch (layout.dir) {
-                        .TOP_DOWN => {
-                            position.x = 0;
-                            position.y = offset;
-                            offset += element.height;
-                        },
-                        .LEFT_RIGHT => {
-                            position.x = offset;
-                            position.y = 0;
-                            offset += element.height;
-                        },
-                        .DOWN_TOP => {
-                            position.x = 0;
-                            position.y = offset;
-                            offset -= element.height;
-                        },
-                        .RIGHT_LEFT => {
-                            position.x = offset;
-                            position.y = 0;
-                            offset -= element.height;
-                        }
-                    }
+            if (!reg.has(rcmp.Position, entry.ety)) {
+                reg.add(entry.ety, rcmp.Position { .x = 0, .y = 0 });
+            }
 
-                    if (!reg.has(rcmp.UpdateGlobalTransform, entry.ety)) {
-                        reg.add(entry.ety, rcmp.UpdateGlobalTransform {});
+            var position = reg.get(rcmp.Position, entry.ety);
+            if (reg.tryGetConst(cmp.LayoutElement, entry.ety)) |element| {
+                switch (layout.dir) {
+                    .TOP_DOWN => {
+                        position.x = 0;
+                        position.y = offset;
+                        offset += element.height;
+                    },
+                    .LEFT_RIGHT => {
+                        position.x = offset;
+                        position.y = 0;
+                        offset += element.height;
+                    },
+                    .DOWN_TOP => {
+                        position.x = 0;
+                        position.y = offset;
+                        offset -= element.height;
+                    },
+                    .RIGHT_LEFT => {
+                        position.x = offset;
+                        position.y = 0;
+                        offset -= element.height;
                     }
+                }
+
+                if (!reg.has(rcmp.UpdateGlobalTransform, entry.ety)) {
+                    reg.add(entry.ety, rcmp.UpdateGlobalTransform {});
                 }
             }
         }
@@ -164,6 +169,47 @@ pub fn linear_layout_on_destroy(reg: *ecs.Registry) void {
         const parent = del_view.getConst(rcmp.Parent, entity);
         if (!reg.has(cmp.RefreshLinearLayout, parent.entity)) {
             reg.add(parent.entity, cmp.RefreshLinearLayout {});
+        }
+    }
+}
+
+pub fn process_scroll(reg: *ecs.Registry) void {
+    var init_view = reg.view(.{ cmp.InitScroll, rcmp.Children }, .{ cmp.Scroll });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        const init = init_view.getConst(cmp.InitScroll, entity);
+
+        reg.add(entity, cmp.Scroll {
+            .view_area = init.view_area,
+            .dir = init.dir,
+            .speed = init.speed,
+        });
+
+        reg.add(entity, icmp.MouseOverTracker { .rect = init.view_area });
+        reg.add(entity, icmp.MouseWheelTracker { });
+        reg.add(entity, icmp.MousePositionTracker {});
+
+        reg.remove(cmp.InitScroll, entity);
+    }
+
+    var process_view = reg.view(.{ cmp.Scroll, icmp.InputWheel, rcmp.Children, icmp.MouseOver }, .{});
+    var process_iter = process_view.entityIterator();
+    while (process_iter.next()) |entity| {
+        const scroll = process_view.getConst(cmp.Scroll, entity);
+        const input = process_view.getConst(icmp.InputWheel, entity);
+        const children = process_view.getConst(rcmp.Children, entity);
+
+        if (children.children.getLastOrNull()) |content_entity| {
+            if (!reg.has(rcmp.Position, content_entity)) {
+                reg.add(content_entity, rcmp.Position { .x = 0, .y = 0 });
+            }
+
+            var pos = reg.get(rcmp.Position, content_entity);
+            pos.y += -scroll.speed * input.delta;
+
+            if (!reg.has(rcmp.UpdateGlobalTransform, content_entity)) {
+                reg.add(content_entity, rcmp.UpdateGlobalTransform {});
+            }
         }
     }
 }

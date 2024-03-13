@@ -1,4 +1,7 @@
 fea: scene editor
+ * view components
+ * add component (popup window)
+ * movement
 fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations
