@@ -9,13 +9,13 @@
                 "ecs.render.components.Position": { "x": 0, "y": 0 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
-                "ecs.render.components.Scissor": { "width": 200, "height": 250 },
+                "ecs.render.components.Scissor": { "width": 200, "height": 200 },
                 "ecs.render.components.SolidRect": {
-                    "rect": { "x": 0, "y": 0, "width": 200, "height": 250 },
+                    "rect": { "x": 0, "y": 0, "width": 200, "height": 200 },
                     "color": { "r": 56, "g": 122, "b": 223, "a": 128 }
                 },
-                "ecs.scene.components.LayoutElement": { "width": 200, "height": 260, "idx": 1 },
-                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 250 } },
+                "ecs.scene.components.LayoutElement": { "width": 200, "height": 210, "idx": 1 },
+                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 200 } },
                 "__children__": [
                     {
                         "ecs.render.components.Position": { "x": 0, "y": 0 },
@@ -30,13 +30,13 @@
                 "ecs.render.components.Position": { "x": 0, "y": 0 },
                 "ecs.render.components.Rotation": { "a": 0 },
                 "ecs.render.components.Scale": { "x": 1, "y": 1 },
-                "ecs.render.components.Scissor": { "width": 200, "height": 400 },
+                "ecs.render.components.Scissor": { "width": 200, "height": 328 },
                 "ecs.render.components.SolidRect": {
-                    "rect": { "x": 0, "y": 0, "width": 200, "height": 400 },
+                    "rect": { "x": 0, "y": 0, "width": 200, "height": 328 },
                     "color": { "r": 56, "g": 122, "b": 223, "a": 128 }
                 },
-                "ecs.scene.components.LayoutElement": { "width": 200, "height": 410, "idx": 2 },
-                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 250 } },
+                "ecs.scene.components.LayoutElement": { "width": 200, "height": 338, "idx": 2 },
+                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 328 } },
                 "__children__": [
                     {
                         "ecs.render.components.Position": { "x": 0, "y": 0 },
@@ -46,11 +46,32 @@
                         "__children__": []
                     }
                 ]
+            },
+            {
+                "ecs.render.components.Position": { "x": 0, "y": 0 },
+                "ecs.render.components.Rotation": { "a": 0 },
+                "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                "ecs.render.components.Scissor": { "width": 200, "height": 200 },
+                "ecs.render.components.SolidRect": {
+                    "rect": { "x": 0, "y": 0, "width": 200, "height": 200 },
+                    "color": { "r": 56, "g": 122, "b": 223, "a": 128 }
+                },
+                "ecs.scene.components.LayoutElement": { "width": 200, "height": 210, "idx": 3 },
+                "ecs.scene.components.Scroll": { "view_area": { "x": 0, "y": 0, "width": 200, "height": 200 } },
+                "__children__": [
+                    {
+                        "ecs.render.components.Position": { "x": 0, "y": 0 },
+                        "ecs.render.components.Rotation": { "a": 0 },
+                        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+                        "ecs.editor.components.ComponentInstancePanel": { },
+                        "__children__": []
+                    }
+                ]
             }
         ]
     },
     {
-        "ecs.render.components.Position": { "x": 220, "y": 270 },
+        "ecs.render.components.Position": { "x": 220, "y": 220 },
         "ecs.render.components.Rotation": { "a": 0 },
         "ecs.render.components.Scale": { "x": 1, "y": 1 },
         "ecs.editor.components.NewEntityButton": { },

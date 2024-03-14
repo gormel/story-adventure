@@ -73,6 +73,7 @@ pub fn main() !void {
         editor_systems.init(&reg);
         editor_systems.new_entity_button(&reg);
         editor_systems.components_panel(&reg);
+        editor_systems.component_instance_panel(&reg);
         try editor_systems.game_object_panel(&reg, arena);
         try render_systems.load_resource(&reg, &res);
         try render_systems.attach_to(&reg, arena);

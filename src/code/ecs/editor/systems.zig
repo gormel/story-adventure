@@ -182,6 +182,70 @@ pub fn game_object_panel_on_destroy(reg: *ecs.Registry) void {
     }
 }
 
+pub fn component_instance_panel(reg: *ecs.Registry) void {
+    //init panel
+    var init_view = reg.view(.{ cmp.ComponentInstancePanel }, .{ cmp.ComponentInstancePanelReady, gcmp.LinearLayout });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        reg.add(entity, gcmp.LinearLayout {
+            .dir = gcmp.LayoutDirection.TOP_DOWN,
+        });
+
+        reg.add(entity, cmp.ComponentInstancePanelReady {});
+    }
+
+    var view = reg.view(.{ cmp.ComponentInstancePanel, cmp.ComponentInstancePanelReady }, .{});
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        if (reg.has(rcmp.Children, entity)) {
+            var buttons = view.get(rcmp.Children, entity);
+            var unselected_view = reg.view(.{ cmp.DisplayedOnComponentInstancePanel }, .{ cmp.SelectedEditorObject });
+            var unselected_iter = unselected_view.entityIterator();
+            while (unselected_iter.next()) |unselected_entity| {
+                for (buttons.children.items) |btn_entity| {
+                    reg.add(btn_entity, ccmp.Destroyed {});
+                }
+                reg.remove(cmp.DisplayedOnComponentInstancePanel, unselected_entity);
+            }
+        }
+
+        var selected_view = reg.view(.{ cmp.SelectedEditorObject }, .{ cmp.DisplayedOnComponentInstancePanel });
+        var selected_iter = selected_view.entityIterator();
+        while (selected_iter.next()) |selected_entity| {
+            inline for (scene_systems.scene_components, 0..) |cmp_type, idx| {
+                if (reg.has(cmp_type, selected_entity)) {
+                    const btn_entity = reg.create();
+                    reg.add(btn_entity, rcmp.AttachTo {
+                        .target = entity
+                    });
+                    reg.add(btn_entity, gcmp.InitLayoutElement { 
+                        .height = 25,
+                        .width = 200,
+                        .idx = idx,
+                    });
+                    reg.add(btn_entity, gcmp.InitButton {
+                        .rect = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 20 },
+                        .color = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 },
+                    });
+
+                    const text_entity = reg.create();
+                    reg.add(text_entity, rcmp.AttachTo {
+                        .target = btn_entity
+                    });
+                    reg.add(text_entity, rcmp.Position { .x = 10, .y = 5 });
+                    reg.add(text_entity, rcmp.Text {
+                        .text = shortify(@typeName(cmp_type)),
+                        .size = 10,
+                        .color = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 },
+                    });
+                }
+            }
+
+            reg.add(selected_entity, cmp.DisplayedOnComponentInstancePanel {});
+        }
+    }
+}
+
 pub fn init(reg: *ecs.Registry) void {
     var group = reg.group(.{ cmp.EditorScene }, .{}, .{});
     if (group.len() < 1) {
