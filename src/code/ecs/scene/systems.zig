@@ -26,6 +26,7 @@ pub const scene_components = .{
     cmp.LayoutElement,
     cmp.Scroll,
     cmp.ObjectName,
+    cmp.TextInput,
 
     ecmp.GameObjectPanel,
     ecmp.ComponentPanel,
@@ -87,6 +88,19 @@ pub fn apply_inits(reg: *ecs.Registry) void {
         });
 
         reg.add(entity, cmp.SpriteLoaded {});
+    }
+
+    var text_input_view = reg.view(.{ cmp.TextInput }, .{ cmp.TextInputLoaded });
+    var text_input_iter = text_input_view.entityIterator();
+    while (text_input_iter.next()) |entity| {
+        const text_input = text_input_view.getConst(cmp.TextInput, entity);
+        reg.add(entity, gcmp.InitTextInput {
+            .bg_color = text_input.bg_color,
+            .text_color = text_input.text_color,
+            .rect = text_input.rect,
+        });
+
+        reg.add(entity, cmp.TextInputLoaded {});
     }
 
     var button_view = reg.view(.{ cmp.Button }, .{ cmp.ButtonLoaded });

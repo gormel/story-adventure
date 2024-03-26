@@ -10,6 +10,7 @@ pub const MouseOver = struct { };
 pub const MouseButtonTracker = struct { button: i32 };
 
 pub const KeyInputTracker = struct { key: i32 };
+pub const CharInputTracker = struct {};
 
 pub const TapTracker = struct { delay: f32 };
 pub const TapCandidate = struct { time_remain: f32 };
@@ -19,3 +20,4 @@ pub const InputDown = struct {};
 pub const InputReleased = struct {};
 pub const InputTap = struct {};
 pub const InputWheel = struct { delta: f32 };
+pub const InputChar = struct { char: u8 };

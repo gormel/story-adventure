@@ -45,7 +45,8 @@ pub fn main() !void {
 
     //debug init
 
-    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
+    //const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
+    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "text_input_test_scene.json" });
     var scene_entity = reg.create();
     reg.add(scene_entity, scmp.SceneResource { .scene_path = path });
     reg.add(scene_entity, rcmp.AttachTo { .target = null });
@@ -80,8 +81,10 @@ pub fn main() !void {
         try render_systems.update_global_transform(&reg);
         render_systems.set_solid_rect_color(&reg);
         render_systems.set_text_params(&reg);
+        render_systems.blink(&reg, dt);
 
         gui_systems.button(&reg);
+        try gui_systems.text_input(&reg, arena);
         try gui_systems.linear_layout(&reg, &children_buffer);
         gui_systems.process_scroll(&reg);
 

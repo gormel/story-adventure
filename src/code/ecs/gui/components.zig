@@ -6,6 +6,13 @@ pub const InitButton = struct { color: rl.Color, rect: rl.Rectangle };
 pub const Button = struct { color: rl.Color };
 pub const ButtonClick = struct {};
 
+pub const InitTextInput = struct { bg_color: rl.Color, text_color: rl.Color, rect: rl.Rectangle };
+pub const TextInput = struct { carete_entity: ecs.Entity, label_entity: ecs.Entity, text: []const u8 };
+pub const TextInputChanged = struct {};
+pub const TextInputSelected = struct {};
+pub const TextInputBackspaceTracker = struct { text_entity: ecs.Entity };
+pub const FreePrevTextInputValue = struct { to_free: []const u8 };
+
 pub const LayoutDirection = enum(u8) {
     LEFT_RIGHT = 1,
     TOP_DOWN = 2,

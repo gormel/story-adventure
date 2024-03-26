@@ -38,3 +38,6 @@ pub const GlobalRotation = struct { a: f32 };
 pub const Hidden = struct {};
 pub const Disabled = struct {};
 pub const Scissor = struct { width: f32, height: f32 };
+
+pub const Blink = struct { on_time: f32, off_time: f32 };
+pub const BlinkState = struct { time: f32 = 0 };

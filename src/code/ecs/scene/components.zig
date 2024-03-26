@@ -15,3 +15,5 @@ pub const LayoutElement = struct { width: f32, height: f32, idx: i32 = -1 };
 pub const LayoutElementLoaded = struct {};
 pub const Scroll = struct { view_area: rl.Rectangle, dir: gcmp.ScrollDirection = gcmp.ScrollDirection.VERTICAL, speed: f32 = 10 };
 pub const ScrollLoaded = struct {};
+pub const TextInput = struct { bg_color: rl.Color, text_color: rl.Color, rect: rl.Rectangle };
+pub const TextInputLoaded = struct { };

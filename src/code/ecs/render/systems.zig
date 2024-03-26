@@ -183,6 +183,15 @@ pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         reg.add(entity, cmp.UpdateGlobalTransform {});
     }
 
+    var update_middle_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ cmp.UpdateGlobalTransform });
+    var update_middle_iter = update_middle_view.entityIterator();
+    while (update_middle_iter.next()) |entity| {
+        var parent = update_middle_view.getConst(cmp.Parent, entity);
+        if (!reg.has(cmp.AttachTo, parent.entity)) {
+            reg.add(entity, cmp.UpdateGlobalTransform {});
+        }
+    }
+
     var init_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ cmp.GameObject });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -231,6 +240,46 @@ pub fn update_global_transform(reg: *ecs.Registry) !void {
         try do_update_global_transform(reg, entity);
         reg.remove(cmp.UpdateGlobalTransform, entity);
         updated = true;
+    }
+}
+
+pub fn blink(reg: *ecs.Registry, dt: f32) void {
+    var cleanup_view = reg.view(.{ cmp.BlinkState }, .{ cmp.Blink });
+    var cleanup_iter = cleanup_view.entityIterator();
+    while (cleanup_iter.next()) |entity| {
+        reg.remove(cmp.BlinkState, entity);
+    }
+
+    var init_view = reg.view(.{ cmp.Blink }, .{ cmp.BlinkState });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        reg.add(entity, cmp.BlinkState { .time = 0 });
+    }
+
+    var show_view = reg.view(.{ cmp.Blink, cmp.BlinkState, cmp.Hidden }, .{});
+    var show_iter = show_view.entityIterator();
+    while (show_iter.next()) |entity| {
+        const setup = show_view.getConst(cmp.Blink, entity);
+        var state = show_view.get(cmp.BlinkState, entity);
+        state.time += dt;
+
+        if (state.time > setup.off_time) {
+            reg.remove(cmp.Hidden, entity);
+            state.time = 0;
+        }
+    }
+
+    var hide_view = reg.view(.{ cmp.Blink, cmp.BlinkState }, .{ cmp.Hidden });
+    var hide_iter = hide_view.entityIterator();
+    while (hide_iter.next()) |entity| {
+        const setup = show_view.getConst(cmp.Blink, entity);
+        var state = show_view.get(cmp.BlinkState, entity);
+        state.time += dt;
+
+        if (state.time > setup.on_time) {
+            reg.add(entity, cmp.Hidden {});
+            state.time = 0;
+        }
     }
 }
 
@@ -365,7 +414,9 @@ fn render_text(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
     var position = rl.Vector2 { .x = pos.x, .y = pos.y };
 
-    rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, text.color);
+    if (text.text.len > 0) {
+        rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, text.color);
+    }
 }
 
 const render_fns = .{
@@ -374,39 +425,63 @@ const render_fns = .{
     .{ .cmp = cmp.Text, .func = render_text },
 };
 
-fn render_object(reg: *ecs.Registry, entity: ecs.Entity) void {
-    const group = reg.group(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{}, .{ cmp.Hidden });
-    inline for (render_fns) |map| {
-        if (
-            reg.has(map.cmp, entity)
-            and group.contains(entity)
-        ) {
-            try map.func(reg, entity);
+fn render_object(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?rl.Rectangle) void {
+    if (reg.has(cmp.Disabled, entity)) {
+        return;
+    }
+
+    if (!reg.has(cmp.Hidden, entity)) {
+        inline for (render_fns) |map| {
+            if (reg.has(map.cmp, entity)) {
+                try map.func(reg, entity);
+            }
         }
     }
 
     var shold_end_scissor = false;
+    var scissor_rect: ?rl.Rectangle = null;
     if (reg.tryGetConst(cmp.Scissor, entity)) |scissor| {
         const pos = reg.getConst(cmp.GlobalPosition, entity);
         const scale = reg.getConst(cmp.GlobalScale, entity);
 
+        scissor_rect = rl.Rectangle {
+            .x = pos.x, .y = pos.y, 
+            .width = scissor.width * scale.x,
+            .height = scissor.height * scale.y
+        };        
+
+        if (parent_scissor_rect != null) {
+            scissor_rect = rl.GetCollisionRec(scissor_rect.?, parent_scissor_rect.?);
+
+            rl.EndScissorMode();
+        }
+
         rl.BeginScissorMode(
-            @as(i32, @intFromFloat(pos.x)),
-            @as(i32, @intFromFloat(pos.y)),
-            @as(i32, @intFromFloat(scissor.width * scale.x)),
-            @as(i32, @intFromFloat(scissor.height * scale.y)),
+            @as(i32, @intFromFloat(scissor_rect.?.x)),
+            @as(i32, @intFromFloat(scissor_rect.?.y)),
+            @as(i32, @intFromFloat(scissor_rect.?.width)),
+            @as(i32, @intFromFloat(scissor_rect.?.height)),
         );
 
         shold_end_scissor = true;
     }
     if (reg.tryGetConst(cmp.Children, entity)) |children| {
         for (children.children.items) |child_entity| {
-            render_object(reg, child_entity);
+            render_object(reg, child_entity, scissor_rect);
         }
     }
 
     if (shold_end_scissor) {
         rl.EndScissorMode();
+
+        if (parent_scissor_rect != null) {
+            rl.BeginScissorMode(
+                @as(i32, @intFromFloat(parent_scissor_rect.?.x)),
+                @as(i32, @intFromFloat(parent_scissor_rect.?.y)),
+                @as(i32, @intFromFloat(parent_scissor_rect.?.width)),
+                @as(i32, @intFromFloat(parent_scissor_rect.?.height)),
+            );
+        }
     }
 }
 
@@ -414,6 +489,6 @@ pub fn render(reg: *ecs.Registry) !void {
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        render_object(reg, entity);
+        render_object(reg, entity, null);
     }
 }

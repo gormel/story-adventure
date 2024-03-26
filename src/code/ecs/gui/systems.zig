@@ -7,6 +7,171 @@ const icmp = @import("../input/components.zig");
 const ccmp = @import("../core/components.zig");
 
 const BTN_CLICK_MUL = 0.8;
+const INPUT_FONT_SIZE = 10;
+
+pub fn text_input(reg: *ecs.Registry, allocator: std.mem.Allocator) std.mem.Allocator.Error!void {
+    var changed_iter = reg.entityIterator(cmp.TextInputChanged);
+    while (changed_iter.next()) |entity| {
+        reg.remove(cmp.TextInputChanged, entity);
+    }
+
+    var init_view = reg.view(.{ cmp.InitTextInput }, .{ cmp.TextInput });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        const init = init_view.getConst(cmp.InitTextInput, entity);
+
+        const str = try allocator.alloc(u8, 1);
+        str[0] = 0;
+
+        var margin_entity = reg.create();
+        reg.add(margin_entity, rcmp.AttachTo { .target = entity });
+        reg.add(margin_entity, rcmp.Position { .x = 2, .y = 5 });
+
+        var carete_entity = reg.create();
+        reg.add(carete_entity, rcmp.Position { .x = 0, .y = 0 });
+        reg.add(carete_entity, rcmp.Disabled { });
+        reg.add(carete_entity, rcmp.AttachTo { .target = margin_entity });
+        reg.add(carete_entity, rcmp.Blink { .on_time = 0.5, .off_time = 0.5 });
+        reg.add(carete_entity, rcmp.SolidRect {
+            .rect = rl.Rectangle { .x = 0, .y = 0, .width = 2, .height = init.rect.height - 10 },
+            .color = init.text_color,
+        });
+
+        var label_entity = reg.create();
+        reg.add(label_entity, rcmp.AttachTo { .target = margin_entity });
+        reg.add(label_entity, rcmp.Text {
+            .color = init.text_color,
+            .text = str,
+            .size = INPUT_FONT_SIZE,
+        });
+
+        var backspace_entity = reg.create();
+        reg.add(backspace_entity, rcmp.AttachTo { .target = entity });
+        reg.add(backspace_entity, icmp.KeyInputTracker { .key = rl.KEY_BACKSPACE });
+        reg.add(backspace_entity, cmp.TextInputBackspaceTracker { .text_entity = entity });
+
+        reg.add(entity, cmp.TextInput {
+            .carete_entity = carete_entity,
+            .text = str,
+            .label_entity = label_entity,
+        });
+        reg.add(entity, rcmp.SolidRect {
+            .rect = init.rect,
+            .color = init.bg_color,
+        });
+        reg.add(entity, rcmp.Scissor {
+            .width = init.rect.width,
+            .height = init.rect.height,
+        });
+        reg.add(entity, icmp.MouseOverTracker { .rect = init.rect });
+        reg.add(entity, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+        reg.add(entity, icmp.MousePositionTracker {});
+        reg.add(entity, icmp.CharInputTracker {});
+
+        reg.remove(cmp.InitTextInput, entity);
+    }
+
+    var select_view = reg.view(.{ cmp.TextInput, icmp.MouseOver, icmp.InputPressed }, .{ cmp.TextInputSelected });
+    var select_iter = select_view.entityIterator();
+    while (select_iter.next()) |entity| {
+        const text = select_view.getConst(cmp.TextInput, entity);
+        reg.remove(rcmp.Disabled, text.carete_entity);
+
+        reg.add(entity, cmp.TextInputSelected {});
+    }
+
+    var unselect_view = reg.view(.{ cmp.TextInput, cmp.TextInputSelected, icmp.InputPressed }, .{ icmp.MouseOver });
+    var unselect_iter = unselect_view.entityIterator();
+    while (unselect_iter.next()) |entity| {
+        const text = select_view.getConst(cmp.TextInput, entity);
+        reg.add(text.carete_entity, rcmp.Disabled {});
+
+        reg.remove(cmp.TextInputSelected, entity);
+    }
+
+    var free_view = reg.view(.{ rcmp.TextValueUpdated, cmp.FreePrevTextInputValue}, .{});
+    var free_iter = free_view.entityIterator();
+    while (free_iter.next()) |entity| {
+        var free = free_view.get(cmp.FreePrevTextInputValue, entity);
+        allocator.free(free.to_free);
+        reg.remove(cmp.FreePrevTextInputValue, entity);
+    }
+
+    var add_char_view = reg.view(.{ cmp.TextInput, cmp.TextInputSelected, icmp.InputChar }, .{ cmp.TextInputChanged });
+    var add_char_iter = add_char_view.entityIterator();
+    while (add_char_iter.next()) |entity| {
+        var text = add_char_view.get(cmp.TextInput, entity);
+        const input = add_char_view.getConst(icmp.InputChar, entity);
+
+        if (text.text.len > 0) {
+            reg.add(text.label_entity, cmp.FreePrevTextInputValue { .to_free = text.text });
+            text.text = try std.mem.concat(allocator, u8, &.{
+                text.text[0..text.text.len - 1],
+                &.{ input.char, 0 },
+            });
+        } else {
+            var str = try allocator.alloc(u8, 2);
+            str[0] = input.char;
+            str[1] = 0;
+            text.text = str;
+        }
+
+        if (reg.tryGet(rcmp.SetTextValue, text.label_entity)) |set_text| {
+            set_text.text = text.text;
+        } else {
+            reg.add(text.label_entity, rcmp.SetTextValue { .text = text.text });
+        }
+
+        reg.add(entity, cmp.TextInputChanged {});
+    }
+
+    var backspace_view = reg.view(.{ cmp.TextInputBackspaceTracker, icmp.InputPressed }, .{});
+    var backspace_iter = backspace_view.entityIterator();
+    while (backspace_iter.next()) |entity| {
+        var backspace = backspace_view.get(cmp.TextInputBackspaceTracker, entity);
+        if (
+            reg.has(cmp.TextInputSelected, backspace.text_entity)
+            and !reg.has(cmp.TextInputChanged, backspace.text_entity)
+        ) {
+            var text = reg.get(cmp.TextInput, backspace.text_entity);
+
+            if (text.text.len > 1) {
+                reg.add(text.label_entity, cmp.FreePrevTextInputValue { .to_free = text.text });
+                var new_str = try allocator.alloc(u8, text.text.len - 1);
+                @memcpy(new_str, text.text[0..text.text.len - 1]);
+                new_str[new_str.len - 1] = 0;
+                text.text = new_str;
+
+                if (reg.tryGet(rcmp.SetTextValue, text.label_entity)) |set_text| {
+                    set_text.text = text.text;
+                } else {
+                    reg.add(text.label_entity, rcmp.SetTextValue { .text = text.text });
+                }
+                
+                reg.add(backspace.text_entity, cmp.TextInputChanged {});
+            }
+        }
+    }
+
+    var carete_view = reg.view(.{ cmp.TextInput, cmp.TextInputSelected, cmp.TextInputChanged }, .{});
+    var carete_iter = carete_view.entityIterator();
+    while (carete_iter.next()) |entity| {
+        var text = carete_view.get(cmp.TextInput, entity);
+        var label = reg.get(rcmp.Text, text.label_entity);
+
+        var carete_pos = reg.get(rcmp.Position, text.carete_entity);
+        if (text.text.len > 1) {
+            const measures = rl.MeasureTextEx(rl.GetFontDefault(), text.text.ptr, label.size, 3);
+            carete_pos.x = measures.x;
+        } else {
+            carete_pos.x = 0;
+        }
+
+        if (!reg.has(rcmp.UpdateGlobalTransform, text.carete_entity)) {
+            reg.add(text.carete_entity, rcmp.UpdateGlobalTransform {});
+        }
+    }
+}
 
 pub fn button(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ cmp.InitButton }, .{ cmp.Button });

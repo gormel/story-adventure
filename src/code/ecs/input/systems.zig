@@ -81,6 +81,11 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
         reg.remove(cmp.InputReleased, entity);
     }
 
+    var char_input_iter = reg.entityIterator(cmp.InputChar);
+    while (char_input_iter.next()) |entity| {
+        reg.remove(cmp.InputChar, entity);
+    }
+
     var mpos_iter = reg.entityIterator(cmp.MousePositionChanged);
     while (mpos_iter.next()) |entity| {
         reg.remove(cmp.MousePositionChanged, entity);
@@ -181,6 +186,15 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
         if (rl.IsKeyReleased(tracker.key)) {
             reg.add(entity, cmp.InputReleased {});
             reg.remove(cmp.InputDown, entity);
+        }
+    }
+
+    const char = @as(i32, rl.GetCharPressed());
+    var char_view = reg.view(.{ cmp.CharInputTracker }, .{ cmp.InputChar });
+    var char_iter = char_view.entityIterator();
+    while (char_iter.next()) |entity| {
+        if (char > 0) {
+            reg.add(entity, cmp.InputChar { .char = @intCast(char) });
         }
     }
 
