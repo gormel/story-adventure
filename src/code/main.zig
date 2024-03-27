@@ -45,8 +45,8 @@ pub fn main() !void {
 
     //debug init
 
-    //const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
-    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "text_input_test_scene.json" });
+    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
+    //const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "text_input_test_scene.json" });
     var scene_entity = reg.create();
     reg.add(scene_entity, scmp.SceneResource { .scene_path = path });
     reg.add(scene_entity, rcmp.AttachTo { .target = null });
