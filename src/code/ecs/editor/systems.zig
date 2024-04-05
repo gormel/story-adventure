@@ -67,6 +67,122 @@ pub fn new_entity_button(reg: *ecs.Registry) void {
     }
 }
 
+pub fn edit_component_window(reg: *ecs.Registry) void {
+    var init_view = reg.view(.{ cmp.EditComponentWindow }, .{ cmp.EditComponentWindowReady, rcmp.SolidRect });
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        const list_ety = reg.create();
+        reg.add(list_ety, rcmp.Position { .x = 0, .y = 0 });
+        reg.add(list_ety, rcmp.AttachTo { .target = entity });
+        reg.add(list_ety, gcmp.LinearLayout {
+            .dir = gcmp.LayoutDirection.TOP_DOWN,
+        });
+
+        reg.add(entity, rcmp.Scissor {
+            .width = gui_setup.SizeWindow.width,
+            .height = gui_setup.SizeWindow.height,
+        });
+        reg.add(entity, gcmp.InitScroll {
+            .view_area = gui_setup.SizeWindow,
+        });
+        reg.add(entity, rcmp.SolidRect {
+            .color = gui_setup.ColorPanel,
+            .rect = gui_setup.SizeWindow,
+        });
+
+        reg.add(entity, cmp.EditComponentWindowReady {
+            .list_entity = list_ety,
+        });
+    }
+
+    var set_view = reg.view(.{ cmp.EditComponentWindowReady, cmp.SetEditingComponent }, .{ });
+    var set_iter = set_view.entityIterator();
+    while(set_iter.next()) |entity| {
+        const ready = set_view.getConst(cmp.EditComponentWindowReady, entity);
+        const set = set_view.getConst(cmp.SetEditingComponent, entity);
+        if (reg.tryGet(cmp.EditingComponent, entity)) |editing_cmp| {
+                editing_cmp.entity = set.entity;
+                editing_cmp.component_idx = set.component_idx;
+        } else {
+            reg.add(entity, cmp.EditingComponent {
+                .entity = set.entity,
+                .component_idx = set.component_idx,
+            });
+        }
+
+        if (reg.has(rcmp.Disabled, entity)) {
+            reg.remove(rcmp.Disabled, entity);
+        }
+
+        if (reg.has(rcmp.Children, ready.list_entity)) {
+            const children = reg.get(rcmp.Children, ready.list_entity);
+            for (children.children.items) |child_ety| {
+                if (!reg.has(ccmp.Destroyed, child_ety)) {
+                    reg.add(child_ety, ccmp.Destroyed {});
+                }
+            }
+        }
+
+        var last_field_idx: usize = 0;
+        inline for (scene_systems.scene_components, 0..) |ComponentT, cmp_idx| {
+            if (cmp_idx == set.component_idx) {
+                const comp_type = @typeInfo(ComponentT);
+                last_field_idx = comp_type.Struct.fields.len;
+                inline for (comp_type.Struct.fields, 0..) |field, field_idx| {
+                    var field_ety = reg.create();
+                    reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
+                    reg.add(field_ety, rcmp.AttachTo { .target = ready.list_entity });
+                    reg.add(field_ety, gcmp.InitLayoutElement {
+                        .idx = field_idx,
+                        .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
+                        .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
+                    });
+                    reg.add(field_ety, rcmp.Text {
+                        .color = gui_setup.ColorLabelText,
+                        .size = gui_setup.SizeText,
+                        .text = field.name,
+                    });
+                }
+                break;
+            }
+        }
+
+        var close_ety = reg.create();
+        reg.add(close_ety, rcmp.Position { .x = 0, .y = 0 });
+        reg.add(close_ety, rcmp.AttachTo { .target = ready.list_entity });
+        reg.add(close_ety, gcmp.InitLayoutElement {
+            .idx = @intCast(last_field_idx),
+            .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
+            .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
+        });
+        reg.add(close_ety, cmp.ConfirmEditComponentButton { .window_entity = entity });
+        reg.add(close_ety, gcmp.InitButton {
+            .color = gui_setup.ColorButton,
+            .rect = gui_setup.SizePanelItem,
+        });
+        reg.add(close_ety, rcmp.Text {
+            .color = gui_setup.ColorButtonText,
+            .size = gui_setup.SizeText,
+            .text = "close",
+        });
+
+        reg.remove(cmp.SetEditingComponent, entity);
+    }
+
+    var close_view = reg.view(.{ gcmp.ButtonClick, cmp.ConfirmEditComponentButton }, .{});
+    var close_iter = close_view.entityIterator();
+    while (close_iter.next()) |entity| {
+        const btn = close_view.getConst(cmp.ConfirmEditComponentButton, entity);
+        if (!reg.has(rcmp.Disabled, btn.window_entity)) {
+            reg.add(btn.window_entity, rcmp.Disabled {});
+        }
+
+        if (reg.has(cmp.EditingComponent, btn.window_entity)) {
+            reg.remove(cmp.EditingComponent, btn.window_entity);
+        }
+    }
+}
+
 pub fn components_panel(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.ComponentPanel }, .{ cmp.ComponentPanelReady, gcmp.LinearLayout });
     var iter = view.entityIterator();
@@ -228,6 +344,10 @@ pub fn component_instance_panel(reg: *ecs.Registry) void {
                         .rect = gui_setup.SizePanelItem,
                         .color = gui_setup.ColorButton,
                     });
+                    reg.add(btn_entity, cmp.ComponentInstanceButton {
+                        .entity = selected_entity,
+                        .component_idx = idx
+                    });
 
                     const text_entity = reg.create();
                     reg.add(text_entity, rcmp.AttachTo {
@@ -243,6 +363,23 @@ pub fn component_instance_panel(reg: *ecs.Registry) void {
             }
 
             reg.add(selected_entity, cmp.DisplayedOnComponentInstancePanel {});
+        }
+    }
+
+    var click_view = reg.view(.{ gcmp.ButtonClick, cmp.ComponentInstanceButton }, .{});
+    var click_iter = click_view.entityIterator();
+    while(click_iter.next()) |entity| {
+        const btn = click_view.getConst(cmp.ComponentInstanceButton, entity);
+
+        var wnd_view = reg.view(.{ cmp.EditComponentWindowReady }, .{ cmp.SetEditingComponent });
+        var wnd_iter = wnd_view.entityIterator();
+        while (wnd_iter.next()) |wnd_entity| {
+        std.debug.print("++++trigger\n", .{});
+            reg.add(wnd_entity, cmp.SetEditingComponent {
+                .entity = btn.entity,
+                .component_idx = btn.component_idx,
+            });
+            break;
         }
     }
 }

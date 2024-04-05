@@ -76,5 +76,13 @@
         "ecs.render.components.Scale": { "x": 1, "y": 1 },
         "ecs.editor.components.NewEntityButton": { },
         "__children__": []
+    },
+    {
+        "ecs.render.components.Position": { "x": 500, "y": 220 },
+        "ecs.render.components.Rotation": { "a": 0 },
+        "ecs.render.components.Scale": { "x": 1, "y": 1 },
+        "ecs.render.components.Disabled": { },
+        "ecs.editor.components.EditComponentWindow": { },
+        "__children__": []
     }
 ]

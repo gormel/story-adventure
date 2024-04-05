@@ -32,6 +32,7 @@ pub const scene_components = .{
     ecmp.ComponentPanel,
     ecmp.NewEntityButton,
     ecmp.ComponentInstancePanel,
+    ecmp.EditComponentWindow,
 };
 
 const children_field = "__children__";

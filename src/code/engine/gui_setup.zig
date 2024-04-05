@@ -9,6 +9,8 @@ pub const ColorLabelText = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 pub const SizePanelItem = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 20 };
 pub const SizeButtonSmall = rl.Rectangle { .x = 0, .y = 0, .width = 20, .height = 20 };
 
+pub const SizeWindow = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 180 };
+
 pub const SizeText = 10;
 
 pub fn Margin(comptime left: i32, comptime top: i32, comptime right: i32, comptime bottom: i32) type {

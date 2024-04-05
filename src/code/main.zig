@@ -22,8 +22,8 @@ pub fn main() !void {
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    const screenWidth = 1280;
-    const screenHeight = 768;
+    const screenWidth = 1024;
+    const screenHeight = 600;
 
     rl.InitWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.CloseWindow(); // Close window and OpenGL context
@@ -73,6 +73,7 @@ pub fn main() !void {
         scene_systems.apply_inits(&reg);
         editor_systems.init(&reg);
         editor_systems.new_entity_button(&reg);
+        editor_systems.edit_component_window(&reg);
         editor_systems.components_panel(&reg);
         editor_systems.component_instance_panel(&reg);
         try editor_systems.game_object_panel(&reg, arena);
