@@ -23,7 +23,7 @@ pub fn main() !void {
     // Initialization
     //--------------------------------------------------------------------------------------
     const screenWidth = 1024;
-    const screenHeight = 600;
+    const screenHeight = 650;
 
     rl.InitWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
     defer rl.CloseWindow(); // Close window and OpenGL context

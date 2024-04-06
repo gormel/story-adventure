@@ -300,7 +300,6 @@ pub fn game_object_panel_on_destroy(reg: *ecs.Registry) void {
 }
 
 pub fn component_instance_panel(reg: *ecs.Registry) void {
-    //init panel
     var init_view = reg.view(.{ cmp.ComponentInstancePanel }, .{ cmp.ComponentInstancePanelReady, gcmp.LinearLayout });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -320,7 +319,11 @@ pub fn component_instance_panel(reg: *ecs.Registry) void {
             var unselected_iter = unselected_view.entityIterator();
             while (unselected_iter.next()) |unselected_entity| {
                 for (buttons.children.items) |btn_entity| {
-                    reg.add(btn_entity, ccmp.Destroyed {});
+                    if (reg.tryGetConst(cmp.ComponentInstanceButton, btn_entity)) |inst_btn| {
+                        if (inst_btn.entity == unselected_entity) {
+                            reg.add(btn_entity, ccmp.Destroyed {});
+                        }
+                    }
                 }
                 reg.remove(cmp.DisplayedOnComponentInstancePanel, unselected_entity);
             }
@@ -374,7 +377,6 @@ pub fn component_instance_panel(reg: *ecs.Registry) void {
         var wnd_view = reg.view(.{ cmp.EditComponentWindowReady }, .{ cmp.SetEditingComponent });
         var wnd_iter = wnd_view.entityIterator();
         while (wnd_iter.next()) |wnd_entity| {
-        std.debug.print("++++trigger\n", .{});
             reg.add(wnd_entity, cmp.SetEditingComponent {
                 .entity = btn.entity,
                 .component_idx = btn.component_idx,
