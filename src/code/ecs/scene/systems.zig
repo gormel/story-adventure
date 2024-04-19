@@ -61,14 +61,14 @@ fn load_game_object(
     }
 }
 
-pub fn load_scene(reg: *ecs.Registry, allocator: std.mem.Allocator, res: *rs.Resources) !void {
+pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, res: *rs.Resources) !void {
     var view = reg.view(.{ cmp.SceneResource }, .{ cmp.Scene });
     var it = view.entityIterator();
     while (it.next()) |entity| {
         reg.add(entity, cmp.Scene {});
 
         const resource = view.getConst(cmp.SceneResource, entity);
-        var scene_json = try res.load_json(resource.scene_path);
+        var scene_json = try res.loadJson(resource.scene_path);
 
         for (scene_json.array.items) |jobj| {
             try load_game_object(allocator, reg, entity, jobj.object);
@@ -78,7 +78,7 @@ pub fn load_scene(reg: *ecs.Registry, allocator: std.mem.Allocator, res: *rs.Res
     }
 }
 
-pub fn apply_inits(reg: *ecs.Registry) void {
+pub fn applyInits(reg: *ecs.Registry) void {
     var sprite_view = reg.view(.{ cmp.Sprite }, .{ cmp.SpriteLoaded });
     var sprite_iter = sprite_view.entityIterator();
     while (sprite_iter.next()) |entity| {

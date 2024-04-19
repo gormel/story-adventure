@@ -22,7 +22,7 @@ pub const Resources = struct {
         };
     }
     
-    pub fn load_json(self: *Resources, json_path: []const u8) !std.json.Value {
+    pub fn loadJson(self: *Resources, json_path: []const u8) !std.json.Value {
         if (self.jsons.get(json_path)) |json| {
             return json;
         } else {
@@ -46,7 +46,7 @@ pub const Resources = struct {
         unreachable;
     }
 
-    pub fn load_sprite(self: *Resources, atlas_path: []const u8, sprite_name: []const u8) !sp.Sprite {
+    pub fn loadSprite(self: *Resources, atlas_path: []const u8, sprite_name: []const u8) !sp.Sprite {
         var atlas = self.atlases.get(atlas_path);
         if (atlas == null) {
             const exe_dir = try std.fs.selfExeDirPathAlloc(self.allocator);
@@ -111,6 +111,6 @@ test "resource allocations" {
     defer res.deinit();
 
     const path = try std.fs.path.join(allocator, &.{ "resources", "atlases", "star.json" });
-    _ = res.load_sprite(path, "star");
+    _ = res.loadSprite(path, "star");
     except(false);
 }

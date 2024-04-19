@@ -6,7 +6,13 @@ pub const InitButton = struct { color: rl.Color, rect: rl.Rectangle };
 pub const Button = struct { color: rl.Color };
 pub const ButtonClick = struct {};
 
-pub const InitTextInput = struct { bg_color: rl.Color, text_color: rl.Color, rect: rl.Rectangle };
+pub const InitTextInput = struct {
+    bg_color: rl.Color,
+    text_color: rl.Color,
+    rect: rl.Rectangle,
+    text: []const u8 = "\x00",
+    free_text: bool = false,
+};
 pub const TextInput = struct { carete_entity: ecs.Entity, label_entity: ecs.Entity, text: []const u8 };
 pub const TextInputChanged = struct {};
 pub const TextInputSelected = struct {};

@@ -10,13 +10,13 @@ const utils = @import("../../engine/utils.zig");
 
 const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
-pub fn load_resource(reg: *ecs.Registry, res: *rs.Resources) !void {
+pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const res_c = view.getConst(cmp.SpriteResource, entity);
         reg.add(entity, cmp.Sprite {
-            .sprite = try res.load_sprite(res_c.atlas_path, res_c.sprite)
+            .sprite = try res.loadSprite(res_c.atlas_path, res_c.sprite)
         });
         reg.remove(cmp.SpriteResource, entity);
     }
@@ -146,7 +146,7 @@ fn detach_parent(reg: *ecs.Registry, entity: ecs.Entity) !void {
     reg.remove(cmp.Parent, entity);
 }
 
-pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var detach_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ });
     var detach_iter = detach_view.entityIterator();
     while (detach_iter.next()) |entity| {
@@ -205,7 +205,7 @@ pub fn attach_to(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     }
 }
 
-pub fn update_global_transform(reg: *ecs.Registry) !void {
+pub fn updateGlobalTransform(reg: *ecs.Registry) !void {
     var fltr_upd_view = reg.view(.{ cmp.UpdateGlobalTransform, cmp.Parent }, .{ });
     var fltr_upd_iter = fltr_upd_view.entityIterator();
     while (fltr_upd_iter.next()) |entity| {
@@ -283,7 +283,7 @@ pub fn blink(reg: *ecs.Registry, dt: f32) void {
     }
 }
 
-pub fn destroy_children(reg: *ecs.Registry) !void {
+pub fn destroyChildren(reg: *ecs.Registry) !void {
     var parent_view = reg.view(.{ Destroyed, cmp.Parent }, .{ });
     var parent_iter = parent_view.entityIterator();
     while (parent_iter.next()) |entity| {
@@ -303,7 +303,7 @@ pub fn destroy_children(reg: *ecs.Registry) !void {
     }
 }
 
-pub fn set_solid_rect_color(reg: *ecs.Registry) void {
+pub fn setSolidRectColor(reg: *ecs.Registry) void {
     var clear_view = reg.view(.{ cmp.SolidColorRectUpdated }, .{});
     var clear_iter = clear_view.entityIterator();
     while (clear_iter.next()) |entity| {
@@ -322,7 +322,7 @@ pub fn set_solid_rect_color(reg: *ecs.Registry) void {
     }
 }
 
-pub fn set_text_params(reg: *ecs.Registry) void {
+pub fn setTextParams(reg: *ecs.Registry) void {
     var clear_color_view = reg.view(.{ cmp.TextColorUpdated }, .{});
     var clear_color_iter = clear_color_view.entityIterator();
     while (clear_color_iter.next()) |entity| {
@@ -359,7 +359,7 @@ pub fn set_text_params(reg: *ecs.Registry) void {
 
 }
 
-fn render_sprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
+fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const sprite = reg.getConst(cmp.Sprite, entity);
     const pos = reg.getConst(cmp.GlobalPosition, entity);
     const rot = reg.getConst(cmp.GlobalRotation, entity);
@@ -379,7 +379,7 @@ fn render_sprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
 }
 
-fn render_solid_rect(reg: *ecs.Registry, entity: ecs.Entity) !void {
+fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const rect = reg.getConst(cmp.SolidRect, entity);
     const pos = reg.getConst(cmp.GlobalPosition, entity);
     const rot = reg.getConst(cmp.GlobalRotation, entity);
@@ -400,7 +400,7 @@ fn render_solid_rect(reg: *ecs.Registry, entity: ecs.Entity) !void {
     rl.DrawRectanglePro(target_rect, origin, rot.a, rect.color);
 }
 
-fn render_text(reg: *ecs.Registry, entity: ecs.Entity) !void {
+fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const text = reg.getConst(cmp.Text, entity);
     const pos = reg.getConst(cmp.GlobalPosition, entity);
     const rot = reg.getConst(cmp.GlobalRotation, entity);
@@ -420,12 +420,12 @@ fn render_text(reg: *ecs.Registry, entity: ecs.Entity) !void {
 }
 
 const render_fns = .{
-    .{ .cmp = cmp.Sprite, .func = render_sprite },
-    .{ .cmp = cmp.SolidRect, .func = render_solid_rect },
-    .{ .cmp = cmp.Text, .func = render_text },
+    .{ .cmp = cmp.Sprite, .func = renderSprite },
+    .{ .cmp = cmp.SolidRect, .func = renderSolidRect },
+    .{ .cmp = cmp.Text, .func = renderText },
 };
 
-fn render_object(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?rl.Rectangle) void {
+fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?rl.Rectangle) void {
     if (reg.has(cmp.Disabled, entity)) {
         return;
     }
@@ -467,7 +467,7 @@ fn render_object(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
     }
     if (reg.tryGetConst(cmp.Children, entity)) |children| {
         for (children.children.items) |child_entity| {
-            render_object(reg, child_entity, scissor_rect);
+            renderObjects(reg, child_entity, scissor_rect);
         }
     }
 
@@ -489,6 +489,6 @@ pub fn render(reg: *ecs.Registry) !void {
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        render_object(reg, entity, null);
+        renderObjects(reg, entity, null);
     }
 }

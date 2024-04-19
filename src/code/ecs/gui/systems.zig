@@ -9,19 +9,28 @@ const ccmp = @import("../core/components.zig");
 const BTN_CLICK_MUL = 0.8;
 const INPUT_FONT_SIZE = 10;
 
-pub fn text_input(reg: *ecs.Registry, allocator: std.mem.Allocator) std.mem.Allocator.Error!void {
+pub fn textInput(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var changed_iter = reg.entityIterator(cmp.TextInputChanged);
     while (changed_iter.next()) |entity| {
         reg.remove(cmp.TextInputChanged, entity);
     }
 
-    var init_view = reg.view(.{ cmp.InitTextInput }, .{ cmp.TextInput });
+    var init_view = reg.view(.{ cmp.InitTextInput }, .{ cmp.TextInput, cmp.TextInputChanged });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
         const init = init_view.getConst(cmp.InitTextInput, entity);
 
-        const str = try allocator.alloc(u8, 1);
-        str[0] = 0;
+        var str = try allocator.alloc(u8, @max(init.text.len, 1));
+        if (init.text.len > 1) {
+            std.mem.copy(u8, str, init.text);
+            reg.add(entity, cmp.TextInputChanged {});
+        } else {
+            str[str.len - 1] = 0;
+        }
+
+        if (init.free_text) {
+            allocator.free(init.text);
+        }
 
         var margin_entity = reg.create();
         reg.add(margin_entity, rcmp.AttachTo { .target = entity });
@@ -237,7 +246,7 @@ fn compare_entry(_: void, a: ChildEntry, b: ChildEntry) bool {
     unreachable();
 }
 
-pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEntry)) !void {
+pub fn linearLayout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEntry)) !void {
     var init_view = reg.view(.{ cmp.InitLayoutElement, rcmp.Parent }, .{ cmp.LayoutElement });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -302,7 +311,7 @@ pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEn
                     .LEFT_RIGHT => {
                         position.x = offset;
                         position.y = 0;
-                        offset += element.height;
+                        offset += element.width;
                     },
                     .DOWN_TOP => {
                         position.x = 0;
@@ -312,7 +321,7 @@ pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEn
                     .RIGHT_LEFT => {
                         position.x = offset;
                         position.y = 0;
-                        offset -= element.height;
+                        offset -= element.width;
                     }
                 }
 
@@ -327,7 +336,7 @@ pub fn linear_layout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEn
     }
 }
 
-pub fn linear_layout_on_destroy(reg: *ecs.Registry) void {
+pub fn linearLayoutOnDestroy(reg: *ecs.Registry) void {
     var del_view = reg.view(.{ ccmp.Destroyed, cmp.LayoutElement, rcmp.Parent }, .{});
     var del_iter = del_view.entityIterator();
     while (del_iter.next()) |entity| {
@@ -338,7 +347,7 @@ pub fn linear_layout_on_destroy(reg: *ecs.Registry) void {
     }
 }
 
-pub fn process_scroll(reg: *ecs.Registry) void {
+pub fn processScroll(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ cmp.InitScroll, rcmp.Children }, .{ cmp.Scroll });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {

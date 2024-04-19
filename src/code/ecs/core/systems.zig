@@ -42,7 +42,7 @@ pub fn timer(reg: *ecs.Registry, dt: f32) void {
     }
 }
 
-pub fn destroy_by_timer(reg: *ecs.Registry) void {
+pub fn destroyByTimer(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.DestroyByTimer, cmp.TimerComplete }, .{ cmp.Destroyed });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {

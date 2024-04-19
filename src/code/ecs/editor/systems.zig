@@ -28,7 +28,7 @@ pub fn shortify(comptime str: []const u8) []const u8 {
     };
 }
 
-pub fn new_entity_button(reg: *ecs.Registry) void {
+pub fn newEntityButton(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.NewEntityButton }, .{ cmp.NewEntityButtonReady, gcmp.Button, gcmp.InitButton });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -63,11 +63,126 @@ pub fn new_entity_button(reg: *ecs.Registry) void {
             reg.add(new_entity, rcmp.AttachTo { .target = selected_entity });
             reg.add(new_entity, scmp.GameObject { });
             reg.add(new_entity, cmp.EditorObject { });
+
+            reg.add(new_entity, rcmp.SolidRect { //++++ testing
+                .rect = rl.Rectangle { .x = 8, .y = 5, .width = 30, .height = 88 },
+                .color = rl.Color { .r = 255, .g = 45, .b = 66, .a = 255 },
+            });
+
+            reg.add(new_entity, rcmp.Text { //++++ testing
+                .size = 15,
+                .text = "BABAHA!",
+                .color = rl.Color { .r = 0, .g = 255 - 45, .b = 255 - 66, .a = 255 },
+            });
         }
     }
 }
 
-pub fn edit_component_window(reg: *ecs.Registry) void {
+inline fn createFieldValue(
+        reg: *ecs.Registry,
+        parent_ety: ecs.Entity,
+        value: []const u8
+    ) void
+{
+    var value_ety = reg.create();
+    reg.add(value_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(value_ety, rcmp.AttachTo { .target = parent_ety });
+    reg.add(value_ety, gcmp.InitLayoutElement {
+        .idx = 2,
+        .width = gui_setup.SizeFieldValue.width,
+        .height = gui_setup.SizeFieldValue.height,
+    });
+    reg.add(value_ety, gcmp.InitTextInput {
+        .rect = gui_setup.SizeFieldValue,
+        .bg_color = gui_setup.ColorLabelBg,
+        .text_color = gui_setup.ColorLabelText,
+        .text = value,
+        .free_text = true,
+    });
+}
+
+inline fn createField(
+        reg: *ecs.Registry,
+        parent_ety: ecs.Entity,
+        comptime name: []const u8,
+        comptime idx: i32,
+        comptime offset: f32,
+        comptime T: type,
+        value: *T,
+        allocator: std.mem.Allocator
+    ) i32
+{
+    comptime var ret_idx = idx + 1;
+    var field_ety = reg.create();
+    reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(field_ety, rcmp.AttachTo { .target = parent_ety });
+    reg.add(field_ety, gcmp.InitLayoutElement {
+        .idx = idx,
+        .width = gui_setup.SizePanelItem.width,
+        .height = gui_setup.SizePanelItem.height,
+    });
+    reg.add(field_ety, gcmp.LinearLayout { .dir = gcmp.LayoutDirection.LEFT_RIGHT });
+
+    var offset_ety = reg.create();
+    reg.add(offset_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(offset_ety, rcmp.AttachTo { .target = field_ety });
+    reg.add(offset_ety, gcmp.InitLayoutElement {
+        .idx = 0,
+        .width = offset,
+        .height = 0,
+    });
+
+    var tile_ety = reg.create();
+    reg.add(tile_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(tile_ety, rcmp.AttachTo { .target = field_ety });
+    reg.add(tile_ety, gcmp.InitLayoutElement {
+        .idx = 1,
+        .width = gui_setup.SizeFieldTitle.width - offset,
+        .height = gui_setup.SizeFieldTitle.height,
+    });
+    reg.add(tile_ety, rcmp.Text {
+        .color = gui_setup.ColorLabelText,
+        .size = gui_setup.SizeText,
+        .text = name,
+    });
+
+    switch (@typeInfo(T)) {
+        .Struct => |info| {
+            inline for (info.fields) |field| {
+                const field_offset = @offsetOf(T, field.name);
+                const field_ptr: *field.type =
+                    @ptrFromInt(@intFromPtr(value) + field_offset);
+                ret_idx += createField(reg, parent_ety, field.name, ret_idx,
+                    offset + gui_setup.SizeFieldOffset, field.type, field_ptr, allocator);
+            }
+        },
+        .Pointer => |info| {
+            switch (info.size) {
+                .Slice => {
+                    if (info.child == u8) {
+                        const str_value = std.fmt.allocPrintZ(allocator, "{s}", .{value.*}) catch "<error>";
+                        createFieldValue(reg, field_ety, str_value);
+                    } else {
+                        const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
+                        createFieldValue(reg, field_ety, str_value);
+                    }
+                },
+                else => {
+                    const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
+                    createFieldValue(reg, field_ety, str_value);
+                }
+            }
+        },
+        else => {
+            const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
+            createFieldValue(reg, field_ety, str_value);
+        },
+    }
+
+    return ret_idx;
+}
+
+pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std.fmt.AllocPrintError!void {
     var init_view = reg.view(.{ cmp.EditComponentWindow }, .{ cmp.EditComponentWindowReady, rcmp.SolidRect });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -123,25 +238,22 @@ pub fn edit_component_window(reg: *ecs.Registry) void {
             }
         }
 
-        var last_field_idx: usize = 0;
+        var last_field_idx: i32 = 0;
         inline for (scene_systems.scene_components, 0..) |ComponentT, cmp_idx| {
             if (cmp_idx == set.component_idx) {
                 const comp_type = @typeInfo(ComponentT);
-                last_field_idx = comp_type.Struct.fields.len;
-                inline for (comp_type.Struct.fields, 0..) |field, field_idx| {
-                    var field_ety = reg.create();
-                    reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
-                    reg.add(field_ety, rcmp.AttachTo { .target = ready.list_entity });
-                    reg.add(field_ety, gcmp.InitLayoutElement {
-                        .idx = field_idx,
-                        .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
-                        .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
-                    });
-                    reg.add(field_ety, rcmp.Text {
-                        .color = gui_setup.ColorLabelText,
-                        .size = gui_setup.SizeText,
-                        .text = field.name,
-                    });
+                inline while (comp_type.Struct.fields.len > 0) {
+                    const component_value = reg.get(ComponentT, set.entity);
+                    comptime var idx = 0;
+                    inline for (comp_type.Struct.fields) |field| {
+                        const field_offset = @offsetOf(ComponentT, field.name);
+                        const field_ptr: *field.type =
+                            @ptrFromInt(@intFromPtr(component_value) + field_offset);
+                        idx += createField(reg, ready.list_entity, field.name,
+                            idx, 0, field.type, field_ptr, allocator);
+                    }
+                    last_field_idx = idx;
+                    break;
                 }
                 break;
             }
@@ -151,7 +263,7 @@ pub fn edit_component_window(reg: *ecs.Registry) void {
         reg.add(close_ety, rcmp.Position { .x = 0, .y = 0 });
         reg.add(close_ety, rcmp.AttachTo { .target = ready.list_entity });
         reg.add(close_ety, gcmp.InitLayoutElement {
-            .idx = @intCast(last_field_idx),
+            .idx = last_field_idx,
             .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
             .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
         });
@@ -183,7 +295,7 @@ pub fn edit_component_window(reg: *ecs.Registry) void {
     }
 }
 
-pub fn components_panel(reg: *ecs.Registry) void {
+pub fn componentPanel(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.ComponentPanel }, .{ cmp.ComponentPanelReady, gcmp.LinearLayout });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -223,7 +335,7 @@ pub fn components_panel(reg: *ecs.Registry) void {
     }
 }
 
-pub fn game_object_panel(reg: *ecs.Registry, allocator: std.mem.Allocator) error { OutOfMemory }!void {
+pub fn gameObjectPanel(reg: *ecs.Registry, allocator: std.mem.Allocator) error { OutOfMemory }!void {
     var view = reg.view(.{ cmp.GameObjectPanel }, .{ cmp.GameObjectPanelReady, gcmp.LinearLayout });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -289,7 +401,7 @@ pub fn game_object_panel(reg: *ecs.Registry, allocator: std.mem.Allocator) error
     }
 }
 
-pub fn game_object_panel_on_destroy(reg: *ecs.Registry) void {
+pub fn gameObjectPanelOnDestroy(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.ListedEditorObject, cmp.EditorObject, ccmp.Destroyed }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -299,7 +411,7 @@ pub fn game_object_panel_on_destroy(reg: *ecs.Registry) void {
     }
 }
 
-pub fn component_instance_panel(reg: *ecs.Registry) void {
+pub fn componentInstancePanel(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ cmp.ComponentInstancePanel }, .{ cmp.ComponentInstancePanelReady, gcmp.LinearLayout });
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {

@@ -67,27 +67,27 @@ pub fn main() !void {
         input_systems.capture(&reg, dt);
 
         core_systems.timer(&reg, dt);
-        core_systems.destroy_by_timer(&reg);
+        core_systems.destroyByTimer(&reg);
 
-        try scene_systems.load_scene(&reg, arena, &res);
-        scene_systems.apply_inits(&reg);
+        try scene_systems.loadScene(&reg, arena, &res);
+        scene_systems.applyInits(&reg);
         editor_systems.init(&reg);
-        editor_systems.new_entity_button(&reg);
-        editor_systems.edit_component_window(&reg);
-        editor_systems.components_panel(&reg);
-        editor_systems.component_instance_panel(&reg);
-        try editor_systems.game_object_panel(&reg, arena);
-        try render_systems.load_resource(&reg, &res);
-        try render_systems.attach_to(&reg, arena);
-        try render_systems.update_global_transform(&reg);
-        render_systems.set_solid_rect_color(&reg);
-        render_systems.set_text_params(&reg);
+        editor_systems.newEntityButton(&reg);
+        try editor_systems.editComponentWindow(&reg, arena);
+        editor_systems.componentPanel(&reg);
+        editor_systems.componentInstancePanel(&reg);
+        try editor_systems.gameObjectPanel(&reg, arena);
+        try render_systems.loadResource(&reg, &res);
+        try render_systems.attachTo(&reg, arena);
+        try render_systems.updateGlobalTransform(&reg);
+        render_systems.setSolidRectColor(&reg);
+        render_systems.setTextParams(&reg);
         render_systems.blink(&reg, dt);
 
         gui_systems.button(&reg);
-        try gui_systems.text_input(&reg, arena);
-        try gui_systems.linear_layout(&reg, &children_buffer);
-        gui_systems.process_scroll(&reg);
+        try gui_systems.textInput(&reg, arena);
+        try gui_systems.linearLayout(&reg, &children_buffer);
+        gui_systems.processScroll(&reg);
 
         rl.BeginDrawing();
         rl.ClearBackground(rl.WHITE);
@@ -97,9 +97,9 @@ pub fn main() !void {
         rl.EndDrawing();
 
         //destroy triggers
-        gui_systems.linear_layout_on_destroy(&reg);
-        editor_systems.game_object_panel_on_destroy(&reg);
-        try render_systems.destroy_children(&reg);
+        gui_systems.linearLayoutOnDestroy(&reg);
+        editor_systems.gameObjectPanelOnDestroy(&reg);
+        try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);
     }
 }

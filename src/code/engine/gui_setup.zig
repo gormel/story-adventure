@@ -4,8 +4,12 @@ const rl = @import("raylib");
 pub const ColorPanel = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
 pub const ColorButton = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 pub const ColorButtonText = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
+pub const ColorLabelBg = rl.Color { .r = 56, .g = 122, .b = 223, .a = 255 };
 pub const ColorLabelText = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 
+pub const SizeFieldOffset = 10;
+pub const SizeFieldTitle = rl.Rectangle { .x = 0, .y = 0, .width = 100, .height = 20 };
+pub const SizeFieldValue = rl.Rectangle { .x = 0, .y = 0, .width = 100, .height = 20 };
 pub const SizePanelItem = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 20 };
 pub const SizeButtonSmall = rl.Rectangle { .x = 0, .y = 0, .width = 20, .height = 20 };
 
