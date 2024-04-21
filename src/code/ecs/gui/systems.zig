@@ -20,13 +20,8 @@ pub fn textInput(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     while (init_iter.next()) |entity| {
         const init = init_view.getConst(cmp.InitTextInput, entity);
 
-        var str = try allocator.alloc(u8, @max(init.text.len, 1));
-        if (init.text.len > 1) {
-            std.mem.copy(u8, str, init.text);
-            reg.add(entity, cmp.TextInputChanged {});
-        } else {
-            str[str.len - 1] = 0;
-        }
+        var str = try std.fmt.allocPrintZ(allocator, "{s}", .{ init.text });
+        reg.add(entity, cmp.TextInputChanged {});
 
         if (init.free_text) {
             allocator.free(init.text);
@@ -114,15 +109,9 @@ pub fn textInput(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 
         if (text.text.len > 0) {
             reg.add(text.label_entity, cmp.FreePrevTextInputValue { .to_free = text.text });
-            text.text = try std.mem.concat(allocator, u8, &.{
-                text.text[0..text.text.len - 1],
-                &.{ input.char, 0 },
-            });
+            text.text = try std.fmt.allocPrintZ(allocator, "{s}{c}", .{ text.text, input.char });
         } else {
-            var str = try allocator.alloc(u8, 2);
-            str[0] = input.char;
-            str[1] = 0;
-            text.text = str;
+            text.text = try std.fmt.allocPrintZ(allocator, "{c}", .{ input.char });
         }
 
         if (reg.tryGet(rcmp.SetTextValue, text.label_entity)) |set_text| {
@@ -146,10 +135,7 @@ pub fn textInput(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 
             if (text.text.len > 1) {
                 reg.add(text.label_entity, cmp.FreePrevTextInputValue { .to_free = text.text });
-                var new_str = try allocator.alloc(u8, text.text.len - 1);
-                @memcpy(new_str, text.text[0..text.text.len - 1]);
-                new_str[new_str.len - 1] = 0;
-                text.text = new_str;
+                text.text = try std.fmt.allocPrintZ(allocator, "{s}", .{ text.text[0..text.text.len - 1] });
 
                 if (reg.tryGet(rcmp.SetTextValue, text.label_entity)) |set_text| {
                     set_text.text = text.text;
@@ -162,14 +148,14 @@ pub fn textInput(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         }
     }
 
-    var carete_view = reg.view(.{ cmp.TextInput, cmp.TextInputSelected, cmp.TextInputChanged }, .{});
+    var carete_view = reg.view(.{ cmp.TextInput, cmp.TextInputChanged }, .{}); 
     var carete_iter = carete_view.entityIterator();
     while (carete_iter.next()) |entity| {
         var text = carete_view.get(cmp.TextInput, entity);
         var label = reg.get(rcmp.Text, text.label_entity);
 
         var carete_pos = reg.get(rcmp.Position, text.carete_entity);
-        if (text.text.len > 1) {
+        if (text.text.len > 0) {
             const measures = rl.MeasureTextEx(rl.GetFontDefault(), text.text.ptr, label.size, 3);
             carete_pos.x = measures.x;
         } else {
