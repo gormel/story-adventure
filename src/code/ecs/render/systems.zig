@@ -439,7 +439,7 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
     }
 
     var shold_end_scissor = false;
-    var scissor_rect: ?rl.Rectangle = null;
+    var scissor_rect: ?rl.Rectangle = parent_scissor_rect;
     if (reg.tryGetConst(cmp.Scissor, entity)) |scissor| {
         const pos = reg.getConst(cmp.GlobalPosition, entity);
         const scale = reg.getConst(cmp.GlobalScale, entity);
