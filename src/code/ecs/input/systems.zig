@@ -5,19 +5,19 @@ const std = @import("std");
 const rcmp = @import("../render/components.zig");
 const utils = @import("../../engine/utils.zig");
 
-fn get_scissor(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
+fn getScissor(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
     if (reg.has(rcmp.Scissor, entity)) {
         return entity;
     }
 
     if (reg.tryGetConst(rcmp.Parent, entity)) |parent| {
-        return get_scissor(reg, parent.entity);
+        return getScissor(reg, parent.entity);
     }
 
     return null;
 }
 
-fn reverse_transform_xy(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32) void {
+fn reverseTransformXY(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32) void {
     if (reg.tryGetConst(rcmp.GlobalPosition, entity)) |g_position| {
         x.* -= g_position.x;
         y.* -= g_position.y;
@@ -33,7 +33,7 @@ fn reverse_transform_xy(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32
     }
 }
 
-fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
+fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     const position = reg.getConst(cmp.MousePositionInput, entity);
     const tracker = reg.getConst(cmp.MouseOverTracker, entity);
 
@@ -41,9 +41,9 @@ fn mouse_over(reg: *ecs.Registry, entity: ecs.Entity) bool {
     var py = @as(f32, @floatFromInt(position.y));
     var x = px;
     var y = py;
-    reverse_transform_xy(reg, entity, &x, &y);
+    reverseTransformXY(reg, entity, &x, &y);
 
-    if (get_scissor(reg, entity)) |scissor_ety| {
+    if (getScissor(reg, entity)) |scissor_ety| {
         const scissor = reg.getConst(rcmp.Scissor, scissor_ety);
         var scale_x = @as(f32, 1.0);
         var scale_y = @as(f32, 1.0);
@@ -120,7 +120,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var add_over_ms_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker }, .{ cmp.MouseOver });
     var add_over_ms_iter = add_over_ms_view.entityIterator();
     while (add_over_ms_iter.next()) |entity| {
-        if (mouse_over(reg, entity)) {
+        if (mouseOver(reg, entity)) {
             reg.add(entity, cmp.MouseOver {});
         }
     }
@@ -128,7 +128,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var add_over_trns_view = reg.view(.{ cmp.MousePositionInput, rcmp.GlobalTransformUpdated, cmp.MouseOverTracker }, .{ cmp.MouseOver });
     var add_over_trns_iter = add_over_trns_view.entityIterator();
     while (add_over_trns_iter.next()) |entity| {
-        if (mouse_over(reg, entity)) {
+        if (mouseOver(reg, entity)) {
             reg.add(entity, cmp.MouseOver {});
         }
     }
@@ -136,7 +136,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var rem_over_ms_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker, cmp.MouseOver }, .{});
     var rem_over_ms_iter = rem_over_ms_view.entityIterator();
     while (rem_over_ms_iter.next()) |entity| {
-        if (!mouse_over(reg, entity)) {
+        if (!mouseOver(reg, entity)) {
             reg.remove(cmp.MouseOver, entity);
         }
     }
@@ -144,7 +144,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var rem_over_trns_view = reg.view(.{ cmp.MousePositionInput, rcmp.GlobalTransformUpdated, cmp.MouseOverTracker, cmp.MouseOver }, .{});
     var rem_over_trns_iter = rem_over_trns_view.entityIterator();
     while (rem_over_trns_iter.next()) |entity| {
-        if (!mouse_over(reg, entity)) {
+        if (!mouseOver(reg, entity)) {
             reg.remove(cmp.MouseOver, entity);
         }
     }

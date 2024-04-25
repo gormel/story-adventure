@@ -182,6 +182,28 @@ inline fn createField(
     return ret_idx;
 }
 
+inline fn createBtn(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text: []const u8) ecs.Entity {
+    var close_ety = reg.create();
+    reg.add(close_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(close_ety, rcmp.AttachTo { .target = parent_ety });
+    reg.add(close_ety, gcmp.InitLayoutElement {
+        .idx = idx,
+        .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
+        .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
+    });
+    reg.add(close_ety, gcmp.InitButton {
+        .color = gui_setup.ColorButton,
+        .rect = gui_setup.SizePanelItem,
+    });
+    reg.add(close_ety, rcmp.Text {
+        .color = gui_setup.ColorButtonText,
+        .size = gui_setup.SizeText,
+        .text = text,
+    });
+
+    return close_ety;
+}
+
 pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std.fmt.AllocPrintError!void {
     var init_view = reg.view(.{ cmp.EditComponentWindow }, .{ cmp.EditComponentWindowReady, rcmp.SolidRect });
     var init_iter = init_view.entityIterator();
@@ -238,6 +260,13 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
             }
         }
 
+        if (reg.tryGet(rcmp.Position, ready.list_entity)) |list_pos| {
+            list_pos.y = 0;
+            if (!reg.has(rcmp.UpdateGlobalTransform, ready.list_entity)){
+                reg.add(ready.list_entity, rcmp.UpdateGlobalTransform { });
+            }
+        }
+
         var last_field_idx: i32 = 0;
         inline for (scene_systems.scene_components, 0..) |ComponentT, cmp_idx| {
             if (cmp_idx == set.component_idx) {
@@ -259,24 +288,8 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
             }
         }
 
-        var close_ety = reg.create();
-        reg.add(close_ety, rcmp.Position { .x = 0, .y = 0 });
-        reg.add(close_ety, rcmp.AttachTo { .target = ready.list_entity });
-        reg.add(close_ety, gcmp.InitLayoutElement {
-            .idx = last_field_idx,
-            .width = gui_setup.SizePanelItem.width + gui_setup.MarginPanelItem.w,
-            .height = gui_setup.SizePanelItem.height + gui_setup.MarginPanelItem.h,
-        });
+        var close_ety = createBtn(reg, ready.list_entity, last_field_idx, "close");
         reg.add(close_ety, cmp.ConfirmEditComponentButton { .window_entity = entity });
-        reg.add(close_ety, gcmp.InitButton {
-            .color = gui_setup.ColorButton,
-            .rect = gui_setup.SizePanelItem,
-        });
-        reg.add(close_ety, rcmp.Text {
-            .color = gui_setup.ColorButtonText,
-            .size = gui_setup.SizeText,
-            .text = "close",
-        });
 
         reg.remove(cmp.SetEditingComponent, entity);
     }

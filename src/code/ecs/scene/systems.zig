@@ -37,7 +37,7 @@ pub const scene_components = .{
 
 const children_field = "__children__";
 
-fn load_game_object(
+fn loadGameObject(
     allocator: std.mem.Allocator,
     reg: *ecs.Registry,
     parent_ety: ecs.Entity,
@@ -56,7 +56,7 @@ fn load_game_object(
 
     if (json.get(children_field)) |jchildren| {
         for (jchildren.array.items) |jobj| {
-            try load_game_object(allocator, reg, entity, jobj.object);
+            try loadGameObject(allocator, reg, entity, jobj.object);
         }
     }
 }
@@ -71,7 +71,7 @@ pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, res: *rs.Reso
         var scene_json = try res.loadJson(resource.scene_path);
 
         for (scene_json.array.items) |jobj| {
-            try load_game_object(allocator, reg, entity, jobj.object);
+            try loadGameObject(allocator, reg, entity, jobj.object);
         }
 
         reg.remove(cmp.SceneResource, entity);

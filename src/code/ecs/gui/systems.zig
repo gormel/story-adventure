@@ -221,7 +221,7 @@ pub fn button(reg: *ecs.Registry) void {
 }
 
 pub const ChildEntry = struct { ety: ecs.Entity, idx: i32 };
-fn compare_entry(_: void, a: ChildEntry, b: ChildEntry) bool {
+fn compareEntry(_: void, a: ChildEntry, b: ChildEntry) bool {
     switch (std.math.clamp(b.idx - a.idx, -1, 1)) {
         -1 => return false,
          0 => return false,
@@ -280,7 +280,7 @@ pub fn linearLayout(reg: *ecs.Registry, children_buffer: *std.ArrayList(ChildEnt
         }
 
         var offset: f32 = 0.0;
-        std.sort.pdq(ChildEntry, children_buffer.items, {}, compare_entry);
+        std.sort.pdq(ChildEntry, children_buffer.items, {}, compareEntry);
         for (children_buffer.items) |entry| {
             if (!reg.has(rcmp.Position, entry.ety)) {
                 reg.add(entry.ety, rcmp.Position { .x = 0, .y = 0 });

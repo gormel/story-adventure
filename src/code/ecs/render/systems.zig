@@ -22,7 +22,7 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     }
 }
 
-fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentGlobalTransform || error {OutOfMemory})!void {
+fn doUpdateGlobalTransform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentGlobalTransform || error {OutOfMemory})!void {
     if (reg.tryGet(cmp.Parent, entity)) |parent| {
         if (
                !reg.has(cmp.GlobalPosition, parent.entity)
@@ -105,12 +105,12 @@ fn do_update_global_transform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentG
 
     if (reg.tryGet(cmp.Children, entity)) |children| {
         for (children.children.items) |child| {
-            try do_update_global_transform(reg, child);
+            try doUpdateGlobalTransform(reg, child);
         }
     }
 }
 
-fn topo_sort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
+fn topoSort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs.Entity), allocator: std.mem.Allocator) !void {
     var queue = qu.Queue(ecs.Entity).init(allocator);
     defer queue.deinit();
     if (!reg.has(cmp.Disabled, entity)) {
@@ -128,7 +128,7 @@ fn topo_sort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ec
     }
 }
 
-fn index_of(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
+fn indexOf(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
     return
         for(slice, 0..) |now_value, index| {
             if (now_value == value) {
@@ -137,10 +137,10 @@ fn index_of(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
         } else null;
 }
 
-fn detach_parent(reg: *ecs.Registry, entity: ecs.Entity) !void {
+fn detachParent(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const parent = reg.getConst(cmp.Parent, entity);
     var parent_children = reg.get(cmp.Children, parent.entity);
-    while (index_of(ecs.Entity, parent_children.children.items, entity))|at_idx| {
+    while (indexOf(ecs.Entity, parent_children.children.items, entity))|at_idx| {
         _ = parent_children.children.swapRemove(at_idx);
     }
     reg.remove(cmp.Parent, entity);
@@ -153,7 +153,7 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         const attach = detach_view.getConst(cmp.AttachTo, entity);
         const parent = detach_view.getConst(cmp.Parent, entity);
         if (attach.target != parent.entity) {
-            try detach_parent(reg, entity);
+            try detachParent(reg, entity);
         } else {
             reg.remove(cmp.AttachTo, entity);
         }
@@ -237,7 +237,7 @@ pub fn updateGlobalTransform(reg: *ecs.Registry) !void {
     var update_view = reg.view(.{ cmp.UpdateGlobalTransform }, .{ });
     var update_iter = update_view.entityIterator();
     while (update_iter.next()) |entity| {
-        try do_update_global_transform(reg, entity);
+        try doUpdateGlobalTransform(reg, entity);
         reg.remove(cmp.UpdateGlobalTransform, entity);
         updated = true;
     }
@@ -287,7 +287,7 @@ pub fn destroyChildren(reg: *ecs.Registry) !void {
     var parent_view = reg.view(.{ Destroyed, cmp.Parent }, .{ });
     var parent_iter = parent_view.entityIterator();
     while (parent_iter.next()) |entity| {
-        try detach_parent(reg, entity);
+        try detachParent(reg, entity);
     }
     
     var children_view = reg.view(.{ Destroyed, cmp.Children }, .{ });
