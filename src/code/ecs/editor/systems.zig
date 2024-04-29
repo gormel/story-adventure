@@ -105,14 +105,14 @@ inline fn createField(
         reg: *ecs.Registry,
         parent_ety: ecs.Entity,
         comptime name: []const u8,
-        comptime idx: i32,
+        idx: i32,
         comptime offset: f32,
         comptime T: type,
         value: *T,
         allocator: std.mem.Allocator
-    ) i32
+    ) struct { new_idx: i32, entity: ecs.Entity }
 {
-    comptime var ret_idx = idx + 1;
+    var ret_idx: i32 = 1;
     var field_ety = reg.create();
     reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(field_ety, rcmp.AttachTo { .target = parent_ety });
@@ -152,8 +152,9 @@ inline fn createField(
                 const field_offset = @offsetOf(T, field.name);
                 const field_ptr: *field.type =
                     @ptrFromInt(@intFromPtr(value) + field_offset);
-                ret_idx += createField(reg, parent_ety, field.name, ret_idx,
+                const child_info = createField(reg, parent_ety, field.name, idx + ret_idx,
                     offset + gui_setup.SizeFieldOffset, field.type, field_ptr, allocator);
+                ret_idx += child_info.new_idx;
             }
         },
         .Pointer => |info| {
@@ -179,7 +180,7 @@ inline fn createField(
         },
     }
 
-    return ret_idx;
+    return .{ .new_idx = ret_idx, .entity = field_ety };
 }
 
 inline fn createBtn(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text: []const u8) ecs.Entity {
@@ -202,6 +203,24 @@ inline fn createBtn(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text: 
     });
 
     return close_ety;
+}
+
+inline fn cerateLabel(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text: []const u8) ecs.Entity {
+    var entity = reg.create();
+    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(entity, rcmp.AttachTo { .target = parent_ety });
+    reg.add(entity, gcmp.InitLayoutElement {
+        .idx = idx,
+        .width = gui_setup.SizePanelItem.width,
+        .height = gui_setup.SizePanelItem.height,
+    });
+    reg.add(entity, rcmp.Text {
+        .color = gui_setup.ColorLabelText,
+        .size = gui_setup.SizeText,
+        .text = text,
+    });
+
+    return entity;
 }
 
 pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std.fmt.AllocPrintError!void {
@@ -254,8 +273,17 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
         if (reg.has(rcmp.Children, ready.list_entity)) {
             const children = reg.get(rcmp.Children, ready.list_entity);
             for (children.children.items) |child_ety| {
-                if (!reg.has(ccmp.Destroyed, child_ety)) {
+                if (!reg.has(ccmp.Destroyed, child_ety)
+                    and reg.has(cmp.EditComponentWindowRow, child_ety)) {
                     reg.add(child_ety, ccmp.Destroyed {});
+
+                    if (reg.tryGetConst(cmp.EditComponentWindowRowResource, child_ety)) |resource| {
+                        for (resource.memory) |arr| {
+                            std.debug.print("{s}\n", .{ arr });
+                            allocator.free(arr);
+                        }
+                        allocator.free(resource.memory);
+                    }
                 }
             }
         }
@@ -271,15 +299,30 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
         inline for (scene_systems.scene_components, 0..) |ComponentT, cmp_idx| {
             if (cmp_idx == set.component_idx) {
                 const comp_type = @typeInfo(ComponentT);
+
+                var text = try std.fmt.allocPrintZ(allocator, "{}: {s}", .{
+                    set.entity,
+                    shortify(@typeName(ComponentT)),
+                });
+                var resource = try allocator.alloc([]const u8, 1);
+                resource[0] = text;
+                var title_ety = cerateLabel(reg, ready.list_entity, 0, text);
+                reg.add(title_ety, cmp.EditComponentWindowRow { });
+                reg.add(title_ety, cmp.EditComponentWindowRowResource {
+                    .memory = resource
+                });
+                
                 inline while (comp_type.Struct.fields.len > 0) {
                     const component_value = reg.get(ComponentT, set.entity);
-                    comptime var idx = 0;
+                    var idx: i32 = 1;
                     inline for (comp_type.Struct.fields) |field| {
                         const field_offset = @offsetOf(ComponentT, field.name);
                         const field_ptr: *field.type =
                             @ptrFromInt(@intFromPtr(component_value) + field_offset);
-                        idx += createField(reg, ready.list_entity, field.name,
+                        const field_info = createField(reg, ready.list_entity, field.name,
                             idx, 0, field.type, field_ptr, allocator);
+                        reg.add(field_info.entity, cmp.EditComponentWindowRow { });
+                        idx += field_info.new_idx;
                     }
                     last_field_idx = idx;
                     break;
@@ -290,6 +333,7 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
 
         var close_ety = createBtn(reg, ready.list_entity, last_field_idx, "close");
         reg.add(close_ety, cmp.ConfirmEditComponentButton { .window_entity = entity });
+        reg.add(close_ety, cmp.EditComponentWindowRow { });
 
         reg.remove(cmp.SetEditingComponent, entity);
     }
@@ -361,8 +405,7 @@ pub fn gameObjectPanel(reg: *ecs.Registry, allocator: std.mem.Allocator) error {
 
     var panel_view = reg.view(.{ cmp.GameObjectPanel, cmp.GameObjectPanelReady }, .{});
     var panel_iter = panel_view.entityIterator();
-    while (panel_iter.next()) |entity| {
-        
+    while (panel_iter.next()) |entity| {        
         var go_view = reg.view(.{ cmp.EditorObject }, .{ cmp.ListedEditorObject });
         var go_iter = go_view.entityIterator();
         while (go_iter.next()) |go_entity| {

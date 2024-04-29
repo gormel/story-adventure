@@ -1,7 +1,6 @@
 fea: scene editor
  * edit component (popup window)
  ** поддержать редактирование
- ** заголовок с именем компонента и редактируемой entity
  ** delete component
  * add component (popup window)
  * movement
