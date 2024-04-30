@@ -101,6 +101,12 @@ inline fn createFieldValue(
     });
 }
 
+const FieldInfo = struct {
+    new_idx: i32,
+    entity: ecs.Entity,
+    children: []FieldInfo,
+};
+
 inline fn createField(
         reg: *ecs.Registry,
         parent_ety: ecs.Entity,
@@ -110,9 +116,10 @@ inline fn createField(
         comptime T: type,
         value: *T,
         allocator: std.mem.Allocator
-    ) struct { new_idx: i32, entity: ecs.Entity }
+    ) FieldInfo
 {
     var ret_idx: i32 = 1;
+    var children: []FieldInfo = &[0]FieldInfo {};
     var field_ety = reg.create();
     reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(field_ety, rcmp.AttachTo { .target = parent_ety });
@@ -148,13 +155,17 @@ inline fn createField(
 
     switch (@typeInfo(T)) {
         .Struct => |info| {
-            inline for (info.fields) |field| {
+            children = allocator.alloc(FieldInfo, info.fields.len) catch children;
+            inline for (info.fields, 0..) |field, i| {
                 const field_offset = @offsetOf(T, field.name);
                 const field_ptr: *field.type =
                     @ptrFromInt(@intFromPtr(value) + field_offset);
                 const child_info = createField(reg, parent_ety, field.name, idx + ret_idx,
                     offset + gui_setup.SizeFieldOffset, field.type, field_ptr, allocator);
                 ret_idx += child_info.new_idx;
+                if (children.len > 0) {
+                    children[i] = child_info;
+                }
             }
         },
         .Pointer => |info| {
@@ -180,7 +191,7 @@ inline fn createField(
         },
     }
 
-    return .{ .new_idx = ret_idx, .entity = field_ety };
+    return FieldInfo { .new_idx = ret_idx, .entity = field_ety, .children = children };
 }
 
 inline fn createBtn(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text: []const u8) ecs.Entity {
@@ -221,6 +232,16 @@ inline fn cerateLabel(reg: *ecs.Registry, parent_ety: ecs.Entity, idx: i32, text
     });
 
     return entity;
+}
+
+fn markFields(reg: *ecs.Registry, info: FieldInfo) void {
+    if (!reg.has(cmp.EditComponentWindowRow, info.entity)) {
+        reg.add(info.entity, cmp.EditComponentWindowRow { });
+    }
+    
+    for (info.children) |child_info| {
+        markFields(reg, child_info);
+    }
 }
 
 pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std.fmt.AllocPrintError!void {
@@ -321,7 +342,7 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
                             @ptrFromInt(@intFromPtr(component_value) + field_offset);
                         const field_info = createField(reg, ready.list_entity, field.name,
                             idx, 0, field.type, field_ptr, allocator);
-                        reg.add(field_info.entity, cmp.EditComponentWindowRow { });
+                        markFields(reg, field_info);
                         idx += field_info.new_idx;
                     }
                     last_field_idx = idx;
