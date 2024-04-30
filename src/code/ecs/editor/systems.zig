@@ -273,13 +273,13 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
         if (reg.has(rcmp.Children, ready.list_entity)) {
             const children = reg.get(rcmp.Children, ready.list_entity);
             for (children.children.items) |child_ety| {
-                if (!reg.has(ccmp.Destroyed, child_ety)
-                    and reg.has(cmp.EditComponentWindowRow, child_ety)) {
-                    reg.add(child_ety, ccmp.Destroyed {});
+                if (reg.has(cmp.EditComponentWindowRow, child_ety)) {
+                    if (!reg.has(ccmp.Destroyed, child_ety)) {
+                        reg.add(child_ety, ccmp.Destroyed {});
+                    }
 
                     if (reg.tryGetConst(cmp.EditComponentWindowRowResource, child_ety)) |resource| {
                         for (resource.memory) |arr| {
-                            std.debug.print("{s}\n", .{ arr });
                             allocator.free(arr);
                         }
                         allocator.free(resource.memory);
@@ -327,6 +327,14 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
                     last_field_idx = idx;
                     break;
                 }
+
+                var del_ety = createBtn(reg, ready.list_entity, last_field_idx, "delete");
+                reg.add(del_ety, cmp.DeleteEditComponentButton {
+                    .window_entity = entity,
+                    .source_btn_entity = set.source_btn_entity
+                });
+                reg.add(del_ety, cmp.EditComponentWindowRow { });
+                last_field_idx += 1;
                 break;
             }
         }
@@ -348,6 +356,26 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
 
         if (reg.has(cmp.EditingComponent, btn.window_entity)) {
             reg.remove(cmp.EditingComponent, btn.window_entity);
+        }
+    }
+
+    var del_view = reg.view(.{ gcmp.ButtonClick, cmp.DeleteEditComponentButton }, .{});
+    var del_iter = del_view.entityIterator();
+    while (del_iter.next()) |entity| {
+        const btn = close_view.getConst(cmp.DeleteEditComponentButton, entity);
+        if (!reg.has(rcmp.Disabled, btn.window_entity)) {
+            reg.add(btn.window_entity, rcmp.Disabled {});
+        }
+
+        if (reg.tryGet(cmp.EditingComponent, btn.window_entity)) |editing| {
+            inline for (scene_systems.scene_components, 0..) |ComponentT, cmp_idx| {
+                if (cmp_idx == editing.component_idx) {
+                    reg.remove(ComponentT, editing.entity);
+                    
+                    reg.remove(cmp.EditingComponent, btn.window_entity);
+                    reg.add(btn.source_btn_entity, ccmp.Destroyed {});
+                }
+            }
         }
     }
 }
@@ -548,6 +576,7 @@ pub fn componentInstancePanel(reg: *ecs.Registry) void {
             reg.add(wnd_entity, cmp.SetEditingComponent {
                 .entity = btn.entity,
                 .component_idx = btn.component_idx,
+                .source_btn_entity = entity,
             });
             break;
         }
