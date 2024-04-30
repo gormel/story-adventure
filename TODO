@@ -1,7 +1,6 @@
 fea: scene editor
  * edit component (popup window)
  ** поддержать редактирование
- ** delete component <<< bug: остаются строки в окне редактирования для полей удалённых компонентов
  * add component (popup window)
  * movement
  * entity tree
