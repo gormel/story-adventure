@@ -20,6 +20,7 @@ pub const EditComponentWindow = struct {};
 pub const EditComponentWindowReady = struct { list_entity: ecs.Entity };
 pub const EditComponentWindowRow = struct {};
 pub const EditComponentWindowRowResource = struct { memory: []const []const u8 };
+pub const EditComponentFieldInput = struct { field_offset: i32 };
 pub const SetEditingComponent = struct { entity: ecs.Entity, source_btn_entity: ecs.Entity, component_idx: usize };
 pub const EditingComponent = struct { entity: ecs.Entity, component_idx: usize };
 pub const ConfirmEditComponentButton = struct { window_entity: ecs.Entity };

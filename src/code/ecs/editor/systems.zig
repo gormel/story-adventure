@@ -81,12 +81,14 @@ pub fn newEntityButton(reg: *ecs.Registry) void {
 inline fn createFieldValue(
         reg: *ecs.Registry,
         parent_ety: ecs.Entity,
-        value: []const u8
+        value: []const u8,
+        field_offset: i32
     ) void
 {
     var value_ety = reg.create();
     reg.add(value_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(value_ety, rcmp.AttachTo { .target = parent_ety });
+    reg.add(value_ety, cmp.EditComponentFieldInput { .field_offset = field_offset });
     reg.add(value_ety, gcmp.InitLayoutElement {
         .idx = 2,
         .width = gui_setup.SizeFieldValue.width,
@@ -115,11 +117,13 @@ inline fn createField(
         comptime offset: f32,
         comptime T: type,
         value: *T,
-        allocator: std.mem.Allocator
+        allocator: std.mem.Allocator,
+        field_offset: i32
     ) FieldInfo
 {
     var ret_idx: i32 = 1;
     var children: []FieldInfo = &[0]FieldInfo {};
+
     var field_ety = reg.create();
     reg.add(field_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(field_ety, rcmp.AttachTo { .target = parent_ety });
@@ -157,11 +161,12 @@ inline fn createField(
         .Struct => |info| {
             children = allocator.alloc(FieldInfo, info.fields.len) catch children;
             inline for (info.fields, 0..) |field, i| {
-                const field_offset = @offsetOf(T, field.name);
+                const child_field_offset = @offsetOf(T, field.name);
                 const field_ptr: *field.type =
-                    @ptrFromInt(@intFromPtr(value) + field_offset);
+                    @ptrFromInt(@intFromPtr(value) + child_field_offset);
                 const child_info = createField(reg, parent_ety, field.name, idx + ret_idx,
-                    offset + gui_setup.SizeFieldOffset, field.type, field_ptr, allocator);
+                    offset + gui_setup.SizeFieldOffset, field.type, field_ptr,
+                    allocator, field_offset + child_field_offset);
                 ret_idx += child_info.new_idx;
                 if (children.len > 0) {
                     children[i] = child_info;
@@ -173,21 +178,21 @@ inline fn createField(
                 .Slice => {
                     if (info.child == u8) {
                         const str_value = std.fmt.allocPrintZ(allocator, "{s}", .{value.*}) catch "<error>";
-                        createFieldValue(reg, field_ety, str_value);
+                        createFieldValue(reg, field_ety, str_value, field_offset);
                     } else {
                         const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
-                        createFieldValue(reg, field_ety, str_value);
+                        createFieldValue(reg, field_ety, str_value, field_offset);
                     }
                 },
                 else => {
                     const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
-                    createFieldValue(reg, field_ety, str_value);
+                    createFieldValue(reg, field_ety, str_value, field_offset);
                 }
             }
         },
         else => {
             const str_value = std.fmt.allocPrintZ(allocator, "{any}", .{value.*}) catch "<error>";
-            createFieldValue(reg, field_ety, str_value);
+            createFieldValue(reg, field_ety, str_value, field_offset);
         },
     }
 
@@ -341,7 +346,7 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
                         const field_ptr: *field.type =
                             @ptrFromInt(@intFromPtr(component_value) + field_offset);
                         const field_info = createField(reg, ready.list_entity, field.name,
-                            idx, 0, field.type, field_ptr, allocator);
+                            idx, 0, field.type, field_ptr, allocator, field_offset);
                         markFields(reg, field_info);
                         idx += field_info.new_idx;
                     }
@@ -375,7 +380,14 @@ pub fn editComponentWindow(reg: *ecs.Registry, allocator: std.mem.Allocator) std
             reg.add(btn.window_entity, rcmp.Disabled {});
         }
 
-        if (reg.has(cmp.EditingComponent, btn.window_entity)) {
+        if (reg.tryGetConst(cmp.EditingComponent, btn.window_entity)) |editing| {
+            inline for(scene_systems.scene_components, 0..) |ComponentT, i| {
+                if (i == editing.component_idx) {
+                    _ = ComponentT;
+                    //iterate ComponentT fields (recursively)
+                    //for each field find field component by field offset
+                }
+            }
             reg.remove(cmp.EditingComponent, btn.window_entity);
         }
     }
