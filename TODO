@@ -1,10 +1,4 @@
-fea: scene editor
- * edit component (popup window)
- ** поддержать редактирование
- * add component (popup window)
- * movement
- * entity tree
- * separate editor component list (mb extract categories)
+ref: scene as .zon file
 fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations

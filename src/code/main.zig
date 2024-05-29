@@ -9,10 +9,7 @@ const input_systems = @import("ecs/input/systems.zig");
 const icmp = @import("ecs/input/components.zig");
 const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
-const gui_systems = @import("ecs/gui/systems.zig");
-const gcmp = @import("ecs/gui/components.zig");
 const rs = @import("engine/resources.zig");
-const editor_systems = @import("ecs/editor/systems.zig");
 
 const Root = struct {};
 const Btn = struct {};
@@ -41,8 +38,6 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
-    var children_buffer = std.ArrayList(gui_systems.ChildEntry).init(arena);
-
     //debug init
 
     const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
@@ -70,24 +65,12 @@ pub fn main() !void {
         core_systems.destroyByTimer(&reg);
 
         try scene_systems.loadScene(&reg, arena, &res);
-        scene_systems.applyInits(&reg);
-        editor_systems.init(&reg);
-        editor_systems.newEntityButton(&reg);
-        try editor_systems.editComponentWindow(&reg, arena);
-        editor_systems.componentPanel(&reg);
-        editor_systems.componentInstancePanel(&reg);
-        try editor_systems.gameObjectPanel(&reg, arena);
         try render_systems.loadResource(&reg, &res);
         try render_systems.attachTo(&reg, arena);
         try render_systems.updateGlobalTransform(&reg);
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg);
         render_systems.blink(&reg, dt);
-
-        gui_systems.button(&reg);
-        try gui_systems.textInput(&reg, arena);
-        try gui_systems.linearLayout(&reg, &children_buffer);
-        gui_systems.processScroll(&reg);
 
         rl.BeginDrawing();
         rl.ClearBackground(rl.WHITE);
@@ -97,8 +80,6 @@ pub fn main() !void {
         rl.EndDrawing();
 
         //destroy triggers
-        gui_systems.linearLayoutOnDestroy(&reg);
-        editor_systems.gameObjectPanelOnDestroy(&reg);
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);
     }
