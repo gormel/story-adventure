@@ -1,0 +1,31 @@
+[
+    {
+        "position": { "x": 100, "y": 150 },
+        "sprite": {
+            "atlas": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "tags": [ "user", "blink" ],
+        "children": []
+    },
+    {
+        "position": { "x": 10, "y": 15 },
+        "tags": [ "user", "blink" ],
+        "children": []
+    },
+    {
+        "position": { "x": 20, "y": 15 },
+        "text": { "size": 15, "text": "abra-cadabra\u0000" },
+        "tags": [ "user", "blink" ],
+        "children": []
+    },
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "tags": [ "user1", "blink1" ],
+        "children": []
+    }
+]

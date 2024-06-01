@@ -1,5 +1,6 @@
 const rl = @import("raylib");
+const sc = @import("../../engine/scene.zig");
 
-pub const SceneResource = struct { scene_path: []const u8 };
+pub const SceneResource = struct { scene: sc.Scene };
 pub const Scene = struct {};
-pub const GameObject = struct {};
+pub const GameObject = struct { tags: [][]u8 };

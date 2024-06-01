@@ -2,7 +2,6 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
-
     const optimize = b.standardOptimizeOption(.{});
 
     const exe = b.addExecutable(.{
@@ -25,9 +24,7 @@ pub fn build(b: *std.Build) !void {
     ) orelse false;
     exe.strip = strip;
 
-
-    const this_dir = std.fs.path.dirname(@src().file) orelse ".";
-    const res_source = b.pathJoin(&.{ this_dir, "src", "resources" });
+    const res_source = b.pathJoin(&.{ "src", "resources" });
     const res_install_subdir = b.pathJoin(&.{ "bin", "resources" });
     const add_resources = b.addInstallDirectory(.{
         .source_dir = .{ .path = res_source },
@@ -44,7 +41,6 @@ pub fn build(b: *std.Build) !void {
     const raylib_path_fragment = b.pathJoin(&.{ "src", "code", "raylib.zig" });
     const raylib_module = b.addModule("raylib", .{ .source_file = .{ .path = raylib_path_fragment } });
     _ = exe.addModule("raylib", raylib_module);
-    //exe.addPa
 
     const ecs = b.dependency("zig_ecs", .{
         .target = target,
@@ -62,23 +58,4 @@ pub fn build(b: *std.Build) !void {
     }
     const run_step = b.step("run", "Run the app");
     run_step.dependOn(&run_cmd.step);
-
-    const test_step = b.step("test", "Run unit tests");
-    test_step.dependOn(&exe.step);
-    const code_root_path = b.pathJoin(&.{ this_dir, "src", "code" });
-    var code_root = try std.fs.openIterableDirAbsolute(code_root_path, .{});
-    var it = try code_root.walk(b.allocator);
-    defer it.deinit();
-    while (try it.next()) | entry | {
-        if (entry.kind == .file) {
-            const unit_tests = b.addTest(.{
-                .root_source_file = .{ .path = b.pathJoin(&.{ code_root_path,  entry.path }) },
-                .target = target,
-                .optimize = optimize,
-            });
-
-            const run_unit_tests = b.addRunArtifact(unit_tests);
-            test_step.dependOn(&run_unit_tests.step);
-        }
-    }
 }

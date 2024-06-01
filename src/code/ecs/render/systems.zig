@@ -16,7 +16,7 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     while (iter.next()) |entity| {
         const res_c = view.getConst(cmp.SpriteResource, entity);
         reg.add(entity, cmp.Sprite {
-            .sprite = try res.loadSprite(res_c.atlas_path, res_c.sprite)
+            .sprite = try res.loadSprite(res_c.atlas, res_c.sprite)
         });
         reg.remove(cmp.SpriteResource, entity);
     }

@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
+const sc = @import("engine/scene.zig");
 const render_systems = @import("ecs/render/systems.zig");
 const rcmp = @import("ecs/render/components.zig");
 const core_systems = @import("ecs/core/systems.zig");
@@ -11,7 +12,7 @@ const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 
-const scene = @embedFile("../embed/scenes/test_scene.json");
+const scene_text = @embedFile("assets/scenes/test_scene.json");
 
 pub fn main() !void {
     // Initialization
@@ -36,7 +37,18 @@ pub fn main() !void {
     defer reg.deinit();
 
     //debug init
-    std.debug.print("{any}\n", .{ scene });
+    const parsed_scene = try std.json.parseFromSlice(
+        []sc.SceneObject,
+        arena,
+        scene_text,
+        .{ .ignore_unknown_fields = true }
+    );
+    const scene = parsed_scene.value;
+
+    var scene_entity = reg.create();
+    reg.add(scene_entity, scmp.SceneResource { .scene = scene });
+    reg.add(scene_entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(scene_entity, rcmp.AttachTo { .target = null });
 
     //debug init end
 
@@ -56,7 +68,10 @@ pub fn main() !void {
         core_systems.timer(&reg, dt);
         core_systems.destroyByTimer(&reg);
 
-        try scene_systems.loadScene(&reg, arena, &res);
+        try scene_systems.loadScene(&reg);
+        //init obj systems
+        
+        //init obj systems end
         try render_systems.loadResource(&reg, &res);
         try render_systems.attachTo(&reg, arena);
         try render_systems.updateGlobalTransform(&reg);
