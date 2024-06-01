@@ -11,21 +11,18 @@ const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 
-const Root = struct {};
-const Btn = struct {};
+const scene = @embedFile("../embed/scenes/test_scene.json");
 
 pub fn main() !void {
-    //std.debug.print("{}", .{ scene_systems.scene_components });
-
     // Initialization
     //--------------------------------------------------------------------------------------
     const screenWidth = 1024;
     const screenHeight = 650;
 
-    rl.InitWindow(screenWidth, screenHeight, "raylib-zig [core] example - basic window");
+    rl.InitWindow(screenWidth, screenHeight, "Journey");
     defer rl.CloseWindow(); // Close window and OpenGL context
 
-    rl.SetTargetFPS(144); // Set our game to run at 60 frames-per-second
+    rl.SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     const allocator = std.heap.page_allocator;
@@ -39,12 +36,7 @@ pub fn main() !void {
     defer reg.deinit();
 
     //debug init
-
-    const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "editor_gui.json" });
-    //const path = try std.fs.path.join(arena, &.{ "resources", "scenes", "text_input_test_scene.json" });
-    var scene_entity = reg.create();
-    reg.add(scene_entity, scmp.SceneResource { .scene_path = path });
-    reg.add(scene_entity, rcmp.AttachTo { .target = null });
+    std.debug.print("{any}\n", .{ scene });
 
     //debug init end
 

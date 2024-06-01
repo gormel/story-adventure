@@ -1,0 +1,11 @@
+[
+    {
+        "position": { "x": 100, "y": 150 },
+        "sprite": {
+            "atlas_path": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "tags": [ "user", "blink" ],
+        "children": []
+    }
+]
