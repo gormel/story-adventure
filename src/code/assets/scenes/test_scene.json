@@ -5,7 +5,7 @@
             "atlas": "resources/atlases/star.json",
             "sprite": "star"
         },
-        "tags": [ "user", "blink" ],
+        "tags": [ "button" ],
         "children": []
     },
     {

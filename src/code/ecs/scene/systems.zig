@@ -13,7 +13,7 @@ fn createGameObjects(reg: *ecs.Registry, parent_ety: ecs.Entity, obj_description
 
         reg.add(obj_ety, rcmp.AttachTo { .target = parent_ety });
         reg.add(obj_ety, rcmp.Position { .x = obj_description.position.x, .y = obj_description.position.y });
-        reg.add(obj_ety, cmp.GameObject { .tags = obj_description.tags });
+        reg.add(obj_ety, cmp.InitGameObject { .tags = obj_description.tags });
 
         if (obj_description.sprite) |obj_sprite| {
             reg.add(obj_ety, rcmp.SpriteResource {
@@ -44,5 +44,14 @@ pub fn loadScene(reg: *ecs.Registry) !void {
         createGameObjects(reg, entity, resource.scene);
 
         reg.remove(cmp.SceneResource, entity);
+    }
+}
+
+pub fn completeLoadScene(reg: *ecs.Registry) void {
+    var view = reg.view(.{ cmp.InitGameObject }, .{ cmp.GameObject });
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        reg.remove(cmp.InitGameObject, entity);
+        reg.add(entity, cmp.GameObject {});
     }
 }

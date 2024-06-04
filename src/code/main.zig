@@ -11,6 +11,7 @@ const icmp = @import("ecs/input/components.zig");
 const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
+const game_systems = @import("ecs/game/systems.zig");
 
 const scene_text = @embedFile("assets/scenes/test_scene.json");
 
@@ -69,12 +70,13 @@ pub fn main() !void {
         core_systems.destroyByTimer(&reg);
 
         try scene_systems.loadScene(&reg);
-        //init obj systems
-        
-        //init obj systems end
         try render_systems.loadResource(&reg, &res);
         try render_systems.attachTo(&reg, arena);
         try render_systems.updateGlobalTransform(&reg);
+        //init obj systems
+        game_systems.initButton(&reg);
+        //init obj systems end
+        scene_systems.completeLoadScene(&reg);
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg);
         render_systems.blink(&reg, dt);
