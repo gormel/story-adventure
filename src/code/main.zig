@@ -77,6 +77,9 @@ pub fn main() !void {
         game_systems.initButton(&reg);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
+
+        game_systems.button(&reg);
+
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg);
         render_systems.blink(&reg, dt);

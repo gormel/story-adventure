@@ -12,3 +12,13 @@ pub fn rotate(x: *f32, y: *f32, a: f32) void {
     x.* = _x * cos + _y * sin;
     y.* = -_x * sin + _y * cos;
 }
+
+pub fn containsTag(tags: [][]const u8, tag: []const u8) bool {
+    for (tags) |mb_tag| {
+        if (std.mem.eql(u8, mb_tag, tag)) {
+            return true;
+        }
+    }
+
+    return false;
+}
