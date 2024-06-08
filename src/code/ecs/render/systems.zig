@@ -300,6 +300,8 @@ pub fn destroyChildren(reg: *ecs.Registry) !void {
                 reg.remove(cmp.Parent, child_entity);
             }
         }
+        reg.remove(cmp.Children, entity);
+        children.children.deinit();
     }
 }
 

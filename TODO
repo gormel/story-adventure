@@ -1,3 +1,5 @@
+fea: player state (str -> float map)
+fea: change scene rules
 fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations
