@@ -16,8 +16,8 @@ pub const Properties = struct {
         };
     }
 
-    pub fn get(self: *Self, name: []const u8) f64 {
-        return self.map.get(name);
+    pub fn get(self: *Self, name: []const u8) !f64 {
+        return self.map.get(name) orelse 0;
     }
 
     pub fn set(self: *Self, name: []const u8, value: f64) !void {

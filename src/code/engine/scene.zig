@@ -11,3 +11,26 @@ pub const SceneObject = struct {
 };
 
 pub const Scene = []SceneObject;
+
+pub const RuleParamOperator = enum {
+    LE,
+    LT,
+    EQ,
+    GT,
+    GE,
+};
+
+pub const RuleParam = struct {
+    name: []const u8,
+    value: f64,
+    operator: RuleParamOperator,
+};
+
+pub const Rule = struct {
+    current_scene: ?[]const u8,
+    result_scene: []const u8,
+    weight: f64,
+    params: []RuleParam,
+};
+
+pub const Rules = []Rule;

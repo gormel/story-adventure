@@ -1,0 +1,17 @@
+[
+    {
+        "position": { "x": 100, "y": 150 },
+        "sprite": {
+            "atlas": "resources/atlases/star.json",
+            "sprite": "star"
+        },
+        "tags": [ "button", "button-start-game" ],
+        "children": []
+    },
+    {
+        "position": { "x": 20, "y": 15 },
+        "text": { "size": 15, "text": "main menu\u0000" },
+        "tags": [],
+        "children": []
+    }
+]

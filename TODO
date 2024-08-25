@@ -1,7 +1,3 @@
-fea: change scene rules
-    * типы для json
-    * надо где-то хранить начальную сцену
-    * система смены по изменениям параметров
 fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations

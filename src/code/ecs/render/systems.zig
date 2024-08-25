@@ -324,7 +324,7 @@ pub fn setSolidRectColor(reg: *ecs.Registry) void {
     }
 }
 
-pub fn setTextParams(reg: *ecs.Registry) void {
+pub fn setTextParams(reg: *ecs.Registry, allocator: std.mem.Allocator) void {
     var clear_color_view = reg.view(.{ cmp.TextColorUpdated }, .{});
     var clear_color_iter = clear_color_view.entityIterator();
     while (clear_color_iter.next()) |entity| {
@@ -351,12 +351,16 @@ pub fn setTextParams(reg: *ecs.Registry) void {
     var value_view = reg.view(.{ cmp.SetTextValue, cmp.Text }, .{ cmp.TextValueUpdated });
     var value_iter = value_view.entityIterator();
     while (value_iter.next()) |entity| {
-       var text = value_view.get(cmp.Text, entity);
-       const set = value_view.getConst(cmp.SetTextValue, entity);
+        var text = value_view.get(cmp.Text, entity);
+        const set = value_view.getConst(cmp.SetTextValue, entity);
 
-       text.text = set.text;
-       reg.remove(cmp.SetTextValue, entity);
-       reg.add(entity, cmp.TextValueUpdated {});
+        if (set.free) {
+            allocator.free(text.text);
+        }
+
+        text.text = set.text;
+        reg.remove(cmp.SetTextValue, entity);
+        reg.add(entity, cmp.TextValueUpdated {});
     }
 
 }

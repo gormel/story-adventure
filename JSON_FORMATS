@@ -29,9 +29,9 @@ scene:
 scene_rules:
 [
     {
-        "current_scene?": "abc",
+        "current_scene": "abc",
         "result_scene": "def",
-        "weight?": 0.5,
+        "weight": 0.5,
         "params": [
             {
                 "name": "param_1",

@@ -1,13 +1,31 @@
 [
     {
-        "current_scene": "abc",
-        "result_scene": "def",
-        "weight": 0.5,
+        "current_scene": "main_menu",
+        "result_scene": "level_01",
+        "weight": 1,
+        "params": []
+    },
+    {
+        "current_scene": "level_01",
+        "result_scene": "level_01",
+        "weight": 1,
         "params": [
             {
-                "name": "param_1",
-                "value": 1.66,
+                "name": "health",
+                "value": 0,
                 "operator": "GT"
+            }
+        ]
+    },
+    {
+        "current_scene": "level_01",
+        "result_scene": "main_menu",
+        "weight": 1,
+        "params": [
+            {
+                "name": "health",
+                "value": 0,
+                "operator": "LE"
             }
         ]
     }

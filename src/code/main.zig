@@ -14,8 +14,8 @@ const rs = @import("engine/resources.zig");
 const game_systems = @import("ecs/game/systems.zig");
 const Properties = @import("engine/parameters.zig").Properties;
 
-const scene_text = @embedFile("assets/scenes/test_scene.json");
 const props_text = @embedFile("assets/cfg/player_properties.json");
+const rules_text = @embedFile("assets/cfg/scene_rules.json");
 
 pub fn main() !void {
     // Initialization
@@ -44,24 +44,19 @@ pub fn main() !void {
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
     var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
 
-    //debug init
-    const parsed_scene = try std.json.parseFromSlice(
-        []sc.SceneObject,
-        arena,
-        scene_text,
-        .{ .ignore_unknown_fields = true }
-    );
-    const scene = parsed_scene.value;
+    var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
+    var rnd = pcg.random();
 
-    var scene_entity = reg.create();
-    reg.add(scene_entity, scmp.SceneResource { .scene = scene });
-    reg.add(scene_entity, rcmp.Position { .x = 0, .y = 0 });
-    reg.add(scene_entity, rcmp.AttachTo { .target = null });
+    var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ .ignore_unknown_fields = true });
+    var rules = rules_json.value;
+
+    //debug init
 
     //debug init end
     
     //game init systems
     try game_systems.initProperties(&reg, props_json.object, &props);
+    try game_systems.initScene(&reg, arena);
     //game init systems end
 
     var timer = try std.time.Timer.start();
@@ -86,14 +81,21 @@ pub fn main() !void {
         try render_systems.updateGlobalTransform(&reg);
         //init obj systems
         game_systems.initButton(&reg);
+
+        game_systems.initMainMenu(&reg);
+        try game_systems.initLevel(&reg, &props, arena);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
         game_systems.button(&reg);
         game_systems.properties(&reg);
+        try game_systems.changeScene(&reg, &props, &rules, &rnd, arena);
+
+        try game_systems.mainMenu(&reg, &props);
+        try game_systems.level(&reg, &props, arena);
 
         render_systems.setSolidRectColor(&reg);
-        render_systems.setTextParams(&reg);
+        render_systems.setTextParams(&reg, arena);
         render_systems.blink(&reg, dt);
 
         rl.BeginDrawing();
