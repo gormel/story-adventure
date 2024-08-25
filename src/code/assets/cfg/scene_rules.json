@@ -1,0 +1,14 @@
+[
+    {
+        "current_scene": "abc",
+        "result_scene": "def",
+        "weight": 0.5,
+        "params": [
+            {
+                "name": "param_1",
+                "value": 1.66,
+                "operator": "GT"
+            }
+        ]
+    }
+]

@@ -6,6 +6,26 @@ const utils = @import("../../engine/utils.zig");
 const scmp = @import("../scene/components.zig");
 const icmp = @import("../input/components.zig");
 const rcmp = @import("../render/components.zig");
+const ccmp = @import("../core/components.zig");
+const Scene = @import("../../engine/scene.zig").Scene;
+const Properties = @import("../../engine/parameters.zig").Properties;
+
+const SceneDesc = struct { name: []const u8, text: []const u8 };
+
+var scenes = &.{
+    .{
+        .name = "main_menu",
+        .text = @embedFile("../../assets/scenes/test_scene.json"),
+    },
+    .{
+        .name = "level_01",
+        .text = @embedFile("../../assets/scenes/test_scene.json"),
+    },
+    .{
+        .name = "game_over",
+        .text = @embedFile("../../assets/scenes/test_scene.json"),
+    },
+};
 
 pub fn initButton(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject, rcmp.Sprite }, .{});
@@ -32,5 +52,31 @@ pub fn button(reg: *ecs.Registry) void {
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         reg.add(entity, cmp.ButtonClicked {});
+    }
+}
+
+pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *Properties) !void {
+    _ = reg;
+    for (json.keys()) |key| {
+        if (json.get(key)) |value| {
+            try props.set(key, value.float);
+        }
+    }
+}
+
+pub fn properties(reg: *ecs.Registry) void {
+    var cleanup_view = reg.view(.{ cmp.PlayerPropertyChanged }, .{});
+    var cleanup_iter = cleanup_view.entityIterator();
+    while (cleanup_iter.next()) |entity| {
+        reg.remove(cmp.PlayerPropertyChanged, entity);
+        reg.add(entity, ccmp.Destroyed {});
+    }
+
+    var set_view = reg.view(.{ cmp.TriggerPlayerPropertyChanged }, .{});
+    var set_iter = set_view.entityIterator();
+    while (set_iter.next()) |entity| {
+        var trigger = reg.get(cmp.TriggerPlayerPropertyChanged, entity);
+        reg.add(entity, cmp.PlayerPropertyChanged { .name = trigger.name });
+        reg.remove(cmp.TriggerPlayerPropertyChanged, entity);
     }
 }

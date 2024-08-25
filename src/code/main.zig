@@ -12,8 +12,10 @@ const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 const game_systems = @import("ecs/game/systems.zig");
+const Properties = @import("engine/parameters.zig").Properties;
 
 const scene_text = @embedFile("assets/scenes/test_scene.json");
+const props_text = @embedFile("assets/cfg/player_properties.json");
 
 pub fn main() !void {
     // Initialization
@@ -37,6 +39,11 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
+    var props = Properties.init(arena, &reg);
+
+    var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
+    var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
+
     //debug init
     const parsed_scene = try std.json.parseFromSlice(
         []sc.SceneObject,
@@ -52,6 +59,10 @@ pub fn main() !void {
     reg.add(scene_entity, rcmp.AttachTo { .target = null });
 
     //debug init end
+    
+    //game init systems
+    try game_systems.initProperties(&reg, props_json.object, &props);
+    //game init systems end
 
     var timer = try std.time.Timer.start();
     // Main game loop
@@ -79,6 +90,7 @@ pub fn main() !void {
         scene_systems.completeLoadScene(&reg);
 
         game_systems.button(&reg);
+        game_systems.properties(&reg);
 
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg);
