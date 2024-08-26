@@ -27,6 +27,7 @@ fn createGameObjects(reg: *ecs.Registry, parent_ety: ecs.Entity, obj_description
                 .text = obj_text.text,
                 .size = obj_text.size,
                 .color = gui_setup.ColorLabelText,
+                .free = false,
             });
         }
 

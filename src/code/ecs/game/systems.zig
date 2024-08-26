@@ -224,6 +224,7 @@ pub fn initLevel(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allo
             var hp = try props.get("health");
             reg.add(entity, rcmp.SetTextValue {
                 .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp }),
+                .free = true,
             });
         }
     }
@@ -246,10 +247,18 @@ pub fn level(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocato
             var hp = try props.get("health");
             var view_iter = view_view.entityIterator();
             while (view_iter.next()) |view_entity| {
-                reg.add(view_entity, rcmp.SetTextValue {
-                    .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp }),
-                    .free = true,
-                });
+                if (reg.tryGet(rcmp.SetTextValue, view_entity)) |set| {
+                    if (set.free) {
+                        allocator.free(set.text);
+                    }
+                    set.text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp });
+                    set.free = true;
+                } else {
+                    reg.add(view_entity, rcmp.SetTextValue {
+                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp }),
+                        .free = true,
+                    });
+                }
             }
         }
     }

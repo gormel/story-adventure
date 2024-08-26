@@ -12,7 +12,7 @@ pub const SolidRectOffset = struct { x: f32, y: f32 };
 pub const SetSolidRectColor = struct { color: rl.Color };
 pub const SolidColorRectUpdated = struct {};
 
-pub const Text = struct { text: []const u8, color: rl.Color, size: f32 };
+pub const Text = struct { text: []const u8, color: rl.Color, size: f32, free: bool = false };
 pub const TextOffset = struct { x: f32, y: f32 };
 pub const SetTextColor = struct { color: rl.Color };
 pub const TextColorUpdated = struct {};

@@ -354,11 +354,12 @@ pub fn setTextParams(reg: *ecs.Registry, allocator: std.mem.Allocator) void {
         var text = value_view.get(cmp.Text, entity);
         const set = value_view.getConst(cmp.SetTextValue, entity);
 
-        if (set.free) {
+        if (text.free) {
             allocator.free(text.text);
         }
 
         text.text = set.text;
+        text.free = set.free;
         reg.remove(cmp.SetTextValue, entity);
         reg.add(entity, cmp.TextValueUpdated {});
     }
