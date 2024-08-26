@@ -82,8 +82,7 @@ pub fn main() !void {
         //init obj systems
         game_systems.initButton(&reg);
 
-        game_systems.initMainMenu(&reg);
-        try game_systems.initLevel(&reg, &props, arena);
+        try game_systems.initGameplayCustoms(&reg, &props, arena);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
@@ -91,8 +90,7 @@ pub fn main() !void {
         game_systems.properties(&reg);
         try game_systems.changeScene(&reg, &props, &rules, &rnd, arena);
 
-        try game_systems.mainMenu(&reg, &props);
-        try game_systems.level(&reg, &props, arena);
+        try game_systems.updateGameplayCustoms(&reg, &props, arena);
 
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg, arena);

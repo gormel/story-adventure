@@ -10,6 +10,9 @@ const ccmp = @import("../core/components.zig");
 const sc = @import("../../engine/scene.zig");
 const Properties = @import("../../engine/parameters.zig").Properties;
 
+const main_menu = @import("mainMenu/systems.zig");
+const level = @import("level/systems.zig");
+
 const SceneDesc = struct { name: []const u8, text: []const u8 };
 
 var scenes = &.{
@@ -177,89 +180,14 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
     }
 }
 
-fn selectNextScene(reg: *ecs.Registry) void {
-    var scene_view = reg.view(.{ scmp.Scene, cmp.GameplayScene }, .{ cmp.NextGameplayScene });
-    var scene_iter = scene_view.entityIterator();
-    while (scene_iter.next()) |entity| {
-        reg.add(entity, cmp.NextGameplayScene {});
-    }
+pub fn initGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+    main_menu.initStartButton(reg);
+    level.initNextButton(reg);
+    try level.initHpView(reg, props, allocator);
 }
 
-pub fn initMainMenu(reg: *ecs.Registry) void {
-    var view = reg.view(.{ scmp.InitGameObject }, .{});
-    var iter = view.entityIterator();
-    while (iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "button-start-game")) {
-            reg.add(entity, cmp.StartGameButton {});
-        }
-    }
-}
-
-pub fn mainMenu(reg: *ecs.Registry, props: *Properties) !void {
-    var view = reg.view(.{ cmp.StartGameButton, cmp.ButtonClicked }, .{});
-    var iter = view.entityIterator();
-    while (iter.next()) |_| {
-        try props.set("health", 100);
-
-        selectNextScene(reg);
-    }
-}
-
-pub fn initLevel(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
-    var iter = reg.entityIterator(scmp.InitGameObject);
-    while (iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "button-next-level")) {
-            reg.add(entity, cmp.NextLevelButton {});
-        }
-    }
-
-    var ph_iter = reg.entityIterator(scmp.InitGameObject);
-    while (ph_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "view-hp")) {
-            reg.add(entity, cmp.ViewCurrentHp {});
-            
-            var hp = try props.get("health");
-            reg.add(entity, rcmp.SetTextValue {
-                .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp }),
-                .free = true,
-            });
-        }
-    }
-}
-
-pub fn level(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
-    var view = reg.view(.{ cmp.NextLevelButton, cmp.ButtonClicked }, .{});
-    var iter = view.entityIterator();
-    while (iter.next()) |_| {
-        try props.set("health", (try props.get("health")) - 10);
-
-        selectNextScene(reg);
-    }
-
-    var hp_prop_iter = reg.entityIterator(cmp.PlayerPropertyChanged);
-    while (hp_prop_iter.next()) |entity| {
-        const changed = reg.get(cmp.PlayerPropertyChanged, entity);
-        if (std.mem.eql(u8, changed.name, "health")) {
-            var view_view = reg.view(.{ rcmp.Text, cmp.ViewCurrentHp }, .{ rcmp.SetTextValue });
-            var hp = try props.get("health");
-            var view_iter = view_view.entityIterator();
-            while (view_iter.next()) |view_entity| {
-                if (reg.tryGet(rcmp.SetTextValue, view_entity)) |set| {
-                    if (set.free) {
-                        allocator.free(set.text);
-                    }
-                    set.text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp });
-                    set.free = true;
-                } else {
-                    reg.add(view_entity, rcmp.SetTextValue {
-                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ hp }),
-                        .free = true,
-                    });
-                }
-            }
-        }
-    }
+pub fn updateGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+    try main_menu.startGame(reg, props);
+    try level.nextLevel(reg, props);
+    try level.updateHealth(reg, props, allocator);
 }
