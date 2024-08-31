@@ -22,6 +22,13 @@ fn createGameObjects(reg: *ecs.Registry, parent_ety: ecs.Entity, obj_description
             });
         }
 
+        if (obj_description.flipbook) |obj_flipbook| {
+            reg.add(obj_ety, rcmp.FlipbookResource {
+                .atlas =  obj_flipbook.atlas,
+                .flipbook = obj_flipbook.animation,
+            });
+        }
+
         if (obj_description.text) |obj_text| {
             reg.add(obj_ety, rcmp.Text {
                 .text = obj_text.text,

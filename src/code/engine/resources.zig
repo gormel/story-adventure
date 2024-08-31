@@ -46,7 +46,7 @@ pub const Resources = struct {
         unreachable;
     }
 
-    pub fn loadSprite(self: *Resources, atlas_path: []const u8, sprite_name: []const u8) !sp.Sprite {
+    fn getAtlas(self: *Resources, atlas_path: []const u8) !Atlas {
         var atlas = self.atlases.get(atlas_path);
         if (atlas == null) {
             const exe_dir = try std.fs.selfExeDirPathAlloc(self.allocator);
@@ -70,17 +70,44 @@ pub const Resources = struct {
             try self.atlases.put(atlas_path, atlas.?);
         }
 
-        const ok_atlas = atlas.?;
-        for (ok_atlas.cfg.value.sprites) | sprite_cfg | {
+        return atlas.?;
+    }
+
+    pub fn loadSprite(self: *Resources, atlas_path: []const u8, sprite_name: []const u8) !sp.Sprite {
+        const atlas = try self.getAtlas(atlas_path);
+
+        for (atlas.cfg.value.sprites) | sprite_cfg | {
             if (std.mem.eql(u8, sprite_cfg.name, sprite_name)) {
                 return sp.Sprite {
-                    .tex = ok_atlas.tex,
+                    .tex = atlas.tex,
                     .rect = rl.Rectangle {
                         .x = sprite_cfg.x,
                         .y = sprite_cfg.y,
                         .width = sprite_cfg.w,
                         .height = sprite_cfg.h,
                     }
+                };
+            }
+        }
+        unreachable;
+    }
+
+    pub fn loadFlipbook(self: *Resources, atlas_path: []const u8, flipbook_name: []const u8) !sp.Flipbook {
+        const atlas = try self.getAtlas(atlas_path);
+
+        for (atlas.cfg.value.animations) |flipbook_cfg| {
+            if (std.mem.eql(u8, flipbook_cfg.name, flipbook_name)) {
+                var frames = try self.allocator.alloc(rl.Rectangle, flipbook_cfg.frames.len);
+                for (flipbook_cfg.frames, 0..) |frame_name, idx| {
+                    const sprite = try self.loadSprite(atlas_path, frame_name);
+                    frames[idx] = sprite.rect;
+                }
+
+                return sp.Flipbook {
+                    .duration = flipbook_cfg.duration,
+                    .tex = atlas.tex,
+                    .frames = frames,
+                    .allocator = self.allocator,
                 };
             }
         }

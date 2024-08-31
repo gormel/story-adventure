@@ -1,4 +1,2 @@
-fea: flipbook animations
 ref: resources to @embedFile()
 fea: tween animations
-ref: LayoutChanged -> Scroll

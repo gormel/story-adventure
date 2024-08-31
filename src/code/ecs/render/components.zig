@@ -5,7 +5,9 @@ const sp = @import("../../engine/sprite.zig");
 
 pub const SpriteResource = struct { atlas: []const u8, sprite: []const u8 };
 pub const Sprite = struct { sprite: sp.Sprite };
-pub const SpriteOffset = struct { x: f32, y: f32 };
+
+pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
+pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
 pub const SolidRect = struct { rect: rl.Rectangle, color: rl.Color };
 pub const SolidRectOffset = struct { x: f32, y: f32 };

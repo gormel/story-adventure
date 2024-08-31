@@ -95,6 +95,7 @@ pub fn main() !void {
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg, arena);
         render_systems.blink(&reg, dt);
+        render_systems.updateFlipbook(&reg, dt);
 
         rl.BeginDrawing();
         rl.ClearBackground(rl.WHITE);
@@ -104,6 +105,7 @@ pub fn main() !void {
         rl.EndDrawing();
 
         //destroy triggers
+        render_systems.freeFlipbook(&reg);
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);
     }

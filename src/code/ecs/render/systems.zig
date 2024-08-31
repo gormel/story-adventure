@@ -11,14 +11,26 @@ const utils = @import("../../engine/utils.zig");
 const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
 pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
-    var view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
-    var iter = view.entityIterator();
-    while (iter.next()) |entity| {
-        const res_c = view.getConst(cmp.SpriteResource, entity);
+    var sprite_view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
+    var sprite_iter = sprite_view.entityIterator();
+    while (sprite_iter.next()) |entity| {
+        const res_c = sprite_view.getConst(cmp.SpriteResource, entity);
         reg.add(entity, cmp.Sprite {
             .sprite = try res.loadSprite(res_c.atlas, res_c.sprite)
         });
         reg.remove(cmp.SpriteResource, entity);
+    }
+    
+    var flipbook_view = reg.view(.{ cmp.FlipbookResource }, .{ cmp.Flipbook });
+    var flipbook_iter = flipbook_view.entityIterator();
+    while (flipbook_iter.next()) |entity| {
+        const res_c = flipbook_view.getConst(cmp.FlipbookResource, entity);
+        const flipbook = try res.loadFlipbook(res_c.atlas, res_c.flipbook);
+        reg.add(entity, cmp.Flipbook {
+            .time = flipbook.duration,
+            .flipbook = flipbook,
+        });
+        reg.remove(cmp.FlipbookResource, entity);
     }
 }
 
@@ -283,6 +295,28 @@ pub fn blink(reg: *ecs.Registry, dt: f32) void {
     }
 }
 
+pub fn updateFlipbook(reg: *ecs.Registry, dt: f64) void {
+    var iter = reg.entityIterator(cmp.Flipbook);
+    while (iter.next()) |entity| {
+        const flipbook = reg.get(cmp.Flipbook, entity);
+        flipbook.time -= dt;
+        if (flipbook.time <= 0) {
+            flipbook.time = flipbook.flipbook.duration;
+        }
+    }
+}
+
+pub fn freeFlipbook(reg: *ecs.Registry) void {
+    var view = reg.view(.{ Destroyed, cmp.Flipbook }, .{});
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        var flipbook = reg.get(cmp.Flipbook, entity);
+        flipbook.flipbook.deinit();
+
+        reg.remove(cmp.Flipbook, entity);
+    }
+}
+
 pub fn destroyChildren(reg: *ecs.Registry) !void {
     var parent_view = reg.view(.{ Destroyed, cmp.Parent }, .{ });
     var parent_iter = parent_view.entityIterator();
@@ -373,10 +407,6 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
     var origin = rl.Vector2 { .x = 0, .y = 0 };
-    if (reg.tryGetConst(cmp.SpriteOffset, entity)) |offset| {
-        origin.x = offset.x;
-        origin.y = offset.y;
-    }
 
     const target_rect = rl.Rectangle {
         .x = pos.x, .y = pos.y,
@@ -384,6 +414,26 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .height = sprite.sprite.rect.height * scale.y
     };
     rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
+}
+
+fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
+    const flipbook = reg.getConst(cmp.Flipbook, entity);
+    const pos = reg.getConst(cmp.GlobalPosition, entity);
+    const rot = reg.getConst(cmp.GlobalRotation, entity);
+    const scale = reg.getConst(cmp.GlobalScale, entity);
+
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    const flen = @as(f64, @floatFromInt(flipbook.flipbook.frames.len));
+    var idx = @as(usize, @intFromFloat(std.math.floor(flipbook.time / flipbook.flipbook.duration * flen)));
+    idx = @min(flipbook.flipbook.frames.len - 1, idx);
+    var frame = flipbook.flipbook.frames[idx];
+
+    const target_rect = rl.Rectangle {
+        .x = pos.x, .y = pos.y,
+        .width = frame.width * scale.x,
+        .height = frame.height * scale.y
+    };
+    rl.DrawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, rl.WHITE);
 }
 
 fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -428,6 +478,7 @@ fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
 const render_fns = .{
     .{ .cmp = cmp.Sprite, .func = renderSprite },
+    .{ .cmp = cmp.Flipbook, .func = renderFlipbook },
     .{ .cmp = cmp.SolidRect, .func = renderSolidRect },
     .{ .cmp = cmp.Text, .func = renderText },
 };

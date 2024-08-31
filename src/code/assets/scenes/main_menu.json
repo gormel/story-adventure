@@ -13,5 +13,14 @@
         "text": { "size": 15, "text": "main menu\u0000" },
         "tags": [],
         "children": []
+    },
+    {
+        "position": { "x": 200, "y": 150 },
+        "flipbook": {
+            "atlas": "resources/atlases/star.json",
+            "animation": "star"
+        },
+        "tags": [],
+        "children": []
     }
 ]
