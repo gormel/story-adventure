@@ -58,7 +58,7 @@ pub const Resources = struct {
             defer file.close();
             const text = try file.readToEndAlloc(self.allocator, 1024 * 5);
             defer self.allocator.free(text);
-            const json = try std.json.parseFromSlice(sp.AtlasCfg, self.allocator, text, .{});
+            const json = try std.json.parseFromSlice(sp.AtlasCfg, self.allocator, text, .{ .ignore_unknown_fields = true });
 
             const absolute_tex_path = try self.allocator.dupeZ(u8, try std.fs.path.join(self.allocator, &.{ exe_dir, json.value.tex }));
             defer self.allocator.free(absolute_tex_path);

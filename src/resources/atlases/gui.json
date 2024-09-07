@@ -1,0 +1,56 @@
+{
+    "tex": "resources/textures/gui.png",
+    "sprites": [
+        {
+            "name": "button",
+            "x": 0,
+            "y": 0,
+            "w": 160,
+            "h": 32
+        },
+        {
+            "name": "popup_bg",
+            "x": 160,
+            "y": 0,
+            "w": 683,
+            "h": 433
+        },
+        {
+            "name": "heart",
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword",
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "shield",
+            "x": 64,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "coin",
+            "x": 96,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "power",
+            "x": 128,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        }
+    ],
+    "animations": [
+    ]
+}

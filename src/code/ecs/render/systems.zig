@@ -165,7 +165,11 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         const attach = detach_view.getConst(cmp.AttachTo, entity);
         const parent = detach_view.getConst(cmp.Parent, entity);
         if (attach.target != parent.entity) {
-            try detachParent(reg, entity);
+            if (attach.target != null and reg.valid(attach.target.?)) {
+                try detachParent(reg, entity);
+            } else {
+                reg.remove(cmp.AttachTo, entity);
+            }
         } else {
             reg.remove(cmp.AttachTo, entity);
         }
@@ -334,8 +338,8 @@ pub fn destroyChildren(reg: *ecs.Registry) !void {
                 reg.remove(cmp.Parent, child_entity);
             }
         }
-        reg.remove(cmp.Children, entity);
         children.children.deinit();
+        reg.remove(cmp.Children, entity);
     }
 }
 

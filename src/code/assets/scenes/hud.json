@@ -1,0 +1,112 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "init-hud" ],
+        "children": []
+    },
+    {
+        "position": { "x": 30, "y": 30 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "heart"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 12, "text": "0/0\u0000" },
+                "tags": [ "health-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 30, "y": 80 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "power"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 12, "text": "0/0\u0000" },
+                "tags": [ "stamina-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 930, "y": 30 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "coin"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 12, "text": "0\u0000" },
+                "tags": [ "gold-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 832, "y": 30 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "shield"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 12, "text": "0\u0000" },
+                "tags": [ "armor-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 734, "y": 30 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "sword"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 12, "text": "0\u0000" },
+                "tags": [ "attack-view" ],
+                "children": []
+            }
+        ]
+    }
+]

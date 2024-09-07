@@ -1,6 +1,7 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
+const game = @import("utils.zig");
 const cmp = @import("components.zig");
 const utils = @import("../../engine/utils.zig");
 const scmp = @import("../scene/components.zig");
@@ -11,24 +12,10 @@ const sc = @import("../../engine/scene.zig");
 const Properties = @import("../../engine/parameters.zig").Properties;
 
 const main_menu = @import("mainMenu/systems.zig");
-const level = @import("level/systems.zig");
+const gameplay_start = @import("gameplayStart/systems.zig");
+const hud = @import("hud/systems.zig");
 
 const SceneDesc = struct { name: []const u8, text: []const u8 };
-
-var scenes = &.{
-    .{
-        .name = "main_menu",
-        .text = @embedFile("../../assets/scenes/main_menu.json"),
-    },
-    .{
-        .name = "level_01",
-        .text = @embedFile("../../assets/scenes/level_01.json"),
-    },
-    .{
-        .name = "game_over",
-        .text = @embedFile("../../assets/scenes/main_menu.json"),
-    },
-};
 
 const initial_scene = "main_menu";
 
@@ -65,7 +52,7 @@ pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *Prop
     _ = reg;
     for (json.keys()) |key| {
         if (json.get(key)) |value| {
-            try props.set(key, value.float);
+            try props.create(key, value.float);
         }
     }
 }
@@ -121,22 +108,11 @@ fn checkCondition(params: []sc.RuleParam, props: *Properties) bool {
     return true;
 }
 
-fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const u8) !void {
-    inline for (scenes) |scene_desc| {
-        if (std.mem.eql(u8, name, scene_desc.name)) {
-            const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
-            
-            var new_scene_entity = reg.create();
-            reg.add(new_scene_entity, scmp.SceneResource { .scene = parsed_scene.value });
-            reg.add(new_scene_entity, rcmp.Position { .x = 0, .y = 0 });
-            reg.add(new_scene_entity, rcmp.AttachTo { .target = null });
-            reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
-        }
-    }
-}
-
 pub fn initScene(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
-    try loadScene(reg, allocator, initial_scene);
+    var state_entity = reg.create();
+    reg.add(state_entity, cmp.GameState {});
+
+    _ = try game.loadScene(reg, allocator, initial_scene);
 }
 
 pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd: *std.rand.Random, allocator: std.mem.Allocator) !void {
@@ -169,7 +145,7 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
                 if (roll >= prev_weight and roll < prev_weight + rule.weight) {
                     reg.add(entity, ccmp.Destroyed {});
 
-                    try loadScene(reg, allocator, rule.result_scene);
+                    _ = try game.loadScene(reg, allocator, rule.result_scene);
                     break;
                 }
                 prev_weight += rule.weight;
@@ -181,13 +157,15 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
 }
 
 pub fn initGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+    main_menu.initScene(reg);
     main_menu.initStartButton(reg);
-    level.initNextButton(reg);
-    try level.initHpView(reg, props, allocator);
+    try gameplay_start.initSwitch(reg, allocator);
+    hud.initViews(reg);
+    _ = props;
 }
 
 pub fn updateGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
-    try main_menu.startGame(reg, props);
-    try level.nextLevel(reg, props);
-    try level.updateHealth(reg, props, allocator);
+    try main_menu.startGame(reg, props, allocator);
+    gameplay_start.doSwitch(reg);
+    hud.syncViews(reg, props, allocator);
 }

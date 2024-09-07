@@ -1,0 +1,7 @@
+[
+    {
+        "position": { "x": 30, "y": 30 },
+        "tags": [ "init-gameplay-start" ],
+        "children": []
+    }
+]

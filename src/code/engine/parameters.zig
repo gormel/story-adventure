@@ -7,12 +7,14 @@ pub const Properties = struct {
     reg: *ecs.Registry,
     allocator: std.mem.Allocator,
     map: std.StringArrayHashMap(f64),
+    initial: std.StringArrayHashMap(f64),
 
     pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry) Self {
         return .{
             .reg = reg,
             .allocator = allocator,
             .map = std.StringArrayHashMap(f64).init(allocator),
+            .initial = std.StringArrayHashMap(f64).init(allocator),
         };
     }
 
@@ -20,9 +22,25 @@ pub const Properties = struct {
         return self.map.get(name) orelse 0;
     }
 
+    pub fn getInitial(self: *Self, name: []const u8) !f64 {
+        return self.initial.get(name) orelse 0;
+    }
+
+    pub fn create(self: *Self, name: []const u8, value: f64) !void {
+        try self.set(name, value);
+        try self.initial.put(name, value);
+    }
+
     pub fn set(self: *Self, name: []const u8, value: f64) !void {
         try self.map.put(name, value);
         var entity = self.reg.create();
         self.reg.add(entity, cmp.TriggerPlayerPropertyChanged { .name = name });
+    }
+
+    pub fn reset(self: *Self) !void {
+        var it = self.initial.iterator();
+        while (it.next()) |kv| {
+            try self.set(kv.key_ptr.*, kv.value_ptr.*);
+        }
     }
 };

@@ -1,26 +1,45 @@
 [
     {
-        "position": { "x": 100, "y": 150 },
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "init-main-menu" ],
+        "children": []
+    },
+    {
+        "position": { "x": 487, "y": 99 },
+        "text": { "size": 12, "text": "STAKAN\u0000" },
+        "tags": [],
+        "children": []
+    },
+    {
+        "position": { "x": 432, "y": 190 },
         "sprite": {
-            "atlas": "resources/atlases/star.json",
-            "sprite": "star"
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button"
         },
         "tags": [ "button", "button-start-game" ],
-        "children": []
+        "children": [
+            {
+                "position": { "x": 58, "y": 9 },
+                "text": { "size": 12, "text": "START\u0000" },
+                "tags": [],
+                "children": []
+            }
+        ]
     },
     {
-        "position": { "x": 20, "y": 15 },
-        "text": { "size": 15, "text": "main menu\u0000" },
-        "tags": [],
-        "children": []
-    },
-    {
-        "position": { "x": 200, "y": 150 },
-        "flipbook": {
-            "atlas": "resources/atlases/star.json",
-            "animation": "star"
+        "position": { "x": 432, "y": 243 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button"
         },
         "tags": [],
-        "children": []
+        "children": [
+            {
+                "position": { "x": 58, "y": 9 },
+                "text": { "size": 12, "text": "ITEMS\u0000" },
+                "tags": [],
+                "children": []
+            }
+        ]
     }
 ]
