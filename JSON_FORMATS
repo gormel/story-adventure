@@ -41,3 +41,48 @@ scene_rules:
         ]
     }
 ]
+
+items:
+{
+    "potion-hp-small": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-red",
+        "parameters": {
+            "health": 100,
+            "stamina": -20
+        },
+        "one-time": true
+    }
+}
+
+item_drop:
+[
+    {
+        "item": "item-name",
+        "weight": 1,
+        "groups": [
+            "potion",
+            "weapon",
+            "gold"
+        ]
+    }
+]
+
+loot_scene:
+{
+    "loot_count_min": 1,
+    "loot_count_max": 3,
+    "tiles": [
+        {
+            "weight": 1,
+            "atlas": "resources/tiles.json",
+            "sprite": "cross",
+            "connections": [
+                "UP",
+                "LEFT",
+                "DOWN",
+                "RIGHT"
+            ]
+        }
+    ]
+}

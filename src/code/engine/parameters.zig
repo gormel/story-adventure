@@ -37,6 +37,11 @@ pub const Properties = struct {
         self.reg.add(entity, cmp.TriggerPlayerPropertyChanged { .name = name });
     }
 
+    pub fn add(self: *Self, name: []const u8, value: f64) !void {
+        var current_value = try self.get(name);
+        try self.set(name, current_value + value);
+    }
+
     pub fn reset(self: *Self) !void {
         var it = self.initial.iterator();
         while (it.next()) |kv| {

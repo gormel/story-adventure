@@ -10,32 +10,42 @@ const rcmp = @import("../render/components.zig");
 const ccmp = @import("../core/components.zig");
 const sc = @import("../../engine/scene.zig");
 const Properties = @import("../../engine/parameters.zig").Properties;
+const rollrate = @import("../../engine/rollrate.zig");
 
 const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
 const hud = @import("hud/systems.zig");
+const loot = @import("loot/systems.zig");
 
 const SceneDesc = struct { name: []const u8, text: []const u8 };
 
 const initial_scene = "main_menu";
 
 pub fn initButton(reg: *ecs.Registry) void {
-    var view = reg.view(.{ scmp.InitGameObject, rcmp.Sprite }, .{});
+    var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "button")) {
-            reg.add(entity, cmp.Button {});
-            const sprite = view.getConst(rcmp.Sprite, entity);
-            
-            reg.add(entity, icmp.MousePositionTracker { });
-            reg.add(entity, icmp.MouseOverTracker { .rect = sprite.sprite.rect });
-            reg.add(entity, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+            reg.add(entity, cmp.CreateButton {});
         }
     }
 }
 
 pub fn button(reg: *ecs.Registry) void {
+    var create_view = reg.view(.{ cmp.CreateButton, rcmp.Sprite }, .{});
+    var create_iter = create_view.entityIterator();
+    while (create_iter.next()) |entity| {
+        reg.add(entity, cmp.Button {});
+        const sprite = create_view.getConst(rcmp.Sprite, entity);
+        
+        reg.add(entity, icmp.MousePositionTracker { });
+        reg.add(entity, icmp.MouseOverTracker { .rect = sprite.sprite.rect });
+        reg.add(entity, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+
+        reg.remove(cmp.CreateButton, entity);
+    }
+
     var clicked_iter = reg.entityIterator(cmp.ButtonClicked);
     while (clicked_iter.next()) |entity| {
         reg.remove(cmp.ButtonClicked, entity);
@@ -122,7 +132,6 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
         var scene = reg.get(cmp.GameplayScene, entity);
         var scene_name = scene.name;
 
-        var max_roll: f64 = 0;
         var rule_count: usize = 0;
         var rules_to_roll = try allocator.alloc(sc.Rule, rules.*.len);
         defer allocator.free(rules_to_roll);
@@ -133,22 +142,15 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
             ) {
                 rules_to_roll[rule_count] = rule;
                 rule_count += 1;
-                max_roll += rule.weight;
             }
         }
 
-        if (max_roll > 0) {
-            var roll = rnd.float(f64) * max_roll;
-            var prev_weight: f64 = 0;
-            for (0..rule_count) |i| {
-                var rule = rules_to_roll[i];
-                if (roll >= prev_weight and roll < prev_weight + rule.weight) {
-                    reg.add(entity, ccmp.Destroyed {});
+        if (rule_count > 0) {
+            var roll = rollrate.select(sc.Rule, "weight", rules_to_roll[0..rule_count], rnd);
+            if (roll) |ok_roll| {
+                reg.add(entity, ccmp.Destroyed {});
 
-                    _ = try game.loadScene(reg, allocator, rule.result_scene);
-                    break;
-                }
-                prev_weight += rule.weight;
+                _ = try game.loadScene(reg, allocator, ok_roll.result_scene);
             }
         }
         
@@ -156,11 +158,17 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
     }
 }
 
-pub fn initGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+pub fn initGameplayCustoms(
+    reg: *ecs.Registry,
+    props: *Properties,
+    allocator: std.mem.Allocator,
+    rnd: *std.rand.Random
+) !void {
     main_menu.initScene(reg);
     main_menu.initStartButton(reg);
     try gameplay_start.initSwitch(reg, allocator);
     hud.initViews(reg);
+    try loot.initLoot(reg, allocator, rnd);
     _ = props;
 }
 
@@ -168,4 +176,9 @@ pub fn updateGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: 
     try main_menu.startGame(reg, props, allocator);
     gameplay_start.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
+    try loot.openTile(reg, props);
+}
+
+pub fn freeGameplayCustoms(reg: *ecs.Registry) void {
+    loot.freeLootStart(reg);
 }

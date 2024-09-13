@@ -1,5 +1,6 @@
 const ecs = @import("zig-ecs");
 
+pub const CreateButton = struct {};
 pub const Button = struct {};
 pub const ButtonClicked = struct {};
 

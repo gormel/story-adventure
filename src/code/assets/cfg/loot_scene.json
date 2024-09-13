@@ -1,0 +1,143 @@
+{
+    "loot_count_min": 1,
+    "loot_count_max": 3,
+    "tiles": [
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lurd",
+            "connections": [
+                "UP",
+                "LEFT",
+                "DOWN",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lu",
+            "connections": [
+                "UP",
+                "LEFT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lr",
+            "connections": [
+                "LEFT",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_ld",
+            "connections": [
+                "LEFT",
+                "DOWN"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_ur",
+            "connections": [
+                "UP",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_ud",
+            "connections": [
+                "UP",
+                "DOWN"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_rd",
+            "connections": [
+                "DOWN",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_urd",
+            "connections": [
+                "UP",
+                "DOWN",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lrd",
+            "connections": [
+                "LEFT",
+                "DOWN",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lud",
+            "connections": [
+                "UP",
+                "LEFT",
+                "DOWN"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_lur",
+            "connections": [
+                "UP",
+                "LEFT",
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_l",
+            "connections": [
+                "LEFT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_u",
+            "connections": [
+                "UP"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_r",
+            "connections": [
+                "RIGHT"
+            ]
+        },
+        {
+            "weight": 1,
+            "atlas": "resources/atlases/gameplay.json",
+            "sprite": "tile_d",
+            "connections": [
+                "DOWN"
+            ]
+        }
+    ]
+}

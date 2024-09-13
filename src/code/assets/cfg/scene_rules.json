@@ -1,7 +1,13 @@
 [
     {
         "current_scene": "gameplay_start",
-        "result_scene": "empty",
+        "result_scene": "loot",
+        "weight": 1,
+        "params": []
+    },
+    {
+        "current_scene": "loot",
+        "result_scene": "loot",
         "weight": 1,
         "params": []
     }

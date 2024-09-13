@@ -23,6 +23,10 @@ var scenes = &.{
         .name = "empty",
         .text = @embedFile("../../assets/scenes/empty.json"),
     },
+    .{
+        .name = "loot",
+        .text = @embedFile("../../assets/scenes/loot.json"),
+    },
 };
 
 pub fn selectNextScene(reg: *ecs.Registry) void {

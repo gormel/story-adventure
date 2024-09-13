@@ -44,7 +44,8 @@ pub fn main() !void {
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
     var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
 
-    var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
+    //var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
+    var pcg = std.rand.Pcg.init(123456789);
     var rnd = pcg.random();
 
     var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ .ignore_unknown_fields = true });
@@ -82,7 +83,7 @@ pub fn main() !void {
         //init obj systems
         game_systems.initButton(&reg);
 
-        try game_systems.initGameplayCustoms(&reg, &props, arena);
+        try game_systems.initGameplayCustoms(&reg, &props, arena, &rnd);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
@@ -105,6 +106,7 @@ pub fn main() !void {
         rl.EndDrawing();
 
         //destroy triggers
+        game_systems.freeGameplayCustoms(&reg);
         render_systems.freeFlipbook(&reg);
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);

@@ -1,0 +1,56 @@
+{
+    "Game Object": {
+        "prefix": "gobj",
+        "scope": "json",
+        "body": [
+            "{",
+            "\t\"position\": { \"x\": 0, \"y\": 0 },",
+            "\t\"tags\": [  ],",
+            "\t\"children\": []",
+            "},"
+        ]
+    },
+    "Sprite Game Object": {
+        "prefix": "gobjs",
+        "scope": "json",
+        "body": [
+            "{",
+            "\t\"position\": { \"x\": 0, \"y\": 0 },",
+            "\t\"sprite\": {",
+            "\t\t\"atlas\": \"resources/atlases/ATLAS_FILE.json\",",
+            "\t\t\"sprite\": \"SPRITE_NAME\"",
+            "\t},",
+            "\t\"tags\": [  ],",
+            "\t\"children\": []",
+            "},"
+        ]
+    },
+    "Text Game Object": {
+        "prefix": "gobjt",
+        "scope": "json",
+        "body": [
+            "{",
+            "\t\"position\": { \"x\": 0, \"y\": 0 },",
+            "\t\"sprite\": {",
+            "\t\"text\": { \"size\": 15, \"text\": \"TEXT_VALUE\u0000\" },",
+            "\t\"tags\": [  ],",
+            "\t\"children\": []",
+            "},"
+        ]
+    },
+    "Animation Game Object": {
+        "prefix": "gobja",
+        "scope": "json",
+        "body": [
+            "{",
+            "\t\"position\": { \"x\": 0, \"y\": 0 },",
+            "\t\"flipbook\": {",
+            "\t\t\"atlas\": \"resources/atlases/ATLAS_FILE.json\",",
+            "\t\t\"animation\": \"ANIMATION_NAME\"",
+            "\t},",
+            "\t\"tags\": [  ],",
+            "\t\"children\": []",
+            "},"
+        ]
+    },
+}

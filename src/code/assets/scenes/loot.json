@@ -1,0 +1,12 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "init-loot" ],
+        "children": []
+    },
+    {
+        "position": { "x": 496, "y": 309 },
+        "tags": [ "loot-start" ],
+        "children": []
+    }
+]
