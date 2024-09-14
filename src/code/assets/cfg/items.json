@@ -1,10 +1,19 @@
-[
-    {
-        "image": "potion-red",
+{
+    "potion-hp-small": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-red",
         "parameters": {
-            "health": 100,
-            "stamina": -20
+            "health": 100
         },
-        "parameter?": "potion-hp-small"
+        "one_time": true
+    },
+    "potion-stamina-small": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-yellow",
+        "parameters": {
+            "stamina": 30,
+            "gold": 50
+        },
+        "one_time": true
     }
-]
+}

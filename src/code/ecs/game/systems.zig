@@ -9,8 +9,9 @@ const icmp = @import("../input/components.zig");
 const rcmp = @import("../render/components.zig");
 const ccmp = @import("../core/components.zig");
 const sc = @import("../../engine/scene.zig");
-const Properties = @import("../../engine/parameters.zig").Properties;
+const pr = @import("../../engine/properties.zig");
 const rollrate = @import("../../engine/rollrate.zig");
+const itm = @import("../../engine/items.zig");
 
 const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
@@ -58,7 +59,7 @@ pub fn button(reg: *ecs.Registry) void {
     }
 }
 
-pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *Properties) !void {
+pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *pr.Properties) !void {
     _ = reg;
     for (json.keys()) |key| {
         if (json.get(key)) |value| {
@@ -100,13 +101,13 @@ fn checkNames(a: ?[]const u8, b: ?[]const u8) bool {
     }
 }
 
-fn checkCondition(params: []sc.RuleParam, props: *Properties) bool {
+fn checkCondition(params: []sc.RuleParam, props: *pr.Properties) bool {
     if (params.len == 0) {
         return true;
     }
 
     for (params) |param| {
-        var value = try props.get(param.name);
+        var value = props.get(param.name);
         switch (param.operator) {
             .LT => { if (value >= param.value) { return false; } },
             .LE => { if (value > param.value) { return false; } },
@@ -125,7 +126,7 @@ pub fn initScene(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     _ = try game.loadScene(reg, allocator, initial_scene);
 }
 
-pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd: *std.rand.Random, allocator: std.mem.Allocator) !void {
+pub fn changeScene(reg: *ecs.Registry, props: *pr.Properties, rules: *sc.Rules, rnd: *std.rand.Random, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -160,7 +161,7 @@ pub fn changeScene(reg: *ecs.Registry, props: *Properties, rules: *sc.Rules, rnd
 
 pub fn initGameplayCustoms(
     reg: *ecs.Registry,
-    props: *Properties,
+    props: *pr.Properties,
     allocator: std.mem.Allocator,
     rnd: *std.rand.Random
 ) !void {
@@ -172,11 +173,18 @@ pub fn initGameplayCustoms(
     _ = props;
 }
 
-pub fn updateGameplayCustoms(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+pub fn updateGameplayCustoms(
+    reg: *ecs.Registry,
+    props: *pr.Properties,
+    allocator: std.mem.Allocator,
+    items: *itm.Items,
+    rnd: *std.rand.Random
+) !void {
     try main_menu.startGame(reg, props, allocator);
     gameplay_start.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
-    try loot.openTile(reg, props);
+    loot.rollItem(reg, items, rnd);
+    try loot.openTile(reg, props, items);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) void {

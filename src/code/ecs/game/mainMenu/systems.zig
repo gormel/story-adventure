@@ -7,8 +7,7 @@ const utils = @import("../../../engine/utils.zig");
 const scmp = @import("../../scene/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
-
-const Properties = @import("../../../engine/parameters.zig").Properties;
+const pr = @import("../../../engine/properties.zig");
 
 const initial_game_scene = "gameplay_start";
 
@@ -43,7 +42,7 @@ pub fn initScene(reg: *ecs.Registry) void {
     }
 }
 
-pub fn startGame(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) !void {
+pub fn startGame(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ cmp.StartGameButton, gcmp.ButtonClicked }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |_| {

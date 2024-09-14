@@ -1,0 +1,20 @@
+{
+    "tex": "resources/textures/items.png",
+    "sprites": [
+        {
+            "name": "potion-red",
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-yellow",
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        }
+    ],
+    "animations": []
+}

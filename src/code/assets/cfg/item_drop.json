@@ -1,0 +1,7 @@
+[
+    {
+        "item": "potion-stamina-small",
+        "weight": 1,
+        "groups": [ "potion", "stamina" ]
+    }
+]

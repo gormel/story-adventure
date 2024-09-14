@@ -8,9 +8,9 @@ const scmp = @import("../../scene/components.zig");
 const ccmp = @import("../../core/components.zig");
 const rcmp = @import("../../render/components.zig");
 const gcmp = @import("../components.zig");
-const Properties = @import("../../../engine/parameters.zig").Properties;
+const pr = @import("../../../engine/properties.zig");
 
-const textSelector = fn (props: *Properties, name: []const u8, allocator: std.mem.Allocator) []const u8;
+const textSelector = fn (props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8;
 
 pub fn initViews(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -52,14 +52,14 @@ fn addSync(comptime ComponentT: type, reg: *ecs.Registry) void {
     }
 }
 
-fn selectValue(props: *Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
-    var value = props.get(name) catch 0;
+fn selectValue(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
+    var value = props.get(name);
     return std.fmt.allocPrintZ(allocator, "{d:.0}", .{ value }) catch "0";
 }
 
-fn selectValueOfMax(props: *Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
-    var value = props.get(name) catch 0;
-    var max = props.getInitial(name) catch 0;
+fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
+    var value = props.get(name);
+    var max = props.getInitial(name);
     return std.fmt.allocPrintZ(allocator, "{d:.0}/{d:.0}", .{ value, max }) catch "0/0";
 }
 
@@ -67,7 +67,7 @@ fn syncProperty(
     comptime ComponentT: type,
     comptime propertyName: []const u8,
     reg: *ecs.Registry,
-    props: *Properties,
+    props: *pr.Properties,
     allocator: std.mem.Allocator,
     comptime selector: textSelector
 ) void {
@@ -91,7 +91,7 @@ fn syncProperty(
     }
 }
 
-pub fn syncViews(reg: *ecs.Registry, props: *Properties, allocator: std.mem.Allocator) void {
+pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) void {
     var iter = reg.entityIterator(gcmp.PlayerPropertyChanged);
     while (iter.next()) |entity| {
         const changed = reg.getConst(gcmp.PlayerPropertyChanged, entity);

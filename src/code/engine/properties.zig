@@ -18,11 +18,11 @@ pub const Properties = struct {
         };
     }
 
-    pub fn get(self: *Self, name: []const u8) !f64 {
+    pub fn get(self: *Self, name: []const u8) f64 {
         return self.map.get(name) orelse 0;
     }
 
-    pub fn getInitial(self: *Self, name: []const u8) !f64 {
+    pub fn getInitial(self: *Self, name: []const u8) f64 {
         return self.initial.get(name) orelse 0;
     }
 
@@ -38,7 +38,7 @@ pub const Properties = struct {
     }
 
     pub fn add(self: *Self, name: []const u8, value: f64) !void {
-        var current_value = try self.get(name);
+        var current_value = self.get(name);
         try self.set(name, current_value + value);
     }
 

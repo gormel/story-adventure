@@ -34,7 +34,8 @@ pub fn initSwitch(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 pub fn doSwitch(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.Switch, scmp.GameObject }, .{ scmp.InitGameObject });
     var iter = view.entityIterator();
-    while (iter.next()) |_| {
+    while (iter.next()) |entity| {
         game.selectNextScene(reg);
+        reg.remove(cmp.Switch, entity);
     }
 }

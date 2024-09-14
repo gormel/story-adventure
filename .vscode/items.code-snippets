@@ -1,0 +1,15 @@
+{
+    "Item": {
+        "prefix": "itm",
+        "scope": "json",
+        "body": [
+            "\"${1:item-name}\": {",
+            "\t\"atlas\": \"resources/atlases/items.json\",",
+            "\t\"sprite\": \"${2:item-sprite}\",",
+            "\t\"parameters\": {",
+            "\t},",
+            "\t\"one_time\": true",
+            "},",
+        ]
+    }
+}

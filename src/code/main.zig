@@ -12,7 +12,8 @@ const scene_systems = @import("ecs/scene/systems.zig");
 const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 const game_systems = @import("ecs/game/systems.zig");
-const Properties = @import("engine/parameters.zig").Properties;
+const pr = @import("engine/properties.zig");
+const itm = @import("engine/items.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
@@ -39,13 +40,21 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
-    var props = Properties.init(arena, &reg);
+    var props = pr.Properties.init(arena, &reg);
 
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
     var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
 
-    //var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
-    var pcg = std.rand.Pcg.init(123456789);
+    const items_cfg_text = @embedFile("assets/cfg/items.json");
+    var items_cfg_json = try std.json.parseFromSlice(itm.ItemListCfg, arena, items_cfg_text, .{ .ignore_unknown_fields = true });
+    defer items_cfg_json.deinit();
+    const item_drop_cfg_text = @embedFile("assets/cfg/item_drop.json");
+    var item_drop_cfg_json = try std.json.parseFromSlice(itm.ItemDropListCfg, arena, item_drop_cfg_text, .{ .ignore_unknown_fields = true });
+    defer item_drop_cfg_json.deinit();
+    var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props);
+
+    var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
+    //var pcg = std.rand.Pcg.init(123456789);
     var rnd = pcg.random();
 
     var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ .ignore_unknown_fields = true });
@@ -91,7 +100,7 @@ pub fn main() !void {
         game_systems.properties(&reg);
         try game_systems.changeScene(&reg, &props, &rules, &rnd, arena);
 
-        try game_systems.updateGameplayCustoms(&reg, &props, arena);
+        try game_systems.updateGameplayCustoms(&reg, &props, arena, &items, &rnd);
 
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg, arena);
