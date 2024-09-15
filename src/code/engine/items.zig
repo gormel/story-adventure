@@ -1,6 +1,7 @@
 const std = @import("std");
 const pr = @import("properties.zig");
 const rr = @import("../engine/rollrate.zig");
+const utils = @import("../engine/utils.zig");
 
 pub const ItemCfg = struct {
     atlas: []const u8,
@@ -25,12 +26,19 @@ pub const Items = struct {
     item_list_cfg: *ItemListCfg,
     item_drop_list_cfg: *ItemDropListCfg,
     props: *pr.Properties,
+    allocator: std.mem.Allocator,
 
-    pub fn init(item_list_cfg: *ItemListCfg, item_drop_list_cfg: *ItemDropListCfg, props: *pr.Properties) Self {
+    pub fn init(
+        item_list_cfg: *ItemListCfg,
+        item_drop_list_cfg: *ItemDropListCfg,
+        props: *pr.Properties,
+        allocator: std.mem.Allocator
+    ) Self {
         return .{
             .item_list_cfg = item_list_cfg,
             .props = props,
             .item_drop_list_cfg = item_drop_list_cfg,
+            .allocator = allocator
         };
     }
 
@@ -41,10 +49,24 @@ pub const Items = struct {
         return null;
     }
 
-    pub fn rollGroup(self: *Self, group: []const u8, rnd: *std.rand.Random) ?[]const u8 {
-        _ = self;
-        _ = group;
-        _ = rnd;
+    pub fn rollGroup(self: *Self, group: []const u8, rnd: *std.rand.Random) !?[]const u8 {
+        var table = try self.allocator.alloc(ItemDropCfg, self.item_drop_list_cfg.len);
+        defer self.allocator.free(table);
+
+        const source_table = self.item_drop_list_cfg.*;
+        var idx: usize = 0;
+        for (source_table) |cfg| {
+            if (utils.containsTag(cfg.groups, group)) {
+                table[idx] = cfg;
+                idx += 1;
+            }
+        }
+
+        if (rr.select(ItemDropCfg, "weight", source_table[0..idx], rnd)) |item| {
+            return item.item;
+        }
+
+        return null;
     }
 
     pub fn info(self: *Self, name: []const u8) ?ItemCfg {

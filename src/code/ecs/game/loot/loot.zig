@@ -2,9 +2,6 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const rollrate = @import("../../../engine/rollrate.zig");
 
-pub const STAMINA = "stamina";
-pub const OPEN_COST = 20;
-
 pub const Side = enum {
     LEFT,
     UP,
@@ -22,6 +19,8 @@ pub const TileCfg = struct {
 pub const LootCfg = struct {
     loot_count_min: f64,
     loot_count_max: f64,
+    step_cost: f64,
+    cost_property: f64,
     tiles: [] TileCfg
 };
 

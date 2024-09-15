@@ -72,6 +72,8 @@ loot_scene:
 {
     "loot_count_min": 1,
     "loot_count_max": 3,
+    "step_cost": 5,
+    "step_cost": 1,
     "tiles": [
         {
             "weight": 1,

@@ -3,5 +3,10 @@
         "item": "potion-stamina-small",
         "weight": 1,
         "groups": [ "potion", "stamina" ]
-    }
+    },
+    {
+        "item": "potion-hp-small",
+        "weight": 1,
+        "groups": [ "potion", "hp" ]
+    },
 ]

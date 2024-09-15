@@ -325,7 +325,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
         }
     }
 
-    var view = reg.view(.{ cmp.Open, cmp.Tile }, .{});
+    var view = reg.view(.{ cmp.Open, cmp.Tile, rcmp.Parent }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         var open = reg.get(cmp.Open, entity);
@@ -383,7 +383,12 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
             }
 
             if (!open.free) {
-                try props.add(loot.STAMINA, -loot.OPEN_COST);
+                const parent = reg.getConst(rcmp.Parent, entity);
+                if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start| {
+                    try props.add(
+                        loot_start.cfg_json.value.cost_property,
+                        -loot_start.cfg_json.value.step_cost);
+                }
             }
         }
 

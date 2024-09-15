@@ -51,7 +51,7 @@ pub fn main() !void {
     const item_drop_cfg_text = @embedFile("assets/cfg/item_drop.json");
     var item_drop_cfg_json = try std.json.parseFromSlice(itm.ItemDropListCfg, arena, item_drop_cfg_text, .{ .ignore_unknown_fields = true });
     defer item_drop_cfg_json.deinit();
-    var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props);
+    var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props, arena);
 
     var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
     //var pcg = std.rand.Pcg.init(123456789);
