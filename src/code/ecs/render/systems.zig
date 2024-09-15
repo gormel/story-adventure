@@ -153,9 +153,15 @@ fn detachParent(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const parent = reg.getConst(cmp.Parent, entity);
     var parent_children = reg.get(cmp.Children, parent.entity);
     while (indexOf(ecs.Entity, parent_children.children.items, entity))|at_idx| {
-        _ = parent_children.children.swapRemove(at_idx);
+        _ = parent_children.children.orderedRemove(at_idx);
     }
     reg.remove(cmp.Parent, entity);
+}
+
+fn gameObjectRenderOrderLessThan(reg: *ecs.Registry, a: ecs.Entity, b: ecs.Entity) bool {
+    const a_order: i32 = if (reg.tryGetConst(cmp.Order, a)) |order| order.order else 0;
+    const b_order: i32 = if (reg.tryGetConst(cmp.Order, b)) |order| order.order else 0;
+    return a_order < b_order;
 }
 
 pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
@@ -183,11 +189,14 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
             reg.add(entity, cmp.Parent { .entity = target_entity });
             if (reg.tryGet(cmp.Children, target_entity)) |parent_children| {
                 try parent_children.children.append(entity);
+                std.sort.heap(ecs.Entity, parent_children.children.items,
+                    reg, gameObjectRenderOrderLessThan);
             } else {
                 var parent_children = cmp.Children {
                     .children = std.ArrayList(ecs.Entity).init(allocator)
                 };
                 try parent_children.children.append(entity);
+                
                 reg.add(target_entity, parent_children);
             }
         }

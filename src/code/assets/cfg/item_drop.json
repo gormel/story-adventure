@@ -8,5 +8,5 @@
         "item": "potion-hp-small",
         "weight": 1,
         "groups": [ "potion", "hp" ]
-    },
+    }
 ]

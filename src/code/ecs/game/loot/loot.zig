@@ -2,6 +2,13 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const rollrate = @import("../../../engine/rollrate.zig");
 
+pub const RenderLayers = struct {
+    pub const TILE = 0;
+    pub const ITEM = 1;
+    pub const FOG = 2;
+    pub const PLAYER = 3;
+};
+
 pub const Side = enum {
     LEFT,
     UP,
@@ -20,7 +27,7 @@ pub const LootCfg = struct {
     loot_count_min: f64,
     loot_count_max: f64,
     step_cost: f64,
-    cost_property: f64,
+    cost_property: []const u8,
     tiles: [] TileCfg
 };
 

@@ -32,6 +32,7 @@ pub const NotUpdateGlobalTransform = struct {};
 pub const Position = struct { x: f32, y: f32 };
 pub const Scale = struct { x: f32, y: f32 };
 pub const Rotation = struct { a: f32 };
+pub const Order = struct { order: i32 };
 
 pub const GlobalPosition = struct { x: f32, y: f32 };
 pub const GlobalScale = struct { x: f32, y: f32 };

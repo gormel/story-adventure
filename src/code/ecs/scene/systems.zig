@@ -8,12 +8,13 @@ const sc = @import("../../engine/scene.zig");
 const gui_setup = @import("../../engine/gui_setup.zig");
 
 fn createGameObjects(reg: *ecs.Registry, parent_ety: ecs.Entity, obj_descriptions: []sc.SceneObject) void {
-    for (obj_descriptions) |obj_description| {
+    for (obj_descriptions, 0..) |obj_description, idx| {
         var obj_ety = reg.create();
 
         reg.add(obj_ety, rcmp.AttachTo { .target = parent_ety });
         reg.add(obj_ety, rcmp.Position { .x = obj_description.position.x, .y = obj_description.position.y });
         reg.add(obj_ety, cmp.InitGameObject { .tags = obj_description.tags });
+        reg.add(obj_ety, rcmp.Order { .order = @intCast(idx) });
 
         if (obj_description.sprite) |obj_sprite| {
             reg.add(obj_ety, rcmp.SpriteResource {

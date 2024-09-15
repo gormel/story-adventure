@@ -35,6 +35,7 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
         .target = tile_ety,
     });
     reg.add(fog_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(fog_ety, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(fog_ety, cmp.Fog { .tile = tile_ety });
     return fog_ety;
 }
@@ -49,6 +50,7 @@ fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs
         .target = tile_ety,
     });
     reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(entity, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(entity, cmp.Opener { .tile = tile_ety, .source_tile = source_tile_ety });
 
     reg.add(entity, gcmp.CreateButton {});
@@ -68,6 +70,7 @@ fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, rnd: *s
                 .target = tile_ety,
             });
             reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+            reg.add(entity, rcmp.Order { .order = loot.RenderLayers.ITEM });
             reg.add(entity, cmp.Loot { .tile = tile_ety, .item_name = item_name });
 
             return entity;
@@ -150,6 +153,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
                         reg.add(tile_ety, rcmp.AttachTo {
                             .target = entity,
                         });
+                        reg.add(tile_ety, rcmp.Order { .order = loot.RenderLayers.TILE });
 
                         reg.add(tile_ety, cmp.Tile { });
                         reg.add(tile_ety, cmp.TileFog { 
@@ -329,8 +333,15 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         var open = reg.get(cmp.Open, entity);
-        const stamina = props.get(loot.STAMINA);
-        if (stamina < loot.OPEN_COST and !open.free) {
+        const parent = reg.getConst(rcmp.Parent, entity);
+        var loot_start = if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start|
+            loot_start else continue;
+        
+        const cost_property = loot_start.cfg_json.value.cost_property;
+        const stamina = props.get(cost_property);
+        const step_cost = loot_start.cfg_json.value.step_cost;
+
+        if (stamina < step_cost and !open.free) {
             game.selectNextScene(reg);
         } else {
             if (reg.tryGet(cmp.TileFog, entity)) |tile_fog| {
@@ -383,12 +394,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
             }
 
             if (!open.free) {
-                const parent = reg.getConst(rcmp.Parent, entity);
-                if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start| {
-                    try props.add(
-                        loot_start.cfg_json.value.cost_property,
-                        -loot_start.cfg_json.value.step_cost);
-                }
+                try props.add(cost_property, -step_cost);
             }
         }
 
