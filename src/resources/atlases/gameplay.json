@@ -119,7 +119,46 @@
             "y": 0,
             "w": 32,
             "h": 32
+        },
+        {
+            "name": "anm-hero_idle-1-0",
+            "x": 0,
+            "y": 128,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "anm-hero_idle-1-1",
+            "x": 32,
+            "y": 128,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "anm-hero_idle-1-2",
+            "x": 64,
+            "y": 128,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "anm-hero_idle-1-3",
+            "x": 96,
+            "y": 128,
+            "w": 32,
+            "h": 32
         }
     ],
-    "animations": []
+    "animations": [
+        {
+            "name": "hero_idle",
+            "duration": 1.0,
+            "frames": [
+                "anm-hero_idle-1-0",
+                "anm-hero_idle-1-1",
+                "anm-hero_idle-1-2",
+                "anm-hero_idle-1-3"
+            ]
+        }
+    ]
 }

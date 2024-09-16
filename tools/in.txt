@@ -1,12 +1,34 @@
-/* items */
+/* gameplay */
 
 position: relative;
-width: 64px;
+width: 160px;
+height: 160px;
+
+
+
+/* tile_lurd */
+
+position: absolute;
+width: 32px;
 height: 32px;
+left: 96px;
+top: 0px;
+
+background: url(tile_lurd.png);
 
 
+/* tile_r */
 
-/* potion-red */
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 64px;
+
+background: url(tile_r.png);
+
+
+/* tile_rd */
 
 position: absolute;
 width: 32px;
@@ -14,10 +36,98 @@ height: 32px;
 left: 0px;
 top: 0px;
 
-background: url(potion-red.png);
+background: url(tile_rd.png);
 
 
-/* potion-yellow */
+/* tile_u */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 32px;
+
+background: url(tile_u.png);
+
+
+/* tile_ud */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 96px;
+
+background: url(tile_ud.png);
+
+
+/* tile_ur */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 96px;
+
+background: url(tile_ur.png);
+
+
+/* tile_urd */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 32px;
+
+background: url(tile_urd.png);
+
+
+/* tile_d */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 64px;
+
+background: url(tile_d.png);
+
+
+/* tile_l */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 64px;
+
+background: url(tile_l.png);
+
+
+/* tile_ld */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 64px;
+
+background: url(tile_ld.png);
+
+
+/* tile_lr */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 32px;
+
+background: url(tile_lr.png);
+
+
+/* tile_lrd */
 
 position: absolute;
 width: 32px;
@@ -25,4 +135,103 @@ height: 32px;
 left: 32px;
 top: 0px;
 
-background: url(potion-yellow.png);
+background: url(tile_lrd.png);
+
+
+/* tile_lu */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 32px;
+
+background: url(tile_lu.png);
+
+
+/* tile_lud */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 0px;
+
+background: url(tile_lud.png);
+
+
+/* tile_lur */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 96px;
+
+background: url(tile_lur.png);
+
+
+/* hidden_loot */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 96px;
+
+background: url(hidden_loot.png);
+
+
+/* openable */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 0px;
+
+background: url(openable.png);
+
+
+/* anm-hero_idle-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 128px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_idle-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 128px;
+
+background: url(anm-hero_idle-1-1.png);
+
+
+/* anm-hero_idle-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 128px;
+
+background: url(anm-hero_idle-1-2.png);
+
+
+/* anm-hero_idle-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 128px;
+
+background: url(anm-hero_idle-1-1.png);

@@ -9,6 +9,16 @@ atlas:
             "w": 64,
             "h": 64
         }
+    ],
+    "animations": [
+        {
+            "name": "star-anim",
+            "duration": 55,
+            "frames": [
+                "star",
+                "star"
+            ]
+        }
     ]
 }
 

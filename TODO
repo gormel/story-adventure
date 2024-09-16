@@ -1,5 +1,7 @@
-ref: resources to @embedFile()
 fea: tween animations
+fea: loot: hero (child of tile; on move - change parent, animate position to 0)
+ref: loot: loot groups to selection ("item_count": [ "group": { "min": 1, "max": 5 } ])
+ref: resources to @embedFile()
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure?node-id=0-1&t=u20MokuF2VXp7yXO-1
 

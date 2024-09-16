@@ -109,6 +109,25 @@ with io.open('in.txt') as fp:
             sprite["w"] = to_px(obj["props"]["width"])
             sprite["h"] = to_px(obj["props"]["height"])
             atlas["sprites"].append(sprite)
+
+            match = re.match("^anm-([a-zA-Z_]+)-([0-9]+(\.[0-9]+)?)-([0-9]+)", sprite["name"])
+            if (match != None):
+                anim_name = match.group(1)
+                frame_idx = int(match.group(4))
+                found_anims = [x for x in atlas["animations"] if x["name"] == anim_name]
+                if (len(found_anims) == 0):
+                    anim = {}
+                    anim["name"] = anim_name
+                    anim["duration"] = float(match.group(2))
+                    anim["frames"] = []
+                    atlas["animations"].append(anim)
+                    found_anims.append(anim)
+
+                anim = found_anims[0]
+                while (len(anim["frames"]) <= frame_idx):
+                    anim["frames"].append(None)
+                
+                anim["frames"][frame_idx] = sprite["name"]
     
     with io.open('out.json', 'w+') as out_fp:
         json.dump(atlas, out_fp)
