@@ -170,6 +170,7 @@ pub fn initGameplayCustoms(
     try gameplay_start.initSwitch(reg, allocator);
     hud.initViews(reg);
     try loot.initLoot(reg, allocator, rnd);
+    loot.initGui(reg);
     _ = props;
 }
 
@@ -186,6 +187,7 @@ pub fn updateGameplayCustoms(
     loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);
     loot.character(reg);
+    loot.gui(reg);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) void {

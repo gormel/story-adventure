@@ -1,5 +1,4 @@
 ref: loot: loot groups to selection ("item_count": [ "group": { "min": 1, "max": 5 } ])
-fea: loot: completion gui
 ref: resources to @embedFile()
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure

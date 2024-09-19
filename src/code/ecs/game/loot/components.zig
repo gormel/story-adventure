@@ -28,3 +28,4 @@ pub const Character = struct {
     d_anim: ecs.Entity,
 };
 pub const CharacterMoveTween = struct { char_entity: ecs.Entity };
+pub const CompleteLootButton = struct {};

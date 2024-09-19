@@ -209,6 +209,25 @@ fn connect(reg: *ecs.Registry, a: ecs.Entity, b: ecs.Entity, ab_side: loot.Side)
     }
 }
 
+pub fn initGui(reg: *ecs.Registry) void {
+    var view = reg.view(.{ scmp.InitGameObject }, .{});
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        var init = reg.get(scmp.InitGameObject, entity);
+        if (utils.containsTag(init.tags, "button-complete-loot")) {
+            reg.add(entity, cmp.CompleteLootButton {});
+        }
+    }
+}
+
+pub fn gui(reg: *ecs.Registry) void {
+    var view = reg.view(.{ cmp.CompleteLootButton, gcmp.ButtonClicked }, .{});
+    var iter = view.entityIterator();
+    while (iter.next()) |_| {
+        game.selectNextScene(reg);
+    }
+}
+
 pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand.Random) !void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();

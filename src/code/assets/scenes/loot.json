@@ -8,5 +8,21 @@
         "position": { "x": 496, "y": 309 },
         "tags": [ "loot-start" ],
         "children": []
+    },
+    {
+        "position": { "x": 432, "y": 533 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button"
+        },
+        "tags": [ "button", "button-complete-loot" ],
+        "children": [
+            {
+                "position": { "x": 51, "y": 9 },
+                "text": { "size": 12, "text": "GO NEXT\u0000" },
+                "tags": [],
+                "children": []
+            }
+        ]
     }
 ]
