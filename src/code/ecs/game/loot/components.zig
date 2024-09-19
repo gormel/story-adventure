@@ -20,3 +20,11 @@ pub const Opener = struct { tile: ecs.Entity, source_tile: ecs.Entity };
 pub const Open = struct { free: bool = false };
 pub const Visited = struct {};
 pub const Loot = struct { tile: ecs.Entity, item_name: []const u8 };
+pub const Character = struct {
+    idle_anim: ecs.Entity,
+    l_anim: ecs.Entity,
+    u_anim: ecs.Entity,
+    r_anim: ecs.Entity,
+    d_anim: ecs.Entity,
+};
+pub const CharacterMoveTween = struct { char_entity: ecs.Entity };

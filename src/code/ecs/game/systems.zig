@@ -185,6 +185,7 @@ pub fn updateGameplayCustoms(
     hud.syncViews(reg, props, allocator);
     loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);
+    loot.character(reg);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) void {

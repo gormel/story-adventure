@@ -59,6 +59,110 @@ fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs
     return entity;
 }
 
+fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, anim: []const u8) ecs.Entity {
+    var entity = reg.create();
+    reg.add(entity, rcmp.FlipbookResource {
+        .atlas = "resources/atlases/gameplay.json",
+        .flipbook = anim,
+    });
+    reg.add(entity, rcmp.AttachTo {
+        .target = char_ety,
+    });
+    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+
+    if (!visible) {
+        reg.add(entity, rcmp.Hidden {});
+    }
+
+    return entity;
+}
+
+fn createCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
+    var entity = reg.create();
+    reg.add(entity, rcmp.AttachTo {
+        .target = tile_ety,
+    });
+
+    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(entity, rcmp.Order { .order = loot.RenderLayers.PLAYER });
+    reg.add(entity, cmp.Character {
+        .idle_anim = createCharacterAnim(reg, entity, true, "hero_idle"),
+        .l_anim = createCharacterAnim(reg, entity, false, "hero_left"),
+        .u_anim = createCharacterAnim(reg, entity, false, "hero_up"),
+        .r_anim = createCharacterAnim(reg, entity, false, "hero_right"),
+        .d_anim = createCharacterAnim(reg, entity, false, "hero_down"),
+    });
+}
+
+fn toDirection(dx: f32, dy: f32) ?loot.Side {
+    if (dx < 0) {
+        return loot.Side.RIGHT;
+    }
+
+    if (dx > 0) {
+        return loot.Side.LEFT;
+    }
+
+    if (dy < 0) {
+        return loot.Side.DOWN;
+    }
+
+    if (dy > 0) {
+        return loot.Side.UP;
+    }
+
+    return null;
+}
+
+fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
+    for(etys, 0..) |entity, i| {
+        if (i == idx) {
+            if (reg.has(rcmp.Hidden, entity)) {
+                reg.remove(rcmp.Hidden, entity);
+            }
+        } else {
+            if (!reg.has(rcmp.Hidden, entity)) {
+                reg.add(entity, rcmp.Hidden {});
+            }
+        }
+    }
+}
+
+fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
+    var from_tile_pos = reg.get(rcmp.Position, char_ety);
+    var to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
+    const dx = from_tile_pos.x - to_tile_pos.x;
+    const dy = from_tile_pos.y - to_tile_pos.y;
+
+    if (toDirection(dx, dy)) |dir| {
+        var tween_ety = reg.create();
+        reg.add(tween_ety, rcmp.TweenMove {
+            .duration = 1,
+            .entity = char_ety,
+            .from_x = from_tile_pos.x, .from_y = from_tile_pos.y,
+            .to_x = to_tile_pos.x, .to_y = to_tile_pos.y,
+        });
+        reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety });
+
+        var char = reg.get(cmp.Character, char_ety);
+        var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
+        
+        switch (dir) {
+            .LEFT => { showAnimation(&anims, 1, reg); },
+            .UP => { showAnimation(&anims, 2, reg); },
+            .RIGHT => { showAnimation(&anims, 3, reg); },
+            .DOWN => { showAnimation(&anims, 4, reg); },
+        }
+    }
+}
+
+fn moveCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
+    var iter = reg.entityIterator(cmp.Character);
+    while (iter.next()) |entity| {
+        animateCharacter(reg, entity, tile_ety);
+    }
+}
+
 fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, rnd: *std.rand.Random) ecs.Entity {
     if (items.roll(rnd)) |item_name| {
         if (items.info(item_name)) |item| {
@@ -163,6 +267,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
 
                         if (at.is_center) {
                             reg.add(tile_ety, cmp.Open { .free = true });
+                            createCharacter(reg, entity);
                         } else {
                             try loot_roll_table.append(LootRoll { .entity = tile_ety });
                         }
@@ -215,6 +320,17 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
                 }
             }
         }
+    }
+}
+
+pub fn character(reg: *ecs.Registry) void {
+    var anim_restore_view = reg.view(.{ rcmp.TweenComplete, cmp.CharacterMoveTween }, .{});
+    var anim_restore_iter = anim_restore_view.entityIterator();
+    while (anim_restore_iter.next()) |entity| {
+        var tween = reg.get(cmp.CharacterMoveTween, entity);
+        var char = reg.get(cmp.Character, tween.char_entity);
+        var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
+        showAnimation(&anims, 0, reg);
     }
 }
 
@@ -382,6 +498,8 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
                     });
                 }
             }
+
+            moveCharacter(reg, entity);
 
             if (!reg.has(cmp.Visited, entity)) {
                 reg.add(entity, cmp.Visited {});
