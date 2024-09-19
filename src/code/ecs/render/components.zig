@@ -9,6 +9,15 @@ pub const Sprite = struct { sprite: sp.Sprite };
 pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
 pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
+pub const TweenMove = struct {
+    from_x: f32, from_y: f32,
+    to_x: f32, to_y: f32,
+    duration: f32,
+    entity: ecs.Entity,
+};
+pub const TweenComplete = struct {};
+pub const TweenInProgress = struct { duration: f32 };
+
 pub const SolidRect = struct { rect: rl.Rectangle, color: rl.Color };
 pub const SolidRectOffset = struct { x: f32, y: f32 };
 pub const SetSolidRectColor = struct { color: rl.Color };

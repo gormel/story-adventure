@@ -268,6 +268,73 @@ pub fn updateGlobalTransform(reg: *ecs.Registry) !void {
     }
 }
 
+fn setTweenMove(reg: *ecs.Registry, entity: ecs.Entity, x: f32, y: f32) void {
+    if (reg.tryGet(cmp.Position, entity)) |pos| {
+        pos.x = x;
+        pos.y = y;
+    } else {
+        reg.add(entity, cmp.Position { .x = x, .y = y });
+    }
+
+    if (!reg.has(cmp.UpdateGlobalTransform, entity)) {
+        reg.add(entity, cmp.UpdateGlobalTransform {});
+    }
+}
+
+pub fn tweenMove(reg: *ecs.Registry, dt: f32) void {
+    var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenMove }, .{ Destroyed });
+    var complete_iter = complete_view.entityIterator();
+    while (complete_iter.next()) |entity| {
+        reg.remove(cmp.TweenComplete, entity);
+        reg.remove(cmp.TweenMove, entity);
+
+        reg.add(entity, Destroyed {});
+    }
+
+    var start_view = reg.view(.{ cmp.TweenMove }, .{ cmp.TweenInProgress, cmp.TweenComplete });
+    var start_iter = start_view.entityIterator();
+    while (start_iter.next()) |entity| {
+        var tween = reg.get(cmp.TweenMove, entity);
+        if (!reg.valid(tween.entity)) {
+            reg.remove(cmp.TweenMove, entity);
+
+            reg.add(entity, Destroyed {});
+            continue;
+        }
+
+        setTweenMove(reg, tween.entity, tween.from_x, tween.from_y);
+
+        reg.add(entity, cmp.TweenInProgress {
+            .duration = tween.duration,
+        });
+    }
+
+    var view = reg.view(.{ cmp.TweenMove, cmp.TweenInProgress }, .{ cmp.TweenComplete });
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        var tween = view.get(cmp.TweenMove, entity);
+        if (!reg.valid(tween.entity)) {
+            reg.remove(cmp.TweenMove, entity);
+            reg.remove(cmp.TweenInProgress, entity);
+
+            reg.add(entity, Destroyed {});
+            continue;
+        }
+
+        var progress = view.get(cmp.TweenInProgress, entity);
+        progress.duration -= dt;
+        const t = @min(@max(0, progress.duration / tween.duration), 1);
+        setTweenMove(reg, tween.entity,
+            tween.from_x * (t) + tween.to_x * (1 - t),
+            tween.from_y * (t) + tween.to_y * (1 - t));
+
+        if (t <= 0) {
+            reg.remove(cmp.TweenInProgress, entity);
+            reg.add(entity, cmp.TweenComplete {});
+        }
+    }
+}
+
 pub fn blink(reg: *ecs.Registry, dt: f32) void {
     var cleanup_view = reg.view(.{ cmp.BlinkState }, .{ cmp.Blink });
     var cleanup_iter = cleanup_view.entityIterator();

@@ -26,7 +26,7 @@ const TileSizeX = 32;
 const TileSizeY = 32;
 
 fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
-    var fog_ety = reg.create();
+    const fog_ety = reg.create();
     reg.add(fog_ety, rcmp.SpriteResource {
         .atlas = "resources/atlases/gameplay.json",
         .sprite = "hidden_loot",
@@ -37,6 +37,7 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
     reg.add(fog_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(fog_ety, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(fog_ety, cmp.Fog { .tile = tile_ety });
+
     return fog_ety;
 }
 
