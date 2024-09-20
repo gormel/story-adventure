@@ -5,6 +5,14 @@ const cmp = @import("components.zig");
 const scmp = @import("../scene/components.zig");
 const rcmp = @import("../render/components.zig");
 const sc = @import("../../engine/scene.zig");
+const pr = @import("../../engine/properties.zig");
+
+pub const ScenePropChangeItemCfg = struct {
+    enter: std.json.ArrayHashMap(f64),
+    exit: std.json.ArrayHashMap(f64),
+};
+
+pub const ScenePropChangeCfg = std.json.ArrayHashMap(ScenePropChangeItemCfg);
 
 var scenes = &.{
     .{
@@ -37,7 +45,7 @@ pub fn selectNextScene(reg: *ecs.Registry) void {
     }
 }
 
-pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const u8) !ecs.Entity {
+pub fn loadScene(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropChangeCfg, allocator: std.mem.Allocator, name: []const u8) !ecs.Entity {
     inline for (scenes) |scene_desc| {
         if (std.mem.eql(u8, name, scene_desc.name)) {
             const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
@@ -47,6 +55,13 @@ pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const
             reg.add(new_scene_entity, rcmp.Position { .x = 0, .y = 0 });
             reg.add(new_scene_entity, rcmp.AttachTo { .target = null });
             reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
+
+            if (change.map.get(name)) |change_item| {
+                var change_iter = change_item.enter.map.iterator();
+                while (change_iter.next()) |change_kv| {
+                    try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+                }
+            }
 
             return new_scene_entity;
         }

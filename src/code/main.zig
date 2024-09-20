@@ -14,6 +14,7 @@ const rs = @import("engine/resources.zig");
 const game_systems = @import("ecs/game/systems.zig");
 const pr = @import("engine/properties.zig");
 const itm = @import("engine/items.zig");
+const game = @import("ecs/game/utils.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
@@ -48,9 +49,12 @@ pub fn main() !void {
     const items_cfg_text = @embedFile("assets/cfg/items.json");
     var items_cfg_json = try std.json.parseFromSlice(itm.ItemListCfg, arena, items_cfg_text, .{ .ignore_unknown_fields = true });
     defer items_cfg_json.deinit();
+
     const item_drop_cfg_text = @embedFile("assets/cfg/item_drop.json");
-    var item_drop_cfg_json = try std.json.parseFromSlice(itm.ItemDropListCfg, arena, item_drop_cfg_text, .{ .ignore_unknown_fields = true });
+    var item_drop_cfg_json = try std.json.parseFromSlice(itm.ItemDropListCfg,
+        arena, item_drop_cfg_text, .{ .ignore_unknown_fields = true });
     defer item_drop_cfg_json.deinit();
+
     var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props, arena);
 
     var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
@@ -58,15 +62,19 @@ pub fn main() !void {
     var rnd = pcg.random();
 
     var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ .ignore_unknown_fields = true });
+    defer rules_json.deinit();
     var rules = rules_json.value;
 
+    const scene_prop_change_text = @embedFile("assets/cfg/scene_property_change.json");
+    var scene_prop_change_json = try std.json.parseFromSlice(
+        game.ScenePropChangeCfg, arena, scene_prop_change_text, .{ .ignore_unknown_fields = true });
     //debug init
 
     //debug init end
     
     //game init systems
     try game_systems.initProperties(&reg, props_json.object, &props);
-    try game_systems.initScene(&reg, arena);
+    try game_systems.initScene(&reg, &props, &scene_prop_change_json.value, arena);
     //game init systems end
 
     var timer = try std.time.Timer.start();
@@ -92,15 +100,15 @@ pub fn main() !void {
         //init obj systems
         game_systems.initButton(&reg);
 
-        try game_systems.initGameplayCustoms(&reg, &props, arena, &rnd);
+        try game_systems.initGameplayCustoms(&reg, &props, &scene_prop_change_json.value, arena, &rnd);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
         game_systems.button(&reg);
         game_systems.properties(&reg);
-        try game_systems.changeScene(&reg, &props, &rules, &rnd, arena);
+        try game_systems.changeScene(&reg, &props, &rules, &scene_prop_change_json.value, &rnd, arena);
 
-        try game_systems.updateGameplayCustoms(&reg, &props, arena, &items, &rnd);
+        try game_systems.updateGameplayCustoms(&reg, &props, &scene_prop_change_json.value, arena, &items, &rnd);
 
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg, arena);

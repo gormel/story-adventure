@@ -163,8 +163,8 @@ fn moveCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
     }
 }
 
-fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, rnd: *std.rand.Random) ecs.Entity {
-    if (items.roll(rnd)) |item_name| {
+fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: []const u8, rnd: *std.rand.Random) ecs.Entity {
+    if (items.rollGroup(group, rnd) catch null) |item_name| {
         if (items.info(item_name)) |item| {
             var entity = reg.create();
             reg.add(entity, rcmp.SpriteResource {
@@ -245,6 +245,8 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
                 .cfg_json = cfg_json
             });
 
+
+
             var index = try loot.TileIndex.init(&cfg, rnd, allocator);
             defer index.deinit();
 
@@ -316,28 +318,33 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
                 }
             }
 
-            var cnt = rnd.intRangeAtMost(i32,
-                @as(i32, @intFromFloat(cfg.loot_count_min)),
-                @as(i32, @intFromFloat(cfg.loot_count_max)));
-            
-            while (cnt > 0) : (cnt -= 1) {
-                var loot_tile = rr.select(LootRoll, "weight", loot_roll_table.items, rnd);
+            var loot_iter = cfg.loot.map.iterator();
+            while (loot_iter.next()) |loot_kv| {
+                var loot_count = loot_kv.value_ptr;
+                var cnt = rnd.intRangeAtMost(i32,
+                    @as(i32, @intFromFloat(loot_count.min)),
+                    @as(i32, @intFromFloat(loot_count.max)));
+                
+                while (cnt > 0) : (cnt -= 1) {
+                    var loot_tile = rr.select(LootRoll, "weight", loot_roll_table.items, rnd);
 
-                if (loot_tile) |ok_loot_tile| {
-                    reg.add(ok_loot_tile.entity, cmp.RollItem {});
+                    if (loot_tile) |ok_loot_tile| {
+                        reg.add(ok_loot_tile.entity, cmp.RollItem { .group = loot_kv.key_ptr.* });
 
-                    const index_of: ?usize = for (loot_roll_table.items, 0..) |loot_item, idx| {
-                        if (loot_item.entity == ok_loot_tile.entity) {
-                            break idx;
+                        const index_of: ?usize = for (loot_roll_table.items, 0..) |loot_item, idx| {
+                            if (loot_item.entity == ok_loot_tile.entity) {
+                                break idx;
+                            }
+                        } else null;
+                        if (index_of) |found_idx| {
+                            _ = loot_roll_table.swapRemove(found_idx);
                         }
-                    } else null;
-                    if (index_of) |found_idx| {
-                        _ = loot_roll_table.swapRemove(found_idx);
+                    } else {
+                        break;
                     }
-                } else {
-                    break;
                 }
             }
+
         }
     }
 }
@@ -357,8 +364,9 @@ pub fn rollItem(reg: *ecs.Registry, items: *itm.Items, rnd: *std.rand.Random) vo
     var view = reg.view(.{ cmp.RollItem }, .{ cmp.TileLoot });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
+        const roll = reg.get(cmp.RollItem, entity);
         reg.add(entity, cmp.TileLoot {
-            .entity = rollLoot(reg, entity, items, rnd),
+            .entity = rollLoot(reg, entity, items, roll.group, rnd),
         });
 
         reg.remove(cmp.RollItem, entity);

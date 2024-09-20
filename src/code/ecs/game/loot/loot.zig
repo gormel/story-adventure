@@ -23,9 +23,15 @@ pub const TileCfg = struct {
     connections: [] Side,
 };
 
+pub const LootCountCfg = struct {
+    min: f64,
+    max: f64,
+};
+
 pub const LootCfg = struct {
     loot_count_min: f64,
     loot_count_max: f64,
+    loot: std.json.ArrayHashMap(LootCountCfg),
     step_cost: f64,
     cost_property: []const u8,
     tiles: [] TileCfg

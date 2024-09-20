@@ -42,7 +42,7 @@ pub fn initScene(reg: *ecs.Registry) void {
     }
 }
 
-pub fn startGame(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
+pub fn startGame(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ cmp.StartGameButton, gcmp.ButtonClicked }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |_| {
@@ -59,6 +59,6 @@ pub fn startGame(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
             reg.remove(gcmp.GameStateMenu, state_entity);
         }
 
-        _ = try game.loadScene(reg, allocator, initial_game_scene);
+        _ = try game.loadScene(reg, props, change, allocator, initial_game_scene);
     }
 }

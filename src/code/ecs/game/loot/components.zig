@@ -11,7 +11,7 @@ pub const Tile = struct {
     r: ?ecs.Entity = null,
     d: ?ecs.Entity = null,
 };
-pub const RollItem = struct { };
+pub const RollItem = struct { group: []const u8 };
 pub const TileFog = struct { entity: ecs.Entity };
 pub const TileOpener = struct { entity: ecs.Entity };
 pub const TileLoot = struct { entity: ecs.Entity };

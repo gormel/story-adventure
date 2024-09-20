@@ -1,4 +1,4 @@
-ref: loot: loot groups to selection ("item_count": [ "group": { "min": 1, "max": 5 } ])
+fix: lock move while animation or fix animation state
 ref: resources to @embedFile()
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
@@ -18,5 +18,7 @@ https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
 
 общий механ
 * без стамины -Х хп за сцену
+* каждый переход требует стамину??
 
+--------------------------------------
 страна

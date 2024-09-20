@@ -1,0 +1,8 @@
+{
+    "loot": {
+        "enter": {
+            "health": 10
+        },
+        "exit": {}
+    }
+}

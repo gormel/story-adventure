@@ -119,14 +119,21 @@ fn checkCondition(params: []sc.RuleParam, props: *pr.Properties) bool {
     return true;
 }
 
-pub fn initScene(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+pub fn initScene(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
     var state_entity = reg.create();
     reg.add(state_entity, cmp.GameState {});
 
-    _ = try game.loadScene(reg, allocator, initial_scene);
+    _ = try game.loadScene(reg, props, change, allocator, initial_scene);
 }
 
-pub fn changeScene(reg: *ecs.Registry, props: *pr.Properties, rules: *sc.Rules, rnd: *std.rand.Random, allocator: std.mem.Allocator) !void {
+pub fn changeScene(
+    reg: *ecs.Registry,
+    props: *pr.Properties,
+    rules: *sc.Rules,
+    change: *game.ScenePropChangeCfg,
+    rnd: *std.rand.Random,
+    allocator: std.mem.Allocator
+) !void {
     var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -151,7 +158,14 @@ pub fn changeScene(reg: *ecs.Registry, props: *pr.Properties, rules: *sc.Rules, 
             if (roll) |ok_roll| {
                 reg.add(entity, ccmp.Destroyed {});
 
-                _ = try game.loadScene(reg, allocator, ok_roll.result_scene);
+                if (change.map.get(scene_name)) |change_item| {
+                    var change_iter = change_item.exit.map.iterator();
+                    while (change_iter.next()) |change_kv| {
+                        try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+                    }
+                }
+
+                _ = try game.loadScene(reg, props, change, allocator, ok_roll.result_scene);
             }
         }
         
@@ -162,26 +176,27 @@ pub fn changeScene(reg: *ecs.Registry, props: *pr.Properties, rules: *sc.Rules, 
 pub fn initGameplayCustoms(
     reg: *ecs.Registry,
     props: *pr.Properties,
+    change: *game.ScenePropChangeCfg,
     allocator: std.mem.Allocator,
     rnd: *std.rand.Random
 ) !void {
     main_menu.initScene(reg);
     main_menu.initStartButton(reg);
-    try gameplay_start.initSwitch(reg, allocator);
+    try gameplay_start.initSwitch(reg, props, change, allocator);
     hud.initViews(reg);
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
-    _ = props;
 }
 
 pub fn updateGameplayCustoms(
     reg: *ecs.Registry,
     props: *pr.Properties,
+    change: *game.ScenePropChangeCfg,
     allocator: std.mem.Allocator,
     items: *itm.Items,
     rnd: *std.rand.Random
 ) !void {
-    try main_menu.startGame(reg, props, allocator);
+    try main_menu.startGame(reg, props, change, allocator);
     gameplay_start.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
     loot.rollItem(reg, items, rnd);
