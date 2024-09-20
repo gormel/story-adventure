@@ -1,6 +1,4 @@
 {
-    "loot_count_min": 1,
-    "loot_count_max": 3,
     "loot": {
         "any": { "min": 1, "max": 3 }
     },

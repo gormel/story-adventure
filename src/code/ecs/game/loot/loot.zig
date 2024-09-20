@@ -29,8 +29,6 @@ pub const LootCountCfg = struct {
 };
 
 pub const LootCfg = struct {
-    loot_count_min: f64,
-    loot_count_max: f64,
     loot: std.json.ArrayHashMap(LootCountCfg),
     step_cost: f64,
     cost_property: []const u8,
