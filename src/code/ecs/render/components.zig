@@ -17,6 +17,7 @@ pub const TweenMove = struct {
 };
 pub const TweenComplete = struct {};
 pub const TweenInProgress = struct { duration: f32 };
+pub const CancelTween = struct {};
 
 pub const SolidRect = struct { rect: rl.Rectangle, color: rl.Color };
 pub const SolidRectOffset = struct { x: f32, y: f32 };

@@ -282,6 +282,12 @@ fn setTweenMove(reg: *ecs.Registry, entity: ecs.Entity, x: f32, y: f32) void {
 }
 
 pub fn tweenMove(reg: *ecs.Registry, dt: f32) void {
+    var cancel_view = reg.view(.{ cmp.CancelTween, cmp.TweenMove }, .{});
+    var cancel_iter = cancel_view.entityIterator();
+    while (cancel_iter.next()) |entity| {
+        
+    }
+
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenMove }, .{ Destroyed });
     var complete_iter = complete_view.entityIterator();
     while (complete_iter.next()) |entity| {

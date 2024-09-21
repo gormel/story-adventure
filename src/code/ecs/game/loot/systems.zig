@@ -128,11 +128,16 @@ fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
     }
 }
 
-fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
-    var from_tile_pos = reg.get(rcmp.Position, char_ety);
+fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
+    var from_tile_pos = reg.get(rcmp.Position, from_tile_ety);
     var to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
     const dx = from_tile_pos.x - to_tile_pos.x;
     const dy = from_tile_pos.y - to_tile_pos.y;
+
+    var tween_iter = reg.entityIterator(cmp.CharacterMoveTween);
+    while (tween_iter.next()) |entity| {
+        reg.add(entity, rcmp.CancelTween {});
+    }
 
     if (toDirection(dx, dy)) |dir| {
         var tween_ety = reg.create();
@@ -156,10 +161,10 @@ fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, to_tile_ety: ecs.E
     }
 }
 
-fn moveCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
+fn moveCharacter(reg: *ecs.Registry, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
     var iter = reg.entityIterator(cmp.Character);
     while (iter.next()) |entity| {
-        animateCharacter(reg, entity, tile_ety);
+        animateCharacter(reg, entity, from_tile_ety, to_tile_ety);
     }
 }
 
@@ -511,6 +516,8 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
                         }
                     }
                 }
+
+                moveCharacter(reg, opener.source_tile, entity);
             }
 
             var connection_iter = ConnectionIterator.init(reg, entity);
@@ -525,8 +532,6 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
                     });
                 }
             }
-
-            moveCharacter(reg, entity);
 
             if (!reg.has(cmp.Visited, entity)) {
                 reg.add(entity, cmp.Visited {});
