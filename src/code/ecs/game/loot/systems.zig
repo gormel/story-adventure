@@ -117,9 +117,7 @@ fn toDirection(dx: f32, dy: f32) ?loot.Side {
 fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
     for(etys, 0..) |entity, i| {
         if (i == idx) {
-            if (reg.has(rcmp.Hidden, entity)) {
-                reg.remove(rcmp.Hidden, entity);
-            }
+            reg.removeIfExists(rcmp.Hidden, entity);
         } else {
             if (!reg.has(rcmp.Hidden, entity)) {
                 reg.add(entity, rcmp.Hidden {});
@@ -134,7 +132,8 @@ fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs
     const dx = from_tile_pos.x - to_tile_pos.x;
     const dy = from_tile_pos.y - to_tile_pos.y;
 
-    var tween_iter = reg.entityIterator(cmp.CharacterMoveTween);
+    var tween_view = reg.view(.{ cmp.CharacterMoveTween }, .{ rcmp.CancelTween });
+    var tween_iter = tween_view.entityIterator();
     while (tween_iter.next()) |entity| {
         reg.add(entity, rcmp.CancelTween {});
     }

@@ -285,7 +285,13 @@ pub fn tweenMove(reg: *ecs.Registry, dt: f32) void {
     var cancel_view = reg.view(.{ cmp.CancelTween, cmp.TweenMove }, .{});
     var cancel_iter = cancel_view.entityIterator();
     while (cancel_iter.next()) |entity| {
-        
+        reg.remove(cmp.TweenMove, entity);
+        reg.remove(cmp.CancelTween, entity);
+
+        reg.removeIfExists(cmp.TweenInProgress, entity);
+        reg.removeIfExists(cmp.TweenComplete, entity);
+
+        reg.add(entity, Destroyed {});
     }
 
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenMove }, .{ Destroyed });
