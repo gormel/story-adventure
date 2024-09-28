@@ -1,0 +1,29 @@
+{
+    "strategy": {
+        "attack": {
+            "name": "attack",
+            "cost": {},
+            "modigy": {
+                "attack": 2
+            }
+        },
+        "rage_attack": {
+            "name": "rage attack",
+            "cost": {
+                "health": 10
+            },
+            "modigy": {
+                "attack": 3,
+                "armor": 0.5
+            }
+        },
+        "defence": {
+            "name": "defence",
+            "cost": {},
+            "modigy": {
+                "armor": 2
+            }
+        }
+    },
+    "enemy": []
+}

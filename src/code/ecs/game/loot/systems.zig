@@ -13,7 +13,7 @@ const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 
 const loot = @import("loot.zig");
-const cfg_text = @embedFile("../../../assets/cfg/loot_scene.json");
+const cfg_text = @embedFile("../../../assets/cfg/scene_customs/loot.json");
 
 const Point = struct {
     x: i32,

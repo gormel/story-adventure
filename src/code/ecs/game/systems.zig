@@ -17,6 +17,7 @@ const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
 const hud = @import("hud/systems.zig");
 const loot = @import("loot/systems.zig");
+const combat = @import("combat/systems.zig");
 
 const SceneDesc = struct { name: []const u8, text: []const u8 };
 
