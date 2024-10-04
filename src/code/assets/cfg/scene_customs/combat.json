@@ -3,7 +3,7 @@
         "attack": {
             "name": "attack",
             "cost": {},
-            "modigy": {
+            "modify": {
                 "attack": 2
             }
         },
@@ -12,7 +12,7 @@
             "cost": {
                 "health": 10
             },
-            "modigy": {
+            "modify": {
                 "attack": 3,
                 "armor": 0.5
             }
@@ -20,10 +20,24 @@
         "defence": {
             "name": "defence",
             "cost": {},
-            "modigy": {
+            "modify": {
                 "armor": 2
             }
         }
     },
-    "enemy": []
+    "enemy": [
+        {
+            "name": "lizard wizard",
+            "strategy": {
+                "attack": 2,
+                "defence": 1
+            },
+            "params": {
+                "health": 10,
+                "attack": 5,
+                "armor": 1,
+                "stamina": 0
+            }
+        }
+    ]
 }

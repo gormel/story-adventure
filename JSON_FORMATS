@@ -70,11 +70,7 @@ item_drop:
     {
         "item": "item-name",
         "weight": 1,
-        "groups": [
-            "potion",
-            "weapon",
-            "gold"
-        ]
+        "groups": [ "potion", "weapon", "gold" ]
     }
 ]
 
