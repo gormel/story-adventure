@@ -114,7 +114,7 @@ pub fn main() !void {
         render_systems.setTextParams(&reg, arena);
         render_systems.blink(&reg, dt);
         render_systems.updateFlipbook(&reg, dt);
-        render_systems.tweenMove(&reg, dt);
+        render_systems.tween(&reg, dt);
 
         rl.BeginDrawing();
         rl.ClearBackground(rl.WHITE);

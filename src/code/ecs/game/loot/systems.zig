@@ -126,36 +126,58 @@ fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
     }
 }
 
+fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axis: rcmp.Axis) void {
+    var tween_view = reg.view(.{ cmp.CharacterMoveTween }, .{ rcmp.CancelTween });
+    var tween_iter = tween_view.entityIterator();
+    while (tween_iter.next()) |entity| {
+        var char_tween = reg.get(cmp.CharacterMoveTween, entity);
+        if (char_tween.axis == axis) {
+            reg.add(entity, rcmp.CancelTween {});
+        } else {
+            char_tween.reset_anim = false;
+        }
+    }
+
+    var tween_ety = reg.create();
+    reg.add(tween_ety, rcmp.TweenMove {
+        .axis = axis,
+    });
+    reg.add(tween_ety, rcmp.TweenSetup {
+        .from = from,
+        .to = to,
+        .duration = 1,
+        .entity = char_ety,
+    });
+    reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety, .axis = axis });
+}
+
 fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
     var from_tile_pos = reg.get(rcmp.Position, from_tile_ety);
     var to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
     const dx = from_tile_pos.x - to_tile_pos.x;
     const dy = from_tile_pos.y - to_tile_pos.y;
 
-    var tween_view = reg.view(.{ cmp.CharacterMoveTween }, .{ rcmp.CancelTween });
-    var tween_iter = tween_view.entityIterator();
-    while (tween_iter.next()) |entity| {
-        reg.add(entity, rcmp.CancelTween {});
-    }
-
     if (toDirection(dx, dy)) |dir| {
-        var tween_ety = reg.create();
-        reg.add(tween_ety, rcmp.TweenMove {
-            .duration = 1,
-            .entity = char_ety,
-            .from_x = from_tile_pos.x, .from_y = from_tile_pos.y,
-            .to_x = to_tile_pos.x, .to_y = to_tile_pos.y,
-        });
-        reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety });
-
         var char = reg.get(cmp.Character, char_ety);
         var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
         
         switch (dir) {
-            .LEFT => { showAnimation(&anims, 1, reg); },
-            .UP => { showAnimation(&anims, 2, reg); },
-            .RIGHT => { showAnimation(&anims, 3, reg); },
-            .DOWN => { showAnimation(&anims, 4, reg); },
+            .LEFT => {
+                createTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
+                showAnimation(&anims, 1, reg);
+            },
+            .UP => {
+                createTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
+                showAnimation(&anims, 2, reg);
+            },
+            .RIGHT => {
+                createTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
+                showAnimation(&anims, 3, reg);
+            },
+            .DOWN => {
+                createTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
+                showAnimation(&anims, 4, reg);
+            },
         }
     }
 }
@@ -358,9 +380,11 @@ pub fn character(reg: *ecs.Registry) void {
     var anim_restore_iter = anim_restore_view.entityIterator();
     while (anim_restore_iter.next()) |entity| {
         var tween = reg.get(cmp.CharacterMoveTween, entity);
-        var char = reg.get(cmp.Character, tween.char_entity);
-        var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
-        showAnimation(&anims, 0, reg);
+        if (tween.reset_anim) {
+            var char = reg.get(cmp.Character, tween.char_entity);
+            var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
+            showAnimation(&anims, 0, reg);
+        }
     }
 }
 

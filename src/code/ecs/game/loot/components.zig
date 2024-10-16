@@ -1,6 +1,7 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
 const loot = @import("loot.zig");
+const rcmp = @import("../../render/components.zig");
 
 pub const LootStart = struct { cfg_json: std.json.Parsed(loot.LootCfg) };
 pub const Tile = struct {
@@ -27,5 +28,5 @@ pub const Character = struct {
     r_anim: ecs.Entity,
     d_anim: ecs.Entity,
 };
-pub const CharacterMoveTween = struct { char_entity: ecs.Entity };
+pub const CharacterMoveTween = struct { char_entity: ecs.Entity, axis: rcmp.Axis, reset_anim: bool = true };
 pub const CompleteLootButton = struct {};

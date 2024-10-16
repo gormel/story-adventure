@@ -9,10 +9,16 @@ pub const Sprite = struct { sprite: sp.Sprite };
 pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
 pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
-pub const TweenMove = struct {
-    from_x: f32, from_y: f32,
-    to_x: f32, to_y: f32,
+pub const Axis = enum { X, Y };
+
+pub const TweenRotate = struct {};
+pub const TweenMove = struct { axis: Axis };
+pub const TweenScale = struct { axis: Axis };
+pub const TweenSetup = struct {
+    from: f32,
+    to: f32,
     duration: f32,
+    //TODO: easing, repeat
     entity: ecs.Entity,
 };
 pub const TweenComplete = struct {};
@@ -39,9 +45,9 @@ pub const UpdateGlobalTransform = struct {};
 pub const GlobalTransformUpdated = struct {};
 pub const NotUpdateGlobalTransform = struct {};
 
-pub const Position = struct { x: f32, y: f32 };
-pub const Scale = struct { x: f32, y: f32 };
-pub const Rotation = struct { a: f32 };
+pub const Position = struct { x: f32 = 0, y: f32 = 0 };
+pub const Scale = struct { x: f32 = 1, y: f32 = 1 };
+pub const Rotation = struct { a: f32 = 0 };
 pub const Order = struct { order: i32 };
 
 pub const GlobalPosition = struct { x: f32, y: f32 };
