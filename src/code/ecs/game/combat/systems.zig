@@ -13,3 +13,8 @@ const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 
 const combat = @import("combat.zig");
+
+pub fn initStrategy() void {
+
+}
+

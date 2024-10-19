@@ -2,6 +2,12 @@
     {
         "current_scene": "gameplay_start",
         "result_scene": "loot",
+        "weight": 0,
+        "params": []
+    },
+    {
+        "current_scene": "gameplay_start",
+        "result_scene": "combat",
         "weight": 1,
         "params": []
     },

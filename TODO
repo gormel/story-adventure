@@ -3,8 +3,8 @@ fea: combat scene
     * strategy cfg [name, param modify, cost]
     * enemy selected strategy info
     * attack animation (mb projectile effect)
-    * hit taken animation
-    * death animation
+    * hit taken animation (scale + recolor effect)
+    * death animation (scale to 0 + rotate? effect)
 
     click strategy -> hide btns -> show hero animation -> show enemy animation + strategy name -> show btns
     enemy == hero (character)

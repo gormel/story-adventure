@@ -1,1 +1,76 @@
-{"tex": "resources/textures/gameplay.png", "sprites": [{"name": "tile_lurd", "x": 96, "y": 0, "w": 32, "h": 32}, {"name": "tile_r", "x": 64, "y": 64, "w": 32, "h": 32}, {"name": "tile_rd", "x": 0, "y": 0, "w": 32, "h": 32}, {"name": "tile_u", "x": 64, "y": 32, "w": 32, "h": 32}, {"name": "tile_ud", "x": 0, "y": 96, "w": 32, "h": 32}, {"name": "tile_ur", "x": 64, "y": 96, "w": 32, "h": 32}, {"name": "tile_urd", "x": 0, "y": 32, "w": 32, "h": 32}, {"name": "tile_d", "x": 0, "y": 64, "w": 32, "h": 32}, {"name": "tile_l", "x": 96, "y": 64, "w": 32, "h": 32}, {"name": "tile_ld", "x": 32, "y": 64, "w": 32, "h": 32}, {"name": "tile_lr", "x": 96, "y": 32, "w": 32, "h": 32}, {"name": "tile_lrd", "x": 32, "y": 0, "w": 32, "h": 32}, {"name": "tile_lu", "x": 32, "y": 32, "w": 32, "h": 32}, {"name": "tile_lud", "x": 64, "y": 0, "w": 32, "h": 32}, {"name": "tile_lur", "x": 32, "y": 96, "w": 32, "h": 32}, {"name": "hidden_loot", "x": 96, "y": 96, "w": 32, "h": 32}, {"name": "openable", "x": 128, "y": 0, "w": 32, "h": 32}, {"name": "anm-hero_idle-1-0", "x": 0, "y": 128, "w": 32, "h": 32}, {"name": "anm-hero_idle-1-1", "x": 32, "y": 128, "w": 32, "h": 32}, {"name": "anm-hero_idle-1-2", "x": 64, "y": 128, "w": 32, "h": 32}, {"name": "anm-hero_idle-1-3", "x": 96, "y": 128, "w": 32, "h": 32}, {"name": "anm-hero_left-1-0", "x": 32, "y": 160, "w": 32, "h": 32}, {"name": "anm-hero_left-1-1", "x": 0, "y": 160, "w": 32, "h": 32}, {"name": "anm-hero_left-1-2", "x": 64, "y": 160, "w": 32, "h": 32}, {"name": "anm-hero_left-1-3", "x": 96, "y": 160, "w": 32, "h": 32}, {"name": "anm-hero_right-1-0", "x": 96, "y": 192, "w": 32, "h": 32}, {"name": "anm-hero_right-1-1", "x": 128, "y": 192, "w": 32, "h": 32}, {"name": "anm-hero_right-1-2", "x": 64, "y": 192, "w": 32, "h": 32}, {"name": "anm-hero_right-1-3", "x": 32, "y": 192, "w": 32, "h": 32}, {"name": "anm-hero_down-1-0", "x": 128, "y": 64, "w": 32, "h": 32}, {"name": "anm-hero_down-1-1", "x": 160, "y": 64, "w": 32, "h": 32}, {"name": "anm-hero_down-1-2", "x": 192, "y": 64, "w": 32, "h": 32}, {"name": "anm-hero_down-1-3", "x": 224, "y": 64, "w": 32, "h": 32}, {"name": "anm-hero_up-1-0", "x": 128, "y": 32, "w": 32, "h": 32}, {"name": "anm-hero_up-1-1", "x": 160, "y": 32, "w": 32, "h": 32}, {"name": "anm-hero_up-1-2", "x": 192, "y": 32, "w": 32, "h": 32}, {"name": "anm-hero_up-1-3", "x": 224, "y": 32, "w": 32, "h": 32}], "animations": [{"name": "hero_idle", "duration": 1.0, "frames": ["anm-hero_idle-1-0", "anm-hero_idle-1-1", "anm-hero_idle-1-2", "anm-hero_idle-1-3"]}, {"name": "hero_left", "duration": 1.0, "frames": ["anm-hero_left-1-0", "anm-hero_left-1-1", "anm-hero_left-1-2", "anm-hero_left-1-3"]}, {"name": "hero_right", "duration": 1.0, "frames": ["anm-hero_right-1-0", "anm-hero_right-1-1", "anm-hero_right-1-2", "anm-hero_right-1-3"]}, {"name": "hero_down", "duration": 1.0, "frames": ["anm-hero_down-1-0", "anm-hero_down-1-1", "anm-hero_down-1-2", "anm-hero_down-1-3"]}, {"name": "hero_up", "duration": 1.0, "frames": ["anm-hero_up-1-0", "anm-hero_up-1-1", "anm-hero_up-1-2", "anm-hero_up-1-3"]}]}
+{
+    "tex": "resources/textures/gui.png",
+    "sprites": [
+        {
+            "name": "button",
+            "x": 0,
+            "y": 0,
+            "w": 160,
+            "h": 32
+        },
+        {
+            "name": "coin",
+            "x": 96,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "heart",
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "popup_bg",
+            "x": 160,
+            "y": 0,
+            "w": 683,
+            "h": 433
+        },
+        {
+            "name": "power",
+            "x": 128,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "shield",
+            "x": 64,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword",
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "defence-strategy",
+            "x": 32,
+            "y": 64,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "rage-attack-strategy",
+            "x": 96,
+            "y": 64,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "attack-strategy",
+            "x": 96,
+            "y": 128,
+            "w": 64,
+            "h": 64
+        }
+    ],
+    "animations": []
+}

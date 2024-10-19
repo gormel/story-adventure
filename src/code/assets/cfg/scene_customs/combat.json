@@ -1,20 +1,28 @@
 {
     "strategy": {
         "attack": {
-            "name": "attack",
             "cost": {},
             "modify": {
                 "attack": 2
+            },
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "attack-strategy",
+                "name": "attack"
             }
         },
         "rage_attack": {
-            "name": "rage attack",
             "cost": {
                 "health": 10
             },
             "modify": {
                 "attack": 3,
                 "armor": 0.5
+            },
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "rage-attack-strategy",
+                "name": "rage attack"
             }
         },
         "defence": {
@@ -22,6 +30,11 @@
             "cost": {},
             "modify": {
                 "armor": 2
+            },
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "defence-strategy",
+                "name": "defence"
             }
         }
     },
@@ -37,7 +50,12 @@
                 "attack": 5,
                 "armor": 1,
                 "stamina": 0
-            }
+            },
+            "view": {
+                "atlas": "",
+                "idle": ""
+            },
+            "condition": {}
         }
     ]
 }

@@ -35,6 +35,10 @@ var scenes = &.{
         .name = "loot",
         .text = @embedFile("../../assets/scenes/loot.json"),
     },
+    .{
+        .name = "combat",
+        .text = @embedFile("../../assets/scenes/combat.json"),
+    },
 };
 
 pub fn selectNextScene(reg: *ecs.Registry) void {

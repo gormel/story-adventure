@@ -94,3 +94,42 @@ loot_scene:
         }
     ]
 }
+
+combat_scene:
+{
+    "strategy": {
+        "attack": {
+            "cost": {
+                "stammina": 1
+            },
+            "modify": {
+                "attack": 2
+            },
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "attack-strategy",
+                "name": "attack"
+            }
+        }
+    },
+    "enemy": [
+        {
+            "name": "lizard wizard",
+            "strategy": {
+                "attack": 2,
+                "defence": 1
+            },
+            "params": {
+                "health": 10,
+                "attack": 5,
+                "armor": 1,
+                "stamina": 0
+            },
+            "view": {
+                "atlas": "resources/atlases/gameplay.json",
+                "idle": "lizard-wizard-idle"
+            },
+            "condition": {}
+        }
+    ]
+}
