@@ -10,6 +10,7 @@ pub const Sprite = struct { sprite: sp.Sprite };
 pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
 pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
+pub const ColorComponent = enum { R, G, B, A };
 pub const Axis = enum { X, Y };
 pub const TweenRepeat = enum {
     OnceForward,
@@ -23,6 +24,7 @@ pub const TweenRepeat = enum {
 pub const TweenRotate = struct {};
 pub const TweenMove = struct { axis: Axis };
 pub const TweenScale = struct { axis: Axis };
+pub const TweenColor = struct { component: ColorComponent };
 pub const TweenSetup = struct {
     from: f32,
     to: f32,
@@ -60,7 +62,7 @@ pub const Position = struct { x: f32 = 0, y: f32 = 0 };
 pub const Scale = struct { x: f32 = 1, y: f32 = 1 };
 pub const Rotation = struct { a: f32 = 0 };
 pub const Order = struct { order: i32 };
-pub const Color = struct { r: u8, g: u8, b: u8, a: u8 };
+pub const Color = struct { r: u8 = 255, g: u8 = 255, b: u8 = 255, a: u8 = 255 };
 
 pub const GlobalPosition = struct { x: f32, y: f32 };
 pub const GlobalScale = struct { x: f32, y: f32 };

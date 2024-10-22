@@ -1,4 +1,3 @@
-fea: recolor tween
 fix: json load "file too big"
 fea: combat scene
     * enemy selected strategy info

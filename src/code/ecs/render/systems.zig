@@ -423,6 +423,27 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             reg.add(setup.entity, cmp.UpdateGlobalTransform {});
         }
     }
+
+    var color_view = reg.view(.{ cmp.TweenSetup, cmp.TweenColor, cmp.TweenInProgress }, .{});
+    var color_iter = color_view.entityIterator();
+    while (color_iter.next()) |entity| {
+        const setup = reg.getConst(cmp.TweenSetup, entity);
+        const color = reg.getConst(cmp.TweenColor, entity);
+
+        const value = tweenValue(reg, entity);
+
+        var colorValue = reg.getOrAdd(cmp.Color, setup.entity);
+        switch (color.component) {
+            .R => { colorValue.r = @intFromFloat(value); },
+            .G => { colorValue.g = @intFromFloat(value); },
+            .B => { colorValue.b = @intFromFloat(value); },
+            .A => { colorValue.a = @intFromFloat(value); },
+        }
+
+        if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
+            reg.add(setup.entity, cmp.UpdateGlobalTransform {});
+        }
+    }
 }
 
 pub fn blink(reg: *ecs.Registry, dt: f32) void {
