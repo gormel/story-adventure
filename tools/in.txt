@@ -1,67 +1,45 @@
-/* gui */
+/* gameplay */
 
 position: relative;
-width: 843px;
-height: 433px;
+width: 256px;
+height: 224px;
 
 
 
-/* button */
-
-position: absolute;
-width: 160px;
-height: 32px;
-left: 0px;
-top: 0px;
-
-background: url(button.png);
-
-
-/* coin */
+/* tile_lurd */
 
 position: absolute;
 width: 32px;
 height: 32px;
 left: 96px;
-top: 32px;
+top: 0px;
 
-background: url(coin.png);
+background: url(tile_lurd.png);
 
 
-/* heart */
+/* tile_r */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 64px;
+
+background: url(tile_r.png);
+
+
+/* tile_rd */
 
 position: absolute;
 width: 32px;
 height: 32px;
 left: 0px;
-top: 32px;
-
-background: url(heart.png);
-
-
-/* popup_bg */
-
-position: absolute;
-width: 683px;
-height: 433px;
-left: 160px;
 top: 0px;
 
-background: url(popup_bg.png);
+background: url(tile_rd.png);
 
 
-/* power */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 128px;
-top: 32px;
-
-background: url(power.png);
-
-
-/* shield */
+/* tile_u */
 
 position: absolute;
 width: 32px;
@@ -69,10 +47,98 @@ height: 32px;
 left: 64px;
 top: 32px;
 
-background: url(shield.png);
+background: url(tile_u.png);
 
 
-/* sword */
+/* tile_ud */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 96px;
+
+background: url(tile_ud.png);
+
+
+/* tile_ur */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 96px;
+
+background: url(tile_ur.png);
+
+
+/* tile_urd */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 32px;
+
+background: url(tile_urd.png);
+
+
+/* tile_d */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 64px;
+
+background: url(tile_d.png);
+
+
+/* tile_l */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 64px;
+
+background: url(tile_l.png);
+
+
+/* tile_ld */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 64px;
+
+background: url(tile_ld.png);
+
+
+/* tile_lr */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 32px;
+
+background: url(tile_lr.png);
+
+
+/* tile_lrd */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 0px;
+
+background: url(tile_lrd.png);
+
+
+/* tile_lu */
 
 position: absolute;
 width: 32px;
@@ -80,37 +146,294 @@ height: 32px;
 left: 32px;
 top: 32px;
 
-background: url(sword.png);
+background: url(tile_lu.png);
 
 
-/* defence-strategy */
+/* tile_lud */
 
 position: absolute;
-width: 64px;
-height: 64px;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 0px;
+
+background: url(tile_lud.png);
+
+
+/* tile_lur */
+
+position: absolute;
+width: 32px;
+height: 32px;
 left: 32px;
-top: 64px;
+top: 96px;
 
-background: url(defence-strategy.png);
+background: url(tile_lur.png);
 
 
-/* rage-attack-strategy */
+/* hidden_loot */
 
 position: absolute;
-width: 64px;
-height: 64px;
+width: 32px;
+height: 32px;
 left: 96px;
-top: 64px;
+top: 96px;
 
-background: url(rage-attack-strategy.png);
+background: url(hidden_loot.png);
 
 
-/* attack-strategy */
+/* openable */
 
 position: absolute;
-width: 64px;
-height: 64px;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 0px;
+
+background: url(openable.png);
+
+
+/* anm-hero_idle-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 128px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_idle-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 128px;
+
+background: url(anm-hero_idle-1-1.png);
+
+
+/* anm-hero_idle-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 128px;
+
+background: url(anm-hero_idle-1-2.png);
+
+
+/* anm-hero_idle-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
 left: 96px;
 top: 128px;
 
-background: url(attack-strategy.png);
+background: url(anm-hero_idle-1-1.png);
+
+
+/* anm-hero_left-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 160px;
+
+background: url(anm-hero_left-1-0.png);
+
+
+/* anm-hero_left-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 160px;
+
+background: url(anm-hero_left-1-1.png);
+
+
+/* anm-hero_left-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 160px;
+
+background: url(anm-hero_left-1-0.png);
+
+
+/* anm-hero_left-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 160px;
+
+background: url(anm-hero_left-1-3.png);
+
+
+/* anm-hero_right-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 192px;
+
+background: url(anm-hero_left-1-0.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 192px;
+
+background: url(anm-hero_left-1-1.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 192px;
+
+background: url(anm-hero_left-1-0.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 192px;
+
+background: url(anm-hero_left-1-3.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_down-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 64px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_down-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 64px;
+
+background: url(anm-hero_down-1-1.png);
+
+
+/* anm-hero_down-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 192px;
+top: 64px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_down-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 224px;
+top: 64px;
+
+background: url(anm-hero_down-1-3.png);
+
+
+/* anm-hero_up-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 32px;
+
+background: url(anm-hero_up-1-0.png);
+
+
+/* anm-hero_up-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 32px;
+
+background: url(anm-hero_up-1-1.png);
+
+
+/* anm-hero_up-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 192px;
+top: 32px;
+
+background: url(anm-hero_up-1-0.png);
+
+
+/* anm-hero_up-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 224px;
+top: 32px;
+
+background: url(anm-hero_up-1-3.png);
+
+
+/* enemy_lizard_wizard */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 0px;
+
+background: url(enemy_lizard_wizard.png);
+
+
+/* attack_effect 1 */
+
+position: absolute;
+width: 8px;
+height: 8px;
+left: 192px;
+top: 0px;
+
+background: url(attack_effect.png);

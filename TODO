@@ -1,6 +1,7 @@
+fea: recolor
+fea: recolor tween
+fix: json load "file too big"
 fea: combat scene
-    * enemy cfg [idle anim, attack anim?, death anim (tween?), attack, defence, hp, stamina, strategy weigths]
-    * strategy cfg [name, param modify, cost]
     * enemy selected strategy info
     * attack animation (mb projectile effect)
     * hit taken animation (scale + recolor effect)

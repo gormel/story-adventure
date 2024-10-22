@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
+const easing = @import("easing.zig");
 const sp = @import("../../engine/sprite.zig");
 
 pub const SpriteResource = struct { atlas: []const u8, sprite: []const u8 };
@@ -10,6 +11,14 @@ pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
 pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
 pub const Axis = enum { X, Y };
+pub const TweenRepeat = enum {
+    OnceForward,
+    OnceReverse,
+    OncePinpong,
+    RepeatForward,
+    RepeatReverse,
+    RepeatPinpong,
+};
 
 pub const TweenRotate = struct {};
 pub const TweenMove = struct { axis: Axis };
@@ -19,6 +28,8 @@ pub const TweenSetup = struct {
     to: f32,
     duration: f32,
     //TODO: easing, repeat
+    easing: easing.Easing = easing.Easing.Linear,
+    repeat: TweenRepeat = TweenRepeat.OnceForward,
     entity: ecs.Entity,
 };
 pub const TweenComplete = struct {};

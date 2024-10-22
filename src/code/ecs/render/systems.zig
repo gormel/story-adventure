@@ -7,6 +7,7 @@ const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
 const rs = @import("../../engine/resources.zig");
 const qu = @import("../../engine/queue.zig");
 const utils = @import("../../engine/utils.zig");
+const easing = @import("easing.zig");
 
 const NoParentGlobalTransform = error{ NoParentGlobalTransform };
 
@@ -268,6 +269,45 @@ pub fn updateGlobalTransform(reg: *ecs.Registry) !void {
     }
 }
 
+fn lerp(a: f32, b: f32, t: f32) f32 {
+    return a * (1 - t) + b * t;
+}
+
+const TweenRepeatDirection = enum {
+    Forward,
+    Reverse,
+    Pinpong,
+};
+
+fn repeatSetup(repeat: cmp.TweenRepeat) struct { once: bool, dir: TweenRepeatDirection } {
+    return switch (repeat) {
+        .OnceForward => .{ .once = true, .dir = .Forward },
+        .OnceReverse => .{ .once = true, .dir = .Reverse },
+        .OncePinpong => .{ .once = true, .dir = .Pinpong },
+        .RepeatForward => .{ .once = false, .dir = .Forward },
+        .RepeatReverse => .{ .once = false, .dir = .Reverse },
+        .RepeatPinpong => .{ .once = false, .dir = .Pinpong },
+    };
+}
+
+fn abs(x: f32) f32 {
+    return if (x < 0) -x else x;
+}
+
+fn tweenValue(reg: *ecs.Registry, entity: ecs.Entity) f32 {
+    const setup = reg.getConst(cmp.TweenSetup, entity);
+    const progress = reg.getConst(cmp.TweenInProgress, entity);
+
+    var t = @min(@max(0, 1 - progress.duration / setup.duration), 1);
+    const repeat = repeatSetup(setup.repeat);
+    switch (repeat.dir) {
+        .Forward => {},
+        .Reverse => { t = 1 - t; },
+        .Pinpong => { t = 1 - abs((t - 0.5) * 2); },
+    }
+    return lerp(setup.from, setup.to, easing.getFunc(setup.easing)(t));
+}
+
 pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var cancel_view = reg.view(.{ cmp.CancelTween, cmp.TweenSetup }, .{});
     var cancel_iter = cancel_view.entityIterator();
@@ -322,8 +362,13 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         progress.duration -= dt;
 
         if (progress.duration <= 0) {
-            reg.remove(cmp.TweenInProgress, entity);
-            reg.add(entity, cmp.TweenComplete {});
+            const repeat = repeatSetup(setup.repeat);
+            if (repeat.once) {
+                reg.remove(cmp.TweenInProgress, entity);
+                reg.add(entity, cmp.TweenComplete {});
+            } else {
+                progress.duration = setup.duration;
+            }
         }
     }
 
@@ -331,11 +376,9 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var move_iter = move_view.entityIterator();
     while (move_iter.next()) |entity| {
         const setup = reg.getConst(cmp.TweenSetup, entity);
-        const progress = reg.getConst(cmp.TweenInProgress, entity);
         const move = reg.getConst(cmp.TweenMove, entity);
 
-        const t = @min(@max(0, progress.duration / setup.duration), 1);
-        const value = setup.from * t + setup.to * (1 - t);
+        const value = tweenValue(reg, entity);
 
         var pos = reg.getOrAdd(cmp.Position, setup.entity);
         switch (move.axis) {
@@ -352,11 +395,9 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var scale_iter = scale_view.entityIterator();
     while (scale_iter.next()) |entity| {
         const setup = reg.getConst(cmp.TweenSetup, entity);
-        const progress = reg.getConst(cmp.TweenInProgress, entity);
         const scale = reg.getConst(cmp.TweenScale, entity);
 
-        const t = @min(@max(0, progress.duration / setup.duration), 1);
-        const value = setup.from * t + setup.to * (1 - t);
+        const value = tweenValue(reg, entity);
 
         var scaleValue = reg.getOrAdd(cmp.Scale, setup.entity);
         switch (scale.axis) {
@@ -373,10 +414,8 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var rotate_iter = rotate_view.entityIterator();
     while (rotate_iter.next()) |entity| {
         const setup = reg.getConst(cmp.TweenSetup, entity);
-        const progress = reg.getConst(cmp.TweenInProgress, entity);
 
-        const t = @min(@max(0, progress.duration / setup.duration), 1);
-        const value = setup.from * t + setup.to * (1 - t);
+        const value = tweenValue(reg, entity);
 
         reg.addOrReplace(setup.entity, cmp.Rotation { .a = value });
 

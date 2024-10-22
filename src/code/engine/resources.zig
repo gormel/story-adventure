@@ -56,7 +56,7 @@ pub const Resources = struct {
 
             const file = try std.fs.openFileAbsolute(absolute_atlas_path, .{});
             defer file.close();
-            const text = try file.readToEndAlloc(self.allocator, 1024 * 5);
+            const text = try file.readToEndAlloc(self.allocator, 1024 * 1024 * 5);
             defer self.allocator.free(text);
             const json = try std.json.parseFromSlice(sp.AtlasCfg, self.allocator, text, .{ .ignore_unknown_fields = true });
 

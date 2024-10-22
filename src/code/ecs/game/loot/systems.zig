@@ -11,6 +11,7 @@ const gcmp = @import("../components.zig");
 const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
+const easing = @import("../../render/easing.zig");
 
 const loot = @import("loot.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/loot.json");
@@ -147,6 +148,7 @@ fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axi
         .to = to,
         .duration = 1,
         .entity = char_ety,
+        .easing = easing.Easing.Ease,
     });
     reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety, .axis = axis });
 }
