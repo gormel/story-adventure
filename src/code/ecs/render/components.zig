@@ -60,6 +60,7 @@ pub const Position = struct { x: f32 = 0, y: f32 = 0 };
 pub const Scale = struct { x: f32 = 1, y: f32 = 1 };
 pub const Rotation = struct { a: f32 = 0 };
 pub const Order = struct { order: i32 };
+pub const Color = struct { r: u8, g: u8, b: u8, a: u8 };
 
 pub const GlobalPosition = struct { x: f32, y: f32 };
 pub const GlobalScale = struct { x: f32, y: f32 };

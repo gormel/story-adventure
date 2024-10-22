@@ -578,12 +578,20 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
     var origin = rl.Vector2 { .x = 0, .y = 0 };
 
+    var color = rl.WHITE;
+    if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
+        color.r = colorComponent.r;
+        color.g = colorComponent.g;
+        color.b = colorComponent.b;
+        color.a = colorComponent.a;
+    }
+
     const target_rect = rl.Rectangle {
         .x = pos.x, .y = pos.y,
         .width = sprite.sprite.rect.width * scale.x,
         .height = sprite.sprite.rect.height * scale.y
     };
-    rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, rl.WHITE);
+    rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, color);
 }
 
 fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -598,12 +606,20 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
     idx = @min(flipbook.flipbook.frames.len - 1, idx);
     var frame = flipbook.flipbook.frames[idx];
 
+    var color = rl.WHITE;
+    if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
+        color.r = colorComponent.r;
+        color.g = colorComponent.g;
+        color.b = colorComponent.b;
+        color.a = colorComponent.a;
+    }
+
     const target_rect = rl.Rectangle {
         .x = pos.x, .y = pos.y,
         .width = frame.width * scale.x,
         .height = frame.height * scale.y
     };
-    rl.DrawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, rl.WHITE);
+    rl.DrawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, color);
 }
 
 fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
