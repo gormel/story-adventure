@@ -1,0 +1,22 @@
+{
+    "System": {
+        "prefix": "syst",
+        "scope": "zig",
+        "body": [
+            "pub fn ${1:system}(reg: *ecs.Registry) void {",
+            "\t",
+            "}"
+        ]
+    },
+    "Filter": {
+        "prefix": "fltr",
+        "scope": "zig",
+        "body": [
+            "var ${1}_view = reg.view(.{ ${2} }, .{});",
+            "var ${1}_iter = ${1}_view.entityIterator();",
+            "while (${1}_iter.next()) |entity| {",
+            "\t${3}",
+            "}"
+        ]
+    }
+}

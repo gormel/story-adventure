@@ -268,7 +268,7 @@
             "h": 32
         },
         {
-            "name": "attack_effect 1",
+            "name": "attack_effect",
             "x": 192,
             "y": 0,
             "w": 8,

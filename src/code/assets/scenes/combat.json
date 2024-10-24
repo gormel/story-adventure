@@ -3,5 +3,15 @@
         "position": { "x": 512, "y": 325 },
         "tags": [ "strategy-container" ],
         "children": []
+    },
+    {
+        "position": { "x": 233, "y": 309 },
+        "tags": [ "hero-root" ],
+        "children": []
+    },
+    {
+        "position": { "x": 791, "y": 309 },
+        "tags": [ "enemy-root" ],
+        "children": []
     }
 ]

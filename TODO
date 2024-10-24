@@ -1,4 +1,3 @@
-fix: json load "file too big"
 fea: combat scene
     * enemy selected strategy info
     * attack animation (mb projectile effect)

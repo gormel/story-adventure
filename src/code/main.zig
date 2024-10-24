@@ -97,6 +97,8 @@ pub fn main() !void {
         try render_systems.loadResource(&reg, &res);
         try render_systems.attachTo(&reg, arena);
         try render_systems.updateGlobalTransform(&reg);
+
+        game_systems.layoutChildren(&reg);
         //layout-children
         //init obj systems
         game_systems.initButton(&reg);

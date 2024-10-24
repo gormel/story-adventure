@@ -209,3 +209,47 @@ pub fn updateGameplayCustoms(
 pub fn freeGameplayCustoms(reg: *ecs.Registry) void {
     loot.freeLootStart(reg);
 }
+
+pub fn layoutChildren(reg: *ecs.Registry) void {
+    var view = reg.view(.{ cmp.LayoutChildren, rcmp.Children }, .{});
+    var iter = view.entityIterator();
+    while (iter.next()) |entity| {
+        var layout = reg.get(cmp.LayoutChildren, entity);
+        var children = reg.get(rcmp.Children, entity);
+
+        var dx: f32 = 0;
+        var dy: f32 = 0;
+
+        switch (layout.axis) {
+            .Horizontal => { dx = layout.distance; },
+            .Vertical => { dy = layout.distance; },
+        }
+
+        const children_count = @as(f32, @floatFromInt(children.children.items.len));
+
+        var origin_x: f32 = 0;
+        var origin_y: f32 = 0;
+        switch (layout.pivot) {
+            .Begin => {},
+            .Center => {
+                origin_x = -dx * (children_count - 1) / 2.0;
+                origin_y = -dy * (children_count - 1) / 2.0;
+            },
+            .End => {
+                origin_x = -dx * (children_count - 1);
+                origin_y = -dy * (children_count - 1);
+            },
+        }
+
+        for (children.children.items, 0..) |child_entity, i| {
+            var position = reg.getOrAdd(rcmp.Position, child_entity);
+            position.x = origin_x + dx * @as(f32, @floatFromInt(i));
+            position.y = origin_y + dy * @as(f32, @floatFromInt(i));
+
+            
+            if (!reg.has(rcmp.UpdateGlobalTransform, child_entity)) {
+                reg.add(child_entity, rcmp.UpdateGlobalTransform {});
+            }
+        }
+    }
+}

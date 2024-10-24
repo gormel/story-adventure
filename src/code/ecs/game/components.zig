@@ -13,3 +13,7 @@ pub const NextGameplayScene = struct {};
 pub const GameState = struct {};
 pub const GameStateMenu = struct { menu_scene: ?ecs.Entity };
 pub const GameStateGameplay = struct { hud_scene: ecs.Entity };
+
+pub const LayoutAxis = enum { Horizontal, Vertical };
+pub const LayoutPivot = enum { Begin, Center, End };
+pub const LayoutChildren = struct { axis: LayoutAxis, pivot: LayoutPivot, distance: f32 };

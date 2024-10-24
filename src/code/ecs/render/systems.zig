@@ -521,9 +521,7 @@ pub fn destroyChildren(reg: *ecs.Registry) !void {
         var children = children_view.get(cmp.Children, entity);
         for (children.children.items) |child_entity| {
             reg.add(child_entity, DestroyNextFrame {});
-            if (reg.has(cmp.Parent, child_entity)) {
-                reg.remove(cmp.Parent, child_entity);
-            }
+            reg.removeIfExists(cmp.Parent, child_entity);
         }
         children.children.deinit();
         reg.remove(cmp.Children, entity);
