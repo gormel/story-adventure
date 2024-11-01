@@ -324,6 +324,11 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenSetup }, .{ Destroyed });
     var complete_iter = complete_view.entityIterator();
     while (complete_iter.next()) |entity| {
+        var setup = reg.get(cmp.TweenSetup, entity);
+        if (setup.remove_source and reg.valid(setup.entity)) {
+            reg.add(setup.entity, Destroyed {});
+        }
+
         reg.remove(cmp.TweenComplete, entity);
         reg.remove(cmp.TweenSetup, entity);
 
@@ -384,6 +389,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         switch (move.axis) {
             .X => { pos.x = value; },
             .Y => { pos.y = value; },
+            .XY => { pos.x = value; pos.y = value; },
         }
 
         if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
@@ -403,6 +409,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         switch (scale.axis) {
             .X => { scaleValue.x = value; },
             .Y => { scaleValue.y = value; },
+            .XY => { scaleValue.x = value; scaleValue.y = value; },
         }
 
         if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
@@ -438,6 +445,56 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             .G => { colorValue.g = @intFromFloat(value); },
             .B => { colorValue.b = @intFromFloat(value); },
             .A => { colorValue.a = @intFromFloat(value); },
+            .RG => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.g = @intFromFloat(value);
+            },
+            .RB => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+            },
+            .RA => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .GB => {
+                colorValue.g = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+            },
+            .GA => {
+                colorValue.g = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .BA => {
+                colorValue.b = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .RGB => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.g = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+            },
+            .RGA => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.g = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .RBA => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .GBA => {
+                colorValue.g = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
+            .RGBA => {
+                colorValue.r = @intFromFloat(value);
+                colorValue.g = @intFromFloat(value);
+                colorValue.b = @intFromFloat(value);
+                colorValue.a = @intFromFloat(value);
+            },
         }
 
         if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
@@ -659,7 +716,15 @@ fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .height = rect.rect.height * scale.y
     };
 
-    rl.DrawRectanglePro(target_rect, origin, rot.a, rect.color);
+    var color = rect.color;
+    if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
+        color.r = @intFromFloat(@as(f32, @floatFromInt(color.r)) * @as(f32, @floatFromInt(colorComponent.r)) / 255);
+        color.g = @intFromFloat(@as(f32, @floatFromInt(color.g)) * @as(f32, @floatFromInt(colorComponent.g)) / 255);
+        color.b = @intFromFloat(@as(f32, @floatFromInt(color.b)) * @as(f32, @floatFromInt(colorComponent.b)) / 255);
+        color.a = @intFromFloat(@as(f32, @floatFromInt(color.a)) * @as(f32, @floatFromInt(colorComponent.a)) / 255);
+    }
+
+    rl.DrawRectanglePro(target_rect, origin, rot.a, color);
 }
 
 fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -674,10 +739,18 @@ fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
         origin.y = offset.y;
     }
 
+    var color = text.color;
+    if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
+        color.r = @intFromFloat(@as(f32, @floatFromInt(color.r)) * @as(f32, @floatFromInt(colorComponent.r)) / 255);
+        color.g = @intFromFloat(@as(f32, @floatFromInt(color.g)) * @as(f32, @floatFromInt(colorComponent.g)) / 255);
+        color.b = @intFromFloat(@as(f32, @floatFromInt(color.b)) * @as(f32, @floatFromInt(colorComponent.b)) / 255);
+        color.a = @intFromFloat(@as(f32, @floatFromInt(color.a)) * @as(f32, @floatFromInt(colorComponent.a)) / 255);
+    }
+
     var position = rl.Vector2 { .x = pos.x, .y = pos.y };
 
     if (text.text.len > 0) {
-        rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, text.color);
+        rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, color);
     }
 }
 

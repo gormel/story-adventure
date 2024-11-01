@@ -4,8 +4,12 @@ const rl = @import("raylib");
 const cmp = @import("components.zig");
 const scmp = @import("../scene/components.zig");
 const rcmp = @import("../render/components.zig");
+const gcmp = @import("../game/components.zig");
+const ccmp = @import("../core/components.zig");
 const sc = @import("../../engine/scene.zig");
 const pr = @import("../../engine/properties.zig");
+
+const initial_scene = "main_menu";
 
 pub const ScenePropChangeItemCfg = struct {
     enter: std.json.ArrayHashMap(f64),
@@ -40,6 +44,29 @@ var scenes = &.{
         .text = @embedFile("../../assets/scenes/combat.json"),
     },
 };
+
+pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
+    var state_view = reg.view(.{ gcmp.GameState, gcmp.GameStateGameplay }, .{});
+    var state_iter = state_view.entityIterator();
+    while (state_iter.next()) |entity| {
+        var gameplay = reg.get(gcmp.GameStateGameplay, entity);
+        if (!reg.has(ccmp.Destroyed, gameplay.hud_scene)) {
+            reg.add(gameplay.hud_scene, ccmp.Destroyed {});
+        }
+
+        var scene_view = reg.view(.{ gcmp.GameplayScene }, .{});
+        var scene_iter = scene_view.entityIterator();
+        while (scene_iter.next()) |scene_entity| {
+            if (!reg.has(ccmp.Destroyed, scene_entity)) {
+                reg.add(scene_entity, ccmp.Destroyed {});
+            }
+        }
+
+        _ = try loadScene(reg, props, change, allocator, initial_scene);
+
+        reg.remove(gcmp.GameStateGameplay, entity);
+    }
+}
 
 pub fn selectNextScene(reg: *ecs.Registry) void {
     var scene_view = reg.view(.{ scmp.Scene, cmp.GameplayScene }, .{ cmp.NextGameplayScene });

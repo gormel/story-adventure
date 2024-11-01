@@ -10,8 +10,24 @@ pub const Sprite = struct { sprite: sp.Sprite };
 pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
 pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
 
-pub const ColorComponent = enum { R, G, B, A };
-pub const Axis = enum { X, Y };
+pub const ColorComponent = enum {
+    R,
+    G,
+    B,
+    A,
+    RG,
+    RB,
+    RA,
+    GB,
+    GA,
+    BA,
+    RGB,
+    RGA,
+    RBA,
+    GBA,
+    RGBA,
+};
+pub const Axis = enum { X, Y, XY };
 pub const TweenRepeat = enum {
     OnceForward,
     OnceReverse,
@@ -29,10 +45,10 @@ pub const TweenSetup = struct {
     from: f32,
     to: f32,
     duration: f32,
-    //TODO: easing, repeat
     easing: easing.Easing = easing.Easing.Linear,
     repeat: TweenRepeat = TweenRepeat.OnceForward,
     entity: ecs.Entity,
+    remove_source: bool = false,
 };
 pub const TweenComplete = struct {};
 pub const TweenInProgress = struct { duration: f32 };

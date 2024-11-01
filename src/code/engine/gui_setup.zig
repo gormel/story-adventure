@@ -16,6 +16,7 @@ pub const SizeButtonSmall = rl.Rectangle { .x = 0, .y = 0, .width = 20, .height 
 pub const SizeWindow = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 180 };
 
 pub const SizeText = 10;
+pub const SizeTextBig = 15;
 
 pub fn Margin(comptime left: i32, comptime top: i32, comptime right: i32, comptime bottom: i32) type {
     return struct {

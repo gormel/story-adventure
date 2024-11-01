@@ -2,11 +2,13 @@
     {
         "item": "potion-stamina-small",
         "weight": 1,
-        "groups": [ "any", "potion", "stamina" ]
+        "groups": [ "any", "potion", "stamina" ],
+        "condition": {}
     },
     {
         "item": "potion-hp-small",
         "weight": 1,
-        "groups": [ "any", "potion", "hp" ]
+        "groups": [ "any", "potion", "hp" ],
+        "condition": {}
     }
 ]

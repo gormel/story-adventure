@@ -1,18 +1,6 @@
-fea: combat scene
-    * enemy selected strategy info
-    * attack animation (mb projectile effect)
-    * hit taken animation (scale + recolor effect)
-    * death animation (scale to 0 + rotate? effect)
-
-    click strategy -> hide btns -> show hero animation -> show enemy animation + strategy name -> show btns
-    enemy == hero (character)
-    hero parameters: player params
-    enemy parameters: custom params instance
-
-    Strategy { id: str }
-    Attack { target: Entity, callback: Entity }
-    AttackCallback {}
+fix: last tween set on conmplete
 fea: max hp/stamina cut
+* property restrictions.json
 fea: loot view popup
 fea: in-game menu: exit, loot, statistics
 ref: resources to @embedFile()

@@ -42,6 +42,7 @@ pub fn main() !void {
     defer reg.deinit();
 
     var props = pr.Properties.init(arena, &reg);
+    defer props.deinit();
 
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
     var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
@@ -111,7 +112,7 @@ pub fn main() !void {
         game_systems.properties(&reg);
         try game_systems.changeScene(&reg, &props, &rules, &scene_prop_change_json.value, &rnd, arena);
 
-        try game_systems.updateGameplayCustoms(&reg, &props, &scene_prop_change_json.value, arena, &items, &rnd);
+        try game_systems.updateGameplayCustoms(&reg, &props, &scene_prop_change_json.value, arena, &items, &rnd, dt);
 
         render_systems.setSolidRectColor(&reg);
         render_systems.setTextParams(&reg, arena);
@@ -127,7 +128,7 @@ pub fn main() !void {
         rl.EndDrawing();
 
         //destroy triggers
-        game_systems.freeGameplayCustoms(&reg);
+        try game_systems.freeGameplayCustoms(&reg);
         render_systems.freeFlipbook(&reg);
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);

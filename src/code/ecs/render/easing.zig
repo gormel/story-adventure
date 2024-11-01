@@ -6,6 +6,7 @@ pub const Easing = enum {
     EaseIn,
     EaseOut,
     EaseInOut,
+    EaseOutQuad,
 };
 
 fn linear(x: f32) f32 {
@@ -40,13 +41,9 @@ fn ease_in_out(x: f32) f32 {
     return cubic(0, 0, 1, 1, x);
 }
 
-const funcs = .{
-    .{ .easing = Easing.Linear, .func = linear },
-    .{ .easing = Easing.Ease, .func = ease },
-    .{ .easing = Easing.EaseIn, .func = ease_in },
-    .{ .easing = Easing.EaseOut, .func = ease_out },
-    .{ .easing = Easing.EaseInOut, .func = ease_in_out },
-};
+fn ease_in_quad(x: f32) f32 {
+    return quad(0, 1, 1, x);
+}
 
 pub fn getFunc(easing: Easing) *const fn(f32) f32 {
     return switch (easing) {
@@ -55,6 +52,7 @@ pub fn getFunc(easing: Easing) *const fn(f32) f32 {
         .EaseIn => ease_in,
         .EaseOut => ease_out,
         .EaseInOut => ease_in_out,
+        .EaseOutQuad => ease_in_quad,
     };
 }
 

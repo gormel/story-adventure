@@ -9,6 +9,7 @@
             "\t\"parameters\": {",
             "\t},",
             "\t\"one_time\": true",
+            "\t\"condition\": {}",
             "},",
         ]
     }

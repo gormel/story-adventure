@@ -497,6 +497,10 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
     var click_view = reg.view(.{ gcmp.ButtonClicked, cmp.Opener }, .{});
     var click_iter = click_view.entityIterator();
     while (click_iter.next()) |entity| {
+        if (reg.assure(cmp.CharacterMoveTween).len() > 0) {
+            continue;
+        }
+
         var opener = reg.getConst(cmp.Opener, entity);
         if (!reg.has(cmp.Open, opener.tile)) {
             reg.add(opener.tile, cmp.Open {});

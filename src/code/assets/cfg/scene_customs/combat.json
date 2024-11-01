@@ -8,7 +8,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "attack-strategy",
-                "name": "attack"
+                "name": "Attack\u0000"
             }
         },
         "rage_attack": {
@@ -22,7 +22,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "rage-attack-strategy",
-                "name": "rage attack"
+                "name": "Rage Attack\u0000"
             }
         },
         "defence": {
@@ -34,7 +34,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "defence-strategy",
-                "name": "defence"
+                "name": "Defence\u0000"
             }
         }
     },
@@ -46,7 +46,7 @@
                 "defence": 1
             },
             "params": {
-                "health": 10,
+                "health": 100,
                 "attack": 5,
                 "armor": 1,
                 "stamina": 0
@@ -55,7 +55,19 @@
                 "atlas": "resources/atlases/gameplay.json",
                 "idle": "enemy_lizard_wizard"
             },
-            "condition": {}
+            "condition": {},
+            "reward": {
+                "gold": 150
+            },
+            "weight": 1
         }
-    ]
+    ],
+    "hero_view": {
+        "atlas": "resources/atlases/gameplay.json",
+        "idle": "anm-hero_right-1-2"
+    },
+    "attack_view": {
+        "atlas": "resources/atlases/gameplay.json",
+        "effect": "attack_effect"
+    }
 }

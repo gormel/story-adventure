@@ -1,17 +1,22 @@
 [
     {
         "position": { "x": 512, "y": 325 },
-        "tags": [ "strategy-container" ],
+        "tags": [ "combat-strategy-container" ],
         "children": []
     },
     {
-        "position": { "x": 233, "y": 309 },
-        "tags": [ "hero-root" ],
+        "position": { "x": 265, "y": 341 },
+        "tags": [ "combat-hero-root" ],
         "children": []
     },
     {
-        "position": { "x": 791, "y": 309 },
-        "tags": [ "enemy-root" ],
+        "position": { "x": 823, "y": 341 },
+        "tags": [ "combat-enemy-root" ],
+        "children": []
+    },
+    {
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "combat-logic" ],
         "children": []
     }
 ]

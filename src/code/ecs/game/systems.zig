@@ -183,10 +183,18 @@ pub fn initGameplayCustoms(
 ) !void {
     main_menu.initScene(reg);
     main_menu.initStartButton(reg);
+
     try gameplay_start.initSwitch(reg, props, change, allocator);
+
     hud.initViews(reg);
+
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
+
+    try combat.initStrategy(reg, allocator);
+    try combat.initPlayer(reg, allocator, props);
+    try combat.initEnemy(reg, allocator, props, rnd);
+    combat.initState(reg);
 }
 
 pub fn updateGameplayCustoms(
@@ -195,19 +203,29 @@ pub fn updateGameplayCustoms(
     change: *game.ScenePropChangeCfg,
     allocator: std.mem.Allocator,
     items: *itm.Items,
-    rnd: *std.rand.Random
+    rnd: *std.rand.Random,
+    dt: f32
 ) !void {
     try main_menu.startGame(reg, props, change, allocator);
     gameplay_start.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
+
     loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);
     loot.character(reg);
     loot.gui(reg);
+
+    try combat.attack(reg);
+    combat.attackEffect(reg, dt);
+    try combat.attackEffectComplete(reg, allocator);
+    combat.deathEffectComplete(reg);
+    try combat.checkDeath(reg);
+    try combat.combatState(reg, props, change, rnd, allocator);
 }
 
-pub fn freeGameplayCustoms(reg: *ecs.Registry) void {
+pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
     loot.freeLootStart(reg);
+    combat.freeCombat(reg);
 }
 
 pub fn layoutChildren(reg: *ecs.Registry) void {

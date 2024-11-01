@@ -2,6 +2,7 @@ const std = @import("std");
 const pr = @import("properties.zig");
 const rr = @import("../engine/rollrate.zig");
 const utils = @import("../engine/utils.zig");
+const condition = @import("../engine/condition.zig");
 
 pub const ItemCfg = struct {
     atlas: []const u8,
@@ -16,6 +17,7 @@ pub const ItemDropCfg = struct {
     item: []const u8,
     weight: f64,
     groups: [][]const u8,
+    condition: std.json.ArrayHashMap(f64),
 };
 
 pub const ItemDropListCfg = []ItemDropCfg;
@@ -43,6 +45,18 @@ pub const Items = struct {
     }
 
     pub fn roll(self: *Self, rnd: *std.rand.Random) ?[]const u8 {
+        var table_size: usize = 0;
+        var table = try self.allocator.alloc(ItemDropCfg, self.item_drop_list_cfg.len);
+        defer self.allocator.free(table);
+
+        const source_table = self.item_drop_list_cfg.*;
+        for (source_table) |cfg| {
+            if (condition.check(cfg.condition, self.props)) {
+                table[table_size] = cfg;
+                table_size += 1;
+            }
+        }
+
         if (rr.select(ItemDropCfg, "weight", self.item_drop_list_cfg.*, rnd)) |item| {
             return item.item;
         }
@@ -50,19 +64,22 @@ pub const Items = struct {
     }
 
     pub fn rollGroup(self: *Self, group: []const u8, rnd: *std.rand.Random) !?[]const u8 {
+        var table_size: usize = 0;
         var table = try self.allocator.alloc(ItemDropCfg, self.item_drop_list_cfg.len);
         defer self.allocator.free(table);
 
         const source_table = self.item_drop_list_cfg.*;
-        var idx: usize = 0;
         for (source_table) |cfg| {
-            if (utils.containsTag(cfg.groups, group)) {
-                table[idx] = cfg;
-                idx += 1;
+            if (
+                utils.containsTag(cfg.groups, group)
+                and condition.check(cfg.condition, self.props)
+            ) {
+                table[table_size] = cfg;
+                table_size += 1;
             }
         }
 
-        if (rr.select(ItemDropCfg, "weight", source_table[0..idx], rnd)) |item| {
+        if (rr.select(ItemDropCfg, "weight", source_table[0..table_size], rnd)) |item| {
             return item.item;
         }
 

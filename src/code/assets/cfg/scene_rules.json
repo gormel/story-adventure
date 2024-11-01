@@ -8,11 +8,23 @@
     {
         "current_scene": "gameplay_start",
         "result_scene": "combat",
-        "weight": 0,
+        "weight": 1,
         "params": []
     },
     {
         "current_scene": "loot",
+        "result_scene": "combat",
+        "weight": 1,
+        "params": []
+    },
+    {
+        "current_scene": "combat",
+        "result_scene": "combat",
+        "weight": 1,
+        "params": []
+    },
+    {
+        "current_scene": "combat",
         "result_scene": "loot",
         "weight": 1,
         "params": []
