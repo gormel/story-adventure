@@ -1,8 +1,5 @@
 fea: max hp/stamina cut
 * property_restrictions.json
-fea: statistics
-* scene depth
-* kill count
 fea: game result scene
 fea: loot view popup
 fea: in-game menu: exit, loot, statistics
@@ -11,6 +8,8 @@ fea: global progress
 * progress triggers
 fea: unique monster attack
 fea: trader scene
+* cfg: group -> count
+fea: trap scene
 
 ref: x5 items, x5 monsters (x3 grades for each)
 ref: resources to @embedFile()

@@ -3,7 +3,7 @@
         "atlas": "resources/atlases/items.json",
         "sprite": "potion-red",
         "parameters": {
-            "health": 100
+            "health": 10
         },
         "one_time": true
     },
@@ -11,8 +11,7 @@
         "atlas": "resources/atlases/items.json",
         "sprite": "potion-yellow",
         "parameters": {
-            "stamina": 30,
-            "gold": 50
+            "stamina": 30
         },
         "one_time": true
     }

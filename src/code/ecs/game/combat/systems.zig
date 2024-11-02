@@ -535,6 +535,7 @@ pub fn combatState(
         while (strat_iter.next()) |kv| {
             table[table_size].weight = kv.value_ptr.*;
             table[table_size].strategy = kv.key_ptr.*;
+            table_size += 1;
         }
 
         if (rr.select(TableT, "weight", table[0..table_size], rnd)) |table_item| {

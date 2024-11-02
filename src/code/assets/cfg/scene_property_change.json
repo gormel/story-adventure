@@ -1,8 +1,19 @@
 {
     "loot": {
         "enter": {
-            "health": 10
+            "health": 10,
+            "scene_depth": 1,
+            "scene_cup": -1
         },
         "exit": {}
+    },
+    "combat": {
+        "enter": {
+            "scene_depth": 1,
+            "scene_cup": -1
+        },
+        "exit": {
+            "kill_count": 1
+        }
     }
 }
