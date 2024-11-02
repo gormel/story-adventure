@@ -537,7 +537,7 @@ pub fn combatState(
             table[table_size].strategy = kv.key_ptr.*;
         }
 
-        if (rr.select(TableT, "weight", table, rnd)) |table_item| {
+        if (rr.select(TableT, "weight", table[0..table_size], rnd)) |table_item| {
             reg.add(enemy_ety, cmp.Attack {
                 .target = hero_ety,
                 .strategy = table_item.strategy,

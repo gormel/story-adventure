@@ -57,7 +57,7 @@ pub const Items = struct {
             }
         }
 
-        if (rr.select(ItemDropCfg, "weight", self.item_drop_list_cfg.*, rnd)) |item| {
+        if (rr.select(ItemDropCfg, "weight", table[0..table_size], rnd)) |item| {
             return item.item;
         }
         return null;
