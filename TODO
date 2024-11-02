@@ -1,9 +1,24 @@
-fix: last tween set on conmplete
 fea: max hp/stamina cut
-* property restrictions.json
+* property_restrictions.json
+fea: statistics
+* scene depth
+* kill count
+fea: game result scene
 fea: loot view popup
 fea: in-game menu: exit, loot, statistics
+fea: global progress
+* props save/load
+* progress triggers
+fea: unique monster attack
+fea: trader scene
+
+ref: x5 items, x5 monsters (x3 grades for each)
 ref: resources to @embedFile()
+
+fix: loot hero move animations: up-down
+fix: loot hero animaion blink
+fix: combat enemy strategy/damage overlap
+
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
 
@@ -25,4 +40,4 @@ https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
 * каждый переход требует стамину??
 
 --------------------------------------
-страна
+страна (население, еда, казна, популярность)

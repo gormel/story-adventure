@@ -365,16 +365,6 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
 
         var progress = view.get(cmp.TweenInProgress, entity);
         progress.duration -= dt;
-
-        if (progress.duration <= 0) {
-            const repeat = repeatSetup(setup.repeat);
-            if (repeat.once) {
-                reg.remove(cmp.TweenInProgress, entity);
-                reg.add(entity, cmp.TweenComplete {});
-            } else {
-                progress.duration = setup.duration;
-            }
-        }
     }
 
     var move_view = reg.view(.{ cmp.TweenSetup, cmp.TweenMove, cmp.TweenInProgress }, .{});
@@ -499,6 +489,24 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
 
         if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
             reg.add(setup.entity, cmp.UpdateGlobalTransform {});
+        }
+    }
+
+    
+    var complate_view = reg.view(.{ cmp.TweenSetup, cmp.TweenInProgress }, .{ cmp.TweenComplete });
+    var complate_iter = complate_view.entityIterator();
+    while (complate_iter.next()) |entity| {
+        var setup = view.get(cmp.TweenSetup, entity);
+        var progress = view.get(cmp.TweenInProgress, entity);
+
+        if (progress.duration <= 0) {
+            const repeat = repeatSetup(setup.repeat);
+            if (repeat.once) {
+                reg.remove(cmp.TweenInProgress, entity);
+                reg.add(entity, cmp.TweenComplete {});
+            } else {
+                progress.duration = setup.duration;
+            }
         }
     }
 }
