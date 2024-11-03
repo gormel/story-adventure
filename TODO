@@ -1,5 +1,3 @@
-fea: max hp/stamina cut
-* property_restrictions.json
 fea: game result scene
 fea: loot view popup
 fea: in-game menu: exit, loot, statistics

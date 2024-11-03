@@ -1,0 +1,9 @@
+{
+    "max": {
+        "health": 100,
+        "stamina": 100
+    },
+    "min": {
+        "attack": 1
+    }
+}

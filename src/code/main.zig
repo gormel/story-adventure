@@ -18,6 +18,7 @@ const game = @import("ecs/game/utils.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
+const restrictions_text = @embedFile("assets/cfg/property_restrictions.json");
 
 pub fn main() !void {
     // Initialization
@@ -41,7 +42,8 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
-    var props = pr.Properties.init(arena, &reg);
+    var restrictions_json = try std.json.parseFromSlice(pr.Restrictions, arena, restrictions_text, .{ .ignore_unknown_fields = true });
+    var props = pr.Properties.init(arena, &reg, &restrictions_json.value);
     defer props.deinit();
 
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);

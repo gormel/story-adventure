@@ -2,6 +2,11 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const cmp = @import("../ecs/game/components.zig");
 
+pub const Restrictions = struct {
+    min: std.json.ArrayHashMap(f64),
+    max: std.json.ArrayHashMap(f64),
+};
+
 pub const Properties = struct {
     const Self = @This();
     reg: *ecs.Registry,
@@ -9,14 +14,16 @@ pub const Properties = struct {
     map: std.StringArrayHashMap(f64),
     initial: std.StringArrayHashMap(f64),
     silent: bool,
+    restrictions: ?*Restrictions,
 
-    pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry) Self {
+    pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry, restrictions: *Restrictions) Self {
         return .{
             .reg = reg,
             .allocator = allocator,
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
             .silent = false,
+            .restrictions = restrictions,
         };
     }
 
@@ -27,6 +34,7 @@ pub const Properties = struct {
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
             .silent = true,
+            .restrictions = null,
         };
     }
 
@@ -49,7 +57,20 @@ pub const Properties = struct {
     }
 
     pub fn set(self: *Self, name: []const u8, value: f64) !void {
-        try self.map.put(name, value);
+        var actual = value;
+
+        if (self.restrictions) |restrictions| {
+            if (restrictions.min.map.get(name)) |min| {
+                actual = @max(min, actual);
+            }
+
+            if (restrictions.max.map.get(name)) |max| {
+                actual = @min(max, actual);
+            }
+        }
+        
+        try self.map.put(name, actual);
+
         if (!self.silent) {
             var entity = self.reg.create();
             self.reg.add(entity, cmp.TriggerPlayerPropertyChanged { .name = name });
