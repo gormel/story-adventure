@@ -1,13 +1,37 @@
 [
     {
-        "item": "potion-stamina-small",
+        "item": "potion-stamina-cmn",
         "weight": 1,
         "groups": [ "any", "potion", "stamina" ],
         "condition": {}
     },
     {
-        "item": "potion-hp-small",
+        "item": "potion-hp-cmn",
         "weight": 1,
+        "groups": [ "any", "potion", "hp" ],
+        "condition": {}
+    },
+    {
+        "item": "potion-stamina-rare",
+        "weight": 0.2,
+        "groups": [ "any", "potion", "stamina" ],
+        "condition": {}
+    },
+    {
+        "item": "potion-hp-rare",
+        "weight": 0.2,
+        "groups": [ "any", "potion", "hp" ],
+        "condition": {}
+    },
+    {
+        "item": "potion-stamina-epic",
+        "weight": 0.02,
+        "groups": [ "any", "potion", "stamina" ],
+        "condition": {}
+    },
+    {
+        "item": "potion-hp-epic",
+        "weight": 0.02,
         "groups": [ "any", "potion", "hp" ],
         "condition": {}
     }

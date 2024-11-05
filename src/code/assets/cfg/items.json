@@ -1,17 +1,49 @@
 {
-    "potion-hp-small": {
+    "potion-hp-cmn": {
         "atlas": "resources/atlases/items.json",
-        "sprite": "potion-red",
+        "sprite": "potion-red-cmn",
         "parameters": {
             "health": 10
         },
         "one_time": true
     },
-    "potion-stamina-small": {
+    "potion-hp-rare": {
         "atlas": "resources/atlases/items.json",
-        "sprite": "potion-yellow",
+        "sprite": "potion-red-rare",
+        "parameters": {
+            "health": 20
+        },
+        "one_time": true
+    },
+    "potion-hp-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-red-epic",
+        "parameters": {
+            "health": 50
+        },
+        "one_time": true
+    },
+    "potion-stamina-cmn": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-yellow-cmn",
+        "parameters": {
+            "stamina": 15
+        },
+        "one_time": true
+    },
+    "potion-stamina-rare": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-yellow-rare",
         "parameters": {
             "stamina": 30
+        },
+        "one_time": true
+    },
+    "potion-stamina-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "potion-yellow-epic",
+        "parameters": {
+            "stamina": 70
         },
         "one_time": true
     }
