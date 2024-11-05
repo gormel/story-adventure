@@ -7,9 +7,9 @@
             "\t\"atlas\": \"resources/atlases/items.json\",",
             "\t\"sprite\": \"${2:item-sprite}\",",
             "\t\"parameters\": {",
+            "\t\t$0",
             "\t},",
-            "\t\"one_time\": true",
-            "\t\"condition\": {}",
+            "\t\"one_time\": ${3:true}",
             "},",
         ]
     }

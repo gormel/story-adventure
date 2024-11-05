@@ -6,7 +6,7 @@ pub fn check(condition: std.json.ArrayHashMap(f64), props: *pr.Properties) bool 
     while (iter.next()) |kv| {
         var cnd = kv.value_ptr.*;
         var act = props.get(kv.key_ptr.*);
-        if (cnd >= act) {
+        if (cnd > act) {
             return false;
         }
     }

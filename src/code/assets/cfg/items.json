@@ -46,5 +46,110 @@
             "stamina": 70
         },
         "one_time": true
+    },
+    "sword-cmn": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "sword-cmn",
+        "parameters": {
+            "attack": 5
+        },
+        "one_time": false
+    },
+    "sword-rare": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "sword-rare",
+        "parameters": {
+            "attack": 10
+        },
+        "one_time": false
+    },
+    "sword-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "sword-epic",
+        "parameters": {
+            "attack": 20
+        },
+        "one_time": false
+    },
+    "star-cmn": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "star-cmn",
+        "parameters": {
+            "attack": 3,
+            "shread_attack": 1
+        },
+        "one_time": false
+    },
+    "star-rare": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "star-rare",
+        "parameters": {
+            "attack": 6,
+            "shread_attack": 1
+        },
+        "one_time": false
+    },
+    "star-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "star-epic",
+        "parameters": {
+            "attack": 12,
+            "shread_attack": 1
+        },
+        "one_time": false
+    },
+    "spear-cmn": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "spear-cmn",
+        "parameters": {
+            "attack": 3,
+            "double_attack": 1
+        },
+        "one_time": false
+    },
+    "spear-rare": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "spear-rare",
+        "parameters": {
+            "attack": 6,
+            "double_attack": 1
+        },
+        "one_time": false
+    },
+    "spear-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "spear-epic",
+        "parameters": {
+            "attack": 12,
+            "double_attack": 1
+        },
+        "one_time": false
+    },
+    "heavy-spear-cmn": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "heavy-spear-cmn",
+        "parameters": {
+            "attack": 3,
+            "heavy_attack": 1
+        },
+        "one_time": false
+    },
+    "heavy-spear-rare": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "heavy-spear-rare",
+        "parameters": {
+            "attack": 6,
+            "heavy_attack": 1
+        },
+        "one_time": false
+    },
+    "heavy-spear-epic": {
+        "atlas": "resources/atlases/items.json",
+        "sprite": "heavy-spear-epic",
+        "parameters": {
+            "attack": 12,
+            "heavy_attack": 1
+        },
+        "one_time": false
     }
 }

@@ -10,8 +10,8 @@
         },
         {
             "name": "coin",
-            "x": 96,
-            "y": 32,
+            "x": 32,
+            "y": 96,
             "w": 32,
             "h": 32
         },
@@ -31,43 +31,50 @@
         },
         {
             "name": "power",
-            "x": 128,
-            "y": 32,
+            "x": 64,
+            "y": 96,
             "w": 32,
             "h": 32
         },
         {
             "name": "shield",
-            "x": 64,
-            "y": 32,
+            "x": 0,
+            "y": 96,
             "w": 32,
             "h": 32
         },
         {
             "name": "sword",
-            "x": 32,
-            "y": 32,
+            "x": 0,
+            "y": 64,
             "w": 32,
             "h": 32
         },
         {
             "name": "defence-strategy",
             "x": 32,
-            "y": 64,
+            "y": 32,
             "w": 64,
             "h": 64
         },
         {
-            "name": "rage-attack-strategy",
+            "name": "double-attack-strategy",
             "x": 96,
-            "y": 64,
+            "y": 32,
             "w": 64,
             "h": 64
         },
         {
             "name": "attack-strategy",
             "x": 96,
-            "y": 128,
+            "y": 96,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "shread-strategy",
+            "x": 96,
+            "y": 160,
             "w": 64,
             "h": 64
         }

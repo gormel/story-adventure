@@ -4,7 +4,14 @@
     "gold": 0.0,
     "attack": 10.0,
     "armor": 0.0,
+    
     "scene_depth": 0.0,
     "kill_count": 0.0,
-    "scene_cup": 0.0
+    "scene_cup": 0.0,
+
+    "defence_attack": 0.0,
+    "rage_attack": 0.0,
+    "shread_attack": 0.0,
+    "heavy_attack": 0.0,
+    "double_attack": 0.0
 }

@@ -79,7 +79,7 @@ pub const Items = struct {
             }
         }
 
-        if (rr.select(ItemDropCfg, "weight", source_table[0..table_size], rnd)) |item| {
+        if (rr.select(ItemDropCfg, "weight", table[0..table_size], rnd)) |item| {
             return item.item;
         }
 

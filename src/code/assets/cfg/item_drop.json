@@ -2,37 +2,121 @@
     {
         "item": "potion-stamina-cmn",
         "weight": 1,
-        "groups": [ "any", "potion", "stamina" ],
+        "groups": [ "any", "potion", "stamina", "common" ],
         "condition": {}
     },
     {
         "item": "potion-hp-cmn",
         "weight": 1,
-        "groups": [ "any", "potion", "hp" ],
+        "groups": [ "any", "potion", "hp", "common" ],
         "condition": {}
     },
     {
         "item": "potion-stamina-rare",
         "weight": 0.2,
-        "groups": [ "any", "potion", "stamina" ],
-        "condition": {}
+        "groups": [ "any", "potion", "stamina", "rare" ],
+        "condition": {
+            "scene_depth": 5
+        }
     },
     {
         "item": "potion-hp-rare",
         "weight": 0.2,
-        "groups": [ "any", "potion", "hp" ],
-        "condition": {}
+        "groups": [ "any", "potion", "hp", "rare" ],
+        "condition": {
+            "scene_depth": 5
+        }
     },
     {
         "item": "potion-stamina-epic",
         "weight": 0.02,
-        "groups": [ "any", "potion", "stamina" ],
-        "condition": {}
+        "groups": [ "any", "potion", "stamina", "epic" ],
+        "condition": {
+            "scene_depth": 20
+        }
     },
     {
         "item": "potion-hp-epic",
         "weight": 0.02,
-        "groups": [ "any", "potion", "hp" ],
+        "groups": [ "any", "potion", "hp", "epic" ],
+        "condition": {
+            "scene_depth": 20
+        }
+    },
+    {
+        "item": "sword-cmn",
+        "weight": 1,
+        "groups": [ "any", "weapon", "attack", "common" ],
+        "condition": {}
+    },
+    {
+        "item": "sword-rare",
+        "weight": 0.2,
+        "groups": [ "any", "weapon", "attack", "rare" ],
+        "condition": {
+            "scene_depth": 5
+        }
+    },
+    {
+        "item": "sword-epic",
+        "weight": 0.02,
+        "groups": [ "any", "weapon", "attack", "epic" ],
+        "condition": {
+            "scene_depth": 20
+        }
+    },
+    {
+        "item": "star-cmn",
+        "weight": 1,
+        "groups": [ "any", "weapon", "attack", "common" ],
+        "condition": {}
+    },
+    {
+        "item": "star-rare",
+        "weight": 0.2,
+        "groups": [ "any", "weapon", "attack", "rare" ],
+        "condition": {}
+    },
+    {
+        "item": "star-epic",
+        "weight": 0.02,
+        "groups": [ "any", "weapon", "attack", "epic" ],
+        "condition": {}
+    },
+    {
+        "item": "spear-cmn",
+        "weight": 1,
+        "groups": [ "any", "weapon", "attack", "common" ],
+        "condition": {}
+    },
+    {
+        "item": "spear-rare",
+        "weight": 0.2,
+        "groups": [ "any", "weapon", "attack", "rare" ],
+        "condition": {}
+    },
+    {
+        "item": "spear-epic",
+        "weight": 0.02,
+        "groups": [ "any", "weapon", "attack", "epic" ],
+        "condition": {}
+    },
+    {
+        "item": "heavy-spear-cmn",
+        "weight": 1,
+        "groups": [ "any", "weapon", "attack", "common" ],
+        "condition": {}
+    },
+    {
+        "item": "heavy-spear-rare",
+        "weight": 0.2,
+        "groups": [ "any", "weapon", "attack", "rare" ],
+        "condition": {}
+    },
+    {
+        "item": "heavy-spear-epic",
+        "weight": 0.02,
+        "groups": [ "any", "weapon", "attack", "epic" ],
         "condition": {}
     }
 ]

@@ -1,40 +1,96 @@
 {
     "strategy": {
-        "attack": {
+        "basic_attack": {
             "cost": {},
             "modify": {
                 "attack": 2
             },
+            "modify_opp": {},
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "attack-strategy",
                 "name": "Attack\u0000"
-            }
+            },
+            "condition": {}
         },
         "rage_attack": {
             "cost": {
                 "health": 10
             },
             "modify": {
-                "attack": 3,
-                "armor": 0.5
+                "attack": 3
             },
+            "modify_opp": {},
             "view": {
                 "atlas": "resources/atlases/gui.json",
-                "icon": "rage-attack-strategy",
+                "icon": "double-attack-strategy",
                 "name": "Rage Attack\u0000"
+            },
+            "condition": {
+                "rage_attack": 1
             }
         },
-        "defence": {
-            "name": "defence",
+        "double_attack": {
             "cost": {},
             "modify": {
-                "armor": 2
+                "attack": 2
             },
+            "modify_opp": {},
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "double-attack-strategy",
+                "name": "Double Attack\u0000"
+            },
+            "condition": {
+                "double_attack": 1
+            }
+        },
+        "defence_attack": {
+            "name": "defence",
+            "cost": {},
+            "modify": {},
+            "modify_opp": {},
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "defence-strategy",
                 "name": "Defence\u0000"
+            },
+            "condition": {
+                "defence_attack": 1
+            }
+        },
+        "shread_attack": {
+            "name": "defence",
+            "cost": {},
+            "modify": {},
+            "modify_opp": {
+                "armor": 0.5
+            },
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "shread-strategy",
+                "name": "Shread\u0000"
+            },
+            "condition": {
+                "shread_attack": 1
+            }
+        },
+        "heavy_attack": {
+            "name": "defence",
+            "cost": {
+                "stamina": 10
+            },
+            "modify": {
+                "attack": 3
+            },
+            "modify_opp": {},
+            "view": {
+                "atlas": "resources/atlases/gui.json",
+                "icon": "attack-strategy",
+                "name": "Heavy\u0000"
+            },
+            "condition": {
+                "heavy_attack": 1
             }
         }
     },
@@ -42,8 +98,8 @@
         {
             "name": "lizard wizard",
             "strategy": {
-                "attack": 2,
-                "defence": 1
+                "basic_attack": 2,
+                "defence_attack": 1
             },
             "params": {
                 "health": 100,

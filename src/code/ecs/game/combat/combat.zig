@@ -34,7 +34,9 @@ pub const StrategyViewCfg = struct {
 pub const StrategyCfg = struct {
     cost: std.json.ArrayHashMap(f64),
     modify: std.json.ArrayHashMap(f64),
+    modify_opp: std.json.ArrayHashMap(f64),
     view: StrategyViewCfg,
+    condition: std.json.ArrayHashMap(f64),
 };
 
 pub const CombatCfg = struct {

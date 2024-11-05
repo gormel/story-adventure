@@ -63,7 +63,7 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
     return root_ety;
 }
 
-pub fn initStrategy(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -76,7 +76,9 @@ pub fn initStrategy(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 
             var strategy_iter = cfg_json.value.strategy.map.iterator();
             while (strategy_iter.next()) |kv| {
-                _ = createStrategyBtn(reg, entity, &cfg_json.value, kv.key_ptr.*);
+                if (condition.check(kv.value_ptr.condition, props)) {
+                    _ = createStrategyBtn(reg, entity, &cfg_json.value, kv.key_ptr.*);
+                }
             }
 
             reg.add(entity, gcmp.LayoutChildren {
@@ -187,6 +189,12 @@ fn attackPropValue(property: []const u8, props: *pr.Properties, strategy: *const
     return current * modifyer;
 }
 
+fn defencePropValue(property: []const u8, props: *pr.Properties, strategy: *const combat.StrategyCfg) f64 {
+    var current = props.get(property);
+    var modifyer = strategy.modify_opp.map.get(property) orelse 1;
+    return current * modifyer;
+}
+
 fn createMessageEffect(reg: *ecs.Registry, parent: ?ecs.Entity, x: f32, y: f32, text: []const u8, free: bool) void {
     var entity = reg.create();
     reg.add(entity, rcmp.Position { .x = x, .y = y });
@@ -286,7 +294,7 @@ pub fn attack(reg: *ecs.Registry) !void {
             if (condition.check(strategy_cfg.cost, &char.props)) {
                 try applyCost(&char.props, strategy_cfg.cost);
 
-                var armor = attackPropValue(ARMOR_PROP_NAME, &char.props, &strategy_cfg);
+                var armor = defencePropValue(ARMOR_PROP_NAME, &target_char.props, &strategy_cfg);
                 var raw_dmg = attackPropValue(ATTACK_PROP_NAME, &char.props, &strategy_cfg);
                 var dmg = @max(raw_dmg - armor, 1);
 

@@ -1,67 +1,34 @@
-/* items */
+/* gui */
 
 position: relative;
-width: 192px;
-height: 128px;
+width: 843px;
+height: 433px;
 
 
 
-/* potion-red-cmn */
+/* button */
 
 position: absolute;
-width: 32px;
+width: 160px;
 height: 32px;
 left: 0px;
 top: 0px;
 
-background: url(potion-red.png);
+background: url(button.png);
 
 
-/* potion-red-rare */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 32px;
-top: 0px;
-
-background: url(potion-red-rare.png);
-
-
-/* potion-red-epic */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 64px;
-top: 0px;
-
-background: url(potion-red-epic.png);
-
-
-/* potion-yellow-rare */
+/* coin */
 
 position: absolute;
 width: 32px;
 height: 32px;
 left: 32px;
-top: 32px;
+top: 96px;
 
-background: url(potion-yellow-rare.png);
-
-
-/* potion-yellow-epic */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 64px;
-top: 32px;
-
-background: url(potion-yellow-epic.png);
+background: url(coin.png);
 
 
-/* potion-yellow-cmn */
+/* heart */
 
 position: absolute;
 width: 32px;
@@ -69,136 +36,92 @@ height: 32px;
 left: 0px;
 top: 32px;
 
-background: url(potion-yellow.png);
+background: url(heart.png);
 
 
-/* star-cmn */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 96px;
-top: 0px;
-
-background: url(star-cmn.png);
-
-
-/* star-epic */
+/* popup_bg */
 
 position: absolute;
-width: 32px;
-height: 32px;
+width: 683px;
+height: 433px;
 left: 160px;
 top: 0px;
 
-background: url(star-epic.png);
+background: url(popup_bg.png);
 
 
-/* star-rare */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 128px;
-top: 0px;
-
-background: url(star-rare.png);
-
-
-/* sword-cmn */
+/* power */
 
 position: absolute;
 width: 32px;
 height: 32px;
+left: 64px;
+top: 96px;
+
+background: url(power.png);
+
+
+/* shield */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 96px;
+
+background: url(shield.png);
+
+
+/* sword */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 64px;
+
+background: url(sword.png);
+
+
+/* defence-strategy */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 32px;
+top: 32px;
+
+background: url(defence-strategy.png);
+
+
+/* double-attack-strategy */
+
+position: absolute;
+width: 64px;
+height: 64px;
 left: 96px;
 top: 32px;
 
-background: url(sword-cmn.png);
+background: url(double-attack-strategy.png);
 
 
-/* sword-epic */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 160px;
-top: 32px;
-
-background: url(sword-epic.png);
-
-
-/* sword-rare */
+/* attack-strategy */
 
 position: absolute;
-width: 32px;
-height: 32px;
-left: 128px;
-top: 32px;
-
-background: url(sword-rare.png);
-
-
-/* heavy-spear-cmn */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 96px;
-top: 64px;
-
-background: url(heavy-spear-cmn.png);
-
-
-/* heavy-spear-epic */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 160px;
-top: 64px;
-
-background: url(heavy-spear-epic.png);
-
-
-/* heavy-spear-rare */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 128px;
-top: 64px;
-
-background: url(heavy-spear-rare.png);
-
-
-/* spear-cmn */
-
-position: absolute;
-width: 32px;
-height: 32px;
+width: 64px;
+height: 64px;
 left: 96px;
 top: 96px;
 
-background: url(spear-cmn.png);
+background: url(attack-strategy.png);
 
 
-/* spear-epic */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 160px;
-top: 96px;
-
-background: url(spear-epic.png);
-
-
-/* spear-rare */
+/* shread-strategy */
 
 position: absolute;
-width: 32px;
-height: 32px;
-left: 128px;
-top: 96px;
+width: 64px;
+height: 64px;
+left: 96px;
+top: 160px;
 
-background: url(spear-rare.png);
+background: url(shread-strategy.png);

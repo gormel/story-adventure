@@ -9,6 +9,7 @@
     },
     "combat": {
         "enter": {
+            "stamina": 10,
             "scene_depth": 1,
             "scene_cup": -1
         },

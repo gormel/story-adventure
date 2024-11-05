@@ -191,7 +191,7 @@ pub fn initGameplayCustoms(
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
 
-    try combat.initStrategy(reg, allocator);
+    try combat.initStrategy(reg, props, allocator);
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
     combat.initState(reg);

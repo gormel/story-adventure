@@ -4,7 +4,7 @@
         "scope": "zig",
         "body": [
             "pub fn ${1:system}(reg: *ecs.Registry) void {",
-            "\t${2}",
+            "\t$0",
             "}"
         ]
     },
@@ -15,7 +15,7 @@
             "var ${1}_view = reg.view(.{ ${2} }, .{});",
             "var ${1}_iter = ${1}_view.entityIterator();",
             "while (${1}_iter.next()) |entity| {",
-            "\t${3}",
+            "\t$0",
             "}"
         ]
     }
