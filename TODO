@@ -1,3 +1,4 @@
+ref: attack modifys lasts until next attack
 fea: attack opponent params modify
 fea: game result scene
 fea: loot view popup
@@ -9,8 +10,11 @@ fea: unique monster attack
 fea: trader scene
 * cfg: group -> count
 fea: trap scene
+fea: dexterity (max dex attacks first)
 
 ref: x5 items, x5 monsters (x3 grades for each)
+* double axes - rage weapon
+* turtue - armored enemy
 ref: resources to @embedFile()
 
 fix: loot hero move animations: up-down
