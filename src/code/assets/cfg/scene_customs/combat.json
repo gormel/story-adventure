@@ -3,7 +3,7 @@
         "basic_attack": {
             "cost": {},
             "modify": {
-                "attack": 2
+                "attack": 1
             },
             "modify_opp": {},
             "view": {
@@ -46,9 +46,10 @@
             }
         },
         "defence_attack": {
-            "name": "defence",
             "cost": {},
-            "modify": {},
+            "modify": {
+                "armor": 2
+            },
             "modify_opp": {},
             "view": {
                 "atlas": "resources/atlases/gui.json",
@@ -60,7 +61,6 @@
             }
         },
         "shread_attack": {
-            "name": "defence",
             "cost": {},
             "modify": {},
             "modify_opp": {
@@ -76,7 +76,6 @@
             }
         },
         "heavy_attack": {
-            "name": "defence",
             "cost": {
                 "stamina": 10
             },

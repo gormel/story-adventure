@@ -104,6 +104,13 @@ pub fn freeCombat(reg: *ecs.Registry) void {
         var char = reg.get(cmp.Character, entity);
         char.props.deinit();
     }
+
+    var modify_view = reg.view(.{ cmp.CharacterModifyList, ccmp.Destroyed }, .{});
+    var modify_iter = modify_view.entityIterator();
+    while (modify_iter.next()) |entity| {
+        var list = reg.get(cmp.CharacterModifyList, entity);
+        list.entities.deinit();
+    }
 }
 
 pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties) !void {
@@ -293,6 +300,11 @@ pub fn attack(reg: *ecs.Registry) !void {
         if (cfg.cfg_json.value.strategy.map.get(attk.strategy)) |strategy_cfg| {
             if (condition.check(strategy_cfg.cost, &char.props)) {
                 try applyCost(&char.props, strategy_cfg.cost);
+
+                //reset my modify
+                //reset my modify to opp
+
+                //create modify
 
                 var armor = defencePropValue(ARMOR_PROP_NAME, &target_char.props, &strategy_cfg);
                 var raw_dmg = attackPropValue(ATTACK_PROP_NAME, &char.props, &strategy_cfg);

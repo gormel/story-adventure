@@ -12,6 +12,9 @@ pub const Character = struct { props: pr.Properties, view: ecs.Entity };
 pub const Hero = struct {};
 pub const Enemy = struct { cfg: combat.EnemyCfg };
 
+pub const CharacterModifyList = struct { entities: std.ArrayList(ecs.Entity) };
+pub const CharacterModify = struct { props: std.StringArrayHashMap(f64), source_character: ecs.Entity };
+
 pub const Attack = struct { target: ecs.Entity, strategy: []const u8 };
 pub const CheckDeath = struct {};
 
