@@ -215,7 +215,7 @@ pub fn updateGameplayCustoms(
     loot.character(reg);
     loot.gui(reg);
 
-    try combat.attack(reg);
+    try combat.attack(reg, allocator);
     combat.attackEffect(reg, dt);
     try combat.attackEffectComplete(reg, allocator);
     combat.deathEffectComplete(reg);

@@ -190,18 +190,6 @@ fn applyCost(props: *pr.Properties, cost: std.json.ArrayHashMap(f64)) !void {
     }
 }
 
-fn attackPropValue(property: []const u8, props: *pr.Properties, strategy: *const combat.StrategyCfg) f64 {
-    var current = props.get(property);
-    var modifyer = strategy.modify.map.get(property) orelse 1;
-    return current * modifyer;
-}
-
-fn defencePropValue(property: []const u8, props: *pr.Properties, strategy: *const combat.StrategyCfg) f64 {
-    var current = props.get(property);
-    var modifyer = strategy.modify_opp.map.get(property) orelse 1;
-    return current * modifyer;
-}
-
 fn createMessageEffect(reg: *ecs.Registry, parent: ?ecs.Entity, x: f32, y: f32, text: []const u8, free: bool) void {
     var entity = reg.create();
     reg.add(entity, rcmp.Position { .x = x, .y = y });
@@ -288,7 +276,68 @@ fn createAttackEffect(
     });
 }
 
-pub fn attack(reg: *ecs.Registry) !void {
+fn resetModify(reg: *ecs.Registry, owner: ecs.Entity, source: ecs.Entity) void {
+    if (reg.tryGet(cmp.CharacterModifyList, owner)) |modify_list| {
+        var i: i32 = 0;
+        while (i < modify_list.entities.items.len) : (i += 1) {
+            const modify_entity = modify_list.entities.items[@intCast(i)];
+            if (reg.tryGet(cmp.CharacterModify, modify_entity)) |modify| {
+                if (modify.source_character == source) {
+                    reg.add(modify_entity, ccmp.Destroyed {});
+                    _ = modify_list.entities.orderedRemove(@intCast(i));
+                    i -= 1;
+                }
+            } else {
+                _ = modify_list.entities.orderedRemove(@intCast(i));
+                i -= 1;
+            }
+        }
+    }
+}
+
+fn createModify(reg: *ecs.Registry, source: ecs.Entity, modify: std.json.ArrayHashMap(f64)) ecs.Entity {
+    var entity = reg.create();
+
+    reg.add(entity, cmp.CharacterModify {
+        .source_character = source,
+        .props = modify,
+    });
+
+    return entity;
+}
+
+fn addModify(reg: *ecs.Registry, target: ecs.Entity, source: ecs.Entity, modify: std.json.ArrayHashMap(f64), allocator: std.mem.Allocator) !void {
+    if (reg.tryGet(cmp.CharacterModifyList, target)) |modify_list| {
+        try modify_list.entities.append(createModify(reg, source, modify));
+
+    } else {
+        var entities = std.ArrayList(ecs.Entity).init(allocator);
+        try entities.append(createModify(reg, source, modify));
+
+        reg.add(target, cmp.CharacterModifyList {
+            .entities = entities
+        });
+    }
+}
+
+fn getPropValue(reg: *ecs.Registry, property: []const u8, character: ecs.Entity) f64 {
+    const char = reg.get(cmp.Character, character);
+    var value = char.props.get(property);
+
+    if (reg.tryGet(cmp.CharacterModifyList, character)) |modify_list| {
+        for (modify_list.entities.items) |modify_entity| {
+            if (reg.tryGet(cmp.CharacterModify, modify_entity)) |modify| {
+                if (modify.props.map.get(property)) |mul| {
+                    value *= mul;
+                }
+            }
+        }
+    }
+
+    return value;
+}
+
+pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
     var attack_view = reg.view(.{ cmp.Character, cmp.Attack, cmp.CfgOwner }, .{ cmp.Dead });
     var attack_iter = attack_view.entityIterator();
     while (attack_iter.next()) |entity| {
@@ -301,13 +350,14 @@ pub fn attack(reg: *ecs.Registry) !void {
             if (condition.check(strategy_cfg.cost, &char.props)) {
                 try applyCost(&char.props, strategy_cfg.cost);
 
-                //reset my modify
-                //reset my modify to opp
+                resetModify(reg, entity, entity);
+                resetModify(reg, attk.target, entity);
 
-                //create modify
+                try addModify(reg, entity, entity, strategy_cfg.modify, allocator);
+                try addModify(reg, attk.target, entity, strategy_cfg.modify_opp, allocator);
 
-                var armor = defencePropValue(ARMOR_PROP_NAME, &target_char.props, &strategy_cfg);
-                var raw_dmg = attackPropValue(ATTACK_PROP_NAME, &char.props, &strategy_cfg);
+                var armor = getPropValue(reg, ARMOR_PROP_NAME, attk.target);
+                var raw_dmg = getPropValue(reg, ATTACK_PROP_NAME, entity);
                 var dmg = @max(raw_dmg - armor, 1);
 
                 try target_char.props.add(HP_PROP_NAME, -dmg);
@@ -315,7 +365,7 @@ pub fn attack(reg: *ecs.Registry) !void {
                     reg.add(attk.target, cmp.CheckDeath {});
                 }
 
-                createMessageEffect(reg, entity, -CHARACTER_SPRITE_SIZE / 2, -CHARACTER_SPRITE_SIZE / 2, strategy_cfg.view.name, false);
+                //createMessageEffect(reg, entity, -CHARACTER_SPRITE_SIZE / 2, -CHARACTER_SPRITE_SIZE / 2, strategy_cfg.view.name, false);
                 createAttackEffect(reg, entity, attk.target, cfg.cfg_json.value.attack_view, dmg); 
             }
         }
