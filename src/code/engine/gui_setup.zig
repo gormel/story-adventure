@@ -31,3 +31,7 @@ pub fn Margin(comptime left: i32, comptime top: i32, comptime right: i32, compti
 
 pub const MarginText = Margin(7, 5, 0, 0);
 pub const MarginPanelItem = Margin(0, 0, 0, 5);
+
+pub const MessageDelay = 0.5;
+pub const MessageDuration = 2;
+pub const MessageShift = 20;

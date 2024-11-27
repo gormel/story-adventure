@@ -190,37 +190,6 @@ fn applyCost(props: *pr.Properties, cost: std.json.ArrayHashMap(f64)) !void {
     }
 }
 
-fn createMessageEffect(reg: *ecs.Registry, parent: ?ecs.Entity, x: f32, y: f32, text: []const u8, free: bool) void {
-    var entity = reg.create();
-    reg.add(entity, rcmp.Position { .x = x, .y = y });
-    reg.add(entity, rcmp.AttachTo { .target = parent });
-    reg.add(entity, rcmp.Text {
-        .color = gui_setup.ColorLabelText,
-        .size = gui_setup.SizeText,
-        .text = text,
-        .free = free,
-    });
-
-    var move_ety = reg.create();
-    reg.add(move_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
-    reg.add(move_ety, rcmp.TweenSetup {
-        .entity = entity,
-        .from = y,
-        .to = y - 20,
-        .duration = 2,
-        .remove_source = true,
-    });
-
-    var opacity_ety = reg.create();
-    reg.add(opacity_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.A });
-    reg.add(opacity_ety, rcmp.TweenSetup {
-        .entity = entity,
-        .from = 255,
-        .to = 0,
-        .duration = 2,
-    });
-}
-
 fn createAttackEffect(
     reg: *ecs.Registry,
     source: ecs.Entity,
@@ -365,7 +334,15 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                     reg.add(attk.target, cmp.CheckDeath {});
                 }
 
-                //createMessageEffect(reg, entity, -CHARACTER_SPRITE_SIZE / 2, -CHARACTER_SPRITE_SIZE / 2, strategy_cfg.view.name, false);
+                var message = reg.create();
+                reg.add(message, gcmp.CreateMessage {
+                    .parent = entity,
+                    .x = -CHARACTER_SPRITE_SIZE / 2,
+                    .y = -CHARACTER_SPRITE_SIZE / 2,
+                    .text = strategy_cfg.view.name,
+                    .free = false,
+                });
+
                 createAttackEffect(reg, entity, attk.target, cfg.cfg_json.value.attack_view, dmg); 
             }
         }
@@ -458,7 +435,14 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
 
         } else {
             var dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
-            createMessageEffect(reg, tween.target_char, -CHARACTER_SPRITE_SIZE / 2, -CHARACTER_SPRITE_SIZE / 2, dmg_text, true);
+            var message = reg.create();
+            reg.add(message, gcmp.CreateMessage {
+                .parent = tween.target_char,
+                .x = -CHARACTER_SPRITE_SIZE / 2,
+                .y = -CHARACTER_SPRITE_SIZE / 2,
+                .text = dmg_text,
+                .free = true,
+            });
 
             var scale_ety = reg.create();
             reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });

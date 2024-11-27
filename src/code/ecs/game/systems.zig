@@ -12,6 +12,7 @@ const sc = @import("../../engine/scene.zig");
 const pr = @import("../../engine/properties.zig");
 const rollrate = @import("../../engine/rollrate.zig");
 const itm = @import("../../engine/items.zig");
+const gui_setup = @import("../../engine/gui_setup.zig");
 
 const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
@@ -125,6 +126,61 @@ pub fn initScene(reg: *ecs.Registry, props: *pr.Properties, change: *game.SceneP
     reg.add(state_entity, cmp.GameState {});
 
     _ = try game.loadScene(reg, props, change, allocator, initial_scene);
+}
+
+pub fn message(reg: *ecs.Registry, dt: f32) void {
+    var delay_view = reg.view(.{ cmp.MessageDelay }, .{});
+    var delay_iter = delay_view.entityIterator();
+    while (delay_iter.next()) |entity| {
+        var delay = reg.get(cmp.MessageDelay, entity);
+        delay.time -= dt;
+        if (delay.time <= 0) {
+            reg.remove(cmp.MessageDelay, entity);
+        }
+    }
+
+    var create_view = reg.view(.{ cmp.CreateMessage }, .{});
+    var create_iter = create_view.entityIterator();
+    while (create_iter.next()) |entity| {
+        var create = reg.get(cmp.CreateMessage, entity);
+        if (create.parent) |parent| {
+            if (!reg.has(cmp.MessageDelay, parent)) {
+                reg.add(parent, cmp.MessageDelay {
+                    .time = gui_setup.MessageDelay,
+                });
+                
+                reg.add(entity, rcmp.Position { .x = create.x, .y = create.y });
+                reg.add(entity, rcmp.AttachTo { .target = parent });
+                reg.add(entity, rcmp.Text {
+                    .color = gui_setup.ColorLabelText,
+                    .size = gui_setup.SizeText,
+                    .text = create.text,
+                    .free = create.free,
+                });
+
+                var move_ety = reg.create();
+                reg.add(move_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
+                reg.add(move_ety, rcmp.TweenSetup {
+                    .entity = entity,
+                    .from = create.y,
+                    .to = create.y - gui_setup.MessageShift,
+                    .duration = gui_setup.MessageDuration,
+                    .remove_source = true,
+                });
+
+                var opacity_ety = reg.create();
+                reg.add(opacity_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.A });
+                reg.add(opacity_ety, rcmp.TweenSetup {
+                    .entity = entity,
+                    .from = 255,
+                    .to = 0,
+                    .duration = gui_setup.MessageDuration,
+                });
+
+                reg.remove(cmp.CreateMessage, entity);
+            }
+        }
+    }
 }
 
 pub fn changeScene(
