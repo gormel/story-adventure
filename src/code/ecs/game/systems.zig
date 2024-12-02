@@ -144,42 +144,44 @@ pub fn message(reg: *ecs.Registry, dt: f32) void {
     while (create_iter.next()) |entity| {
         var create = reg.get(cmp.CreateMessage, entity);
         if (create.parent) |parent| {
-            if (!reg.has(cmp.MessageDelay, parent)) {
-                reg.add(parent, cmp.MessageDelay {
-                    .time = gui_setup.MessageDelay,
-                });
-                
-                reg.add(entity, rcmp.Position { .x = create.x, .y = create.y });
-                reg.add(entity, rcmp.AttachTo { .target = parent });
-                reg.add(entity, rcmp.Text {
-                    .color = gui_setup.ColorLabelText,
-                    .size = gui_setup.SizeText,
-                    .text = create.text,
-                    .free = create.free,
-                });
-
-                var move_ety = reg.create();
-                reg.add(move_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
-                reg.add(move_ety, rcmp.TweenSetup {
-                    .entity = entity,
-                    .from = create.y,
-                    .to = create.y - gui_setup.MessageShift,
-                    .duration = gui_setup.MessageDuration,
-                    .remove_source = true,
-                });
-
-                var opacity_ety = reg.create();
-                reg.add(opacity_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.A });
-                reg.add(opacity_ety, rcmp.TweenSetup {
-                    .entity = entity,
-                    .from = 255,
-                    .to = 0,
-                    .duration = gui_setup.MessageDuration,
-                });
-
-                reg.remove(cmp.CreateMessage, entity);
+            if (reg.has(cmp.MessageDelay, parent)) {
+                continue;
             }
+
+            reg.add(parent, cmp.MessageDelay {
+                .time = gui_setup.MessageDelay,
+            });
         }
+
+        reg.add(entity, rcmp.Position { .x = create.x, .y = create.y });
+        reg.add(entity, rcmp.AttachTo { .target = create.parent });
+        reg.add(entity, rcmp.Text {
+            .color = gui_setup.ColorLabelText,
+            .size = gui_setup.SizeText,
+            .text = create.text,
+            .free = create.free,
+        });
+
+        var move_ety = reg.create();
+        reg.add(move_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
+        reg.add(move_ety, rcmp.TweenSetup {
+            .entity = entity,
+            .from = create.y,
+            .to = create.y - gui_setup.MessageShift,
+            .duration = gui_setup.MessageDuration,
+            .remove_source = true,
+        });
+
+        var opacity_ety = reg.create();
+        reg.add(opacity_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.A });
+        reg.add(opacity_ety, rcmp.TweenSetup {
+            .entity = entity,
+            .from = 255,
+            .to = 0,
+            .duration = gui_setup.MessageDuration,
+        });
+
+        reg.remove(cmp.CreateMessage, entity);
     }
 }
 
