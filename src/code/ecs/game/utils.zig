@@ -9,7 +9,7 @@ const ccmp = @import("../core/components.zig");
 const sc = @import("../../engine/scene.zig");
 const pr = @import("../../engine/properties.zig");
 
-const initial_scene = "main_menu";
+const gameover_scene = "gameover";
 
 pub const ScenePropChangeItemCfg = struct {
     enter: std.json.ArrayHashMap(f64),
@@ -43,7 +43,20 @@ var scenes = &.{
         .name = "combat",
         .text = @embedFile("../../assets/scenes/combat.json"),
     },
+    .{
+        .name = "gameover",
+        .text = @embedFile("../../assets/scenes/gameover.json"),
+    },
 };
+
+pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {
+    var iter = reg.entityIterator(Component);
+    while (iter.next()) |entity| {
+        if (!reg.has(ccmp.Destroyed, entity)) {
+            reg.add(entity, ccmp.Destroyed {});
+        }
+    }
+}
 
 pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
     var state_view = reg.view(.{ gcmp.GameState, gcmp.GameStateGameplay }, .{});
@@ -54,15 +67,9 @@ pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropCha
             reg.add(gameplay.hud_scene, ccmp.Destroyed {});
         }
 
-        var scene_view = reg.view(.{ gcmp.GameplayScene }, .{});
-        var scene_iter = scene_view.entityIterator();
-        while (scene_iter.next()) |scene_entity| {
-            if (!reg.has(ccmp.Destroyed, scene_entity)) {
-                reg.add(scene_entity, ccmp.Destroyed {});
-            }
-        }
-
-        _ = try loadScene(reg, props, change, allocator, initial_scene);
+        destroyAll(gcmp.GameplayScene, reg);
+        const gameover_scene_entity = try loadScene(reg, props, change, allocator, gameover_scene);
+        reg.add(gameover_scene_entity, cmp.GameoverScene {});
 
         reg.remove(gcmp.GameStateGameplay, entity);
     }

@@ -11,6 +11,7 @@ pub const TriggerPlayerPropertyChanged = struct { name: []const u8 };
 
 pub const GameplayScene = struct { name: []const u8 };
 pub const NextGameplayScene = struct {};
+pub const GameoverScene = struct {};
 
 pub const GameState = struct {};
 pub const GameStateMenu = struct { menu_scene: ?ecs.Entity };

@@ -1,0 +1,34 @@
+[
+    {
+        "position": { "x": 170, "y": 108 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "popup_bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 245, "y": 21 },
+                "text": { "size": 36, "text": "Game Over\u0000" },
+                "tags": [ "gameover-title-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 262, "y": 339 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "gameover-button-continue" ],
+                "children": [
+                    {
+                        "position": { "x": 49, "y": 12 },
+                        "text": { "size": 10, "text": "Continue\u0000" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

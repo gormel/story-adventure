@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 
 pub const ColorPanel = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
+pub const ColorPanelTitle = rl.Color { .r = 255, .g = 255, .b = 255, .a = 255 };
 pub const ColorButton = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 pub const ColorButtonText = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
 pub const ColorLabelBg = rl.Color { .r = 56, .g = 122, .b = 223, .a = 255 };

@@ -19,6 +19,7 @@ const gameplay_start = @import("gameplayStart/systems.zig");
 const hud = @import("hud/systems.zig");
 const loot = @import("loot/systems.zig");
 const combat = @import("combat/systems.zig");
+const gameover = @import("gameover/systems.zig");
 
 const SceneDesc = struct { name: []const u8, text: []const u8 };
 
@@ -253,6 +254,8 @@ pub fn initGameplayCustoms(
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
     combat.initState(reg);
+
+    gameover.initGui(reg);
 }
 
 pub fn updateGameplayCustoms(
@@ -279,6 +282,8 @@ pub fn updateGameplayCustoms(
     combat.deathEffectComplete(reg);
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, change, rnd, allocator);
+
+    try gameover.gui(reg, props, change, allocator);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
