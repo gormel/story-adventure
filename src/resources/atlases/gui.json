@@ -2,6 +2,13 @@
     "tex": "resources/textures/gui.png",
     "sprites": [
         {
+            "name": "popup_panel_bg",
+            "x": 487,
+            "y": 433,
+            "w": 356,
+            "h": 42
+        },
+        {
             "name": "button",
             "x": 0,
             "y": 0,

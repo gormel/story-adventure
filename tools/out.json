@@ -1,1 +1,90 @@
-{"tex": "resources/textures/gui.png", "sprites": [{"name": "button", "x": 0, "y": 0, "w": 160, "h": 32}, {"name": "coin", "x": 32, "y": 96, "w": 32, "h": 32}, {"name": "heart", "x": 0, "y": 32, "w": 32, "h": 32}, {"name": "popup_bg", "x": 160, "y": 0, "w": 683, "h": 433}, {"name": "power", "x": 64, "y": 96, "w": 32, "h": 32}, {"name": "shield", "x": 0, "y": 96, "w": 32, "h": 32}, {"name": "sword", "x": 0, "y": 64, "w": 32, "h": 32}, {"name": "defence-strategy", "x": 32, "y": 32, "w": 64, "h": 64}, {"name": "double-attack-strategy", "x": 96, "y": 32, "w": 64, "h": 64}, {"name": "attack-strategy", "x": 96, "y": 96, "w": 64, "h": 64}, {"name": "shread-strategy", "x": 96, "y": 160, "w": 64, "h": 64}], "animations": []}
+{
+    "tex": "resources/textures/gui.png",
+    "sprites": [
+        {
+            "name": "popup_panel_bg",
+            "x": 487,
+            "y": 433,
+            "w": 356,
+            "h": 42
+        },
+        {
+            "name": "button",
+            "x": 0,
+            "y": 0,
+            "w": 160,
+            "h": 32
+        },
+        {
+            "name": "coin",
+            "x": 32,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "heart",
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "popup_bg",
+            "x": 160,
+            "y": 0,
+            "w": 683,
+            "h": 433
+        },
+        {
+            "name": "power",
+            "x": 64,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "shield",
+            "x": 0,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword",
+            "x": 0,
+            "y": 64,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "defence-strategy",
+            "x": 32,
+            "y": 32,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "double-attack-strategy",
+            "x": 96,
+            "y": 32,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "attack-strategy",
+            "x": 96,
+            "y": 96,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "shread-strategy",
+            "x": 96,
+            "y": 160,
+            "w": 64,
+            "h": 64
+        }
+    ],
+    "animations": []
+}

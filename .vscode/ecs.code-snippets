@@ -18,5 +18,15 @@
             "\t$0",
             "}"
         ]
+    },
+    "FilterSingle": {
+        "prefix": "fltrs",
+        "scope": "zig",
+        "body": [
+            "var ${1}_iter = reg.entityIterator(${2});",
+            "while (${1}_iter.next()) |entity| {",
+            "\t$0",
+            "}"
+        ]
     }
 }

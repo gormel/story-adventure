@@ -283,7 +283,7 @@ pub fn updateGameplayCustoms(
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, change, rnd, allocator);
 
-    try gameover.gui(reg, props, change, allocator);
+    try gameover.gui(reg, props, change, items.item_list_cfg, allocator);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {

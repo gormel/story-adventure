@@ -13,6 +13,7 @@ const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
+const sp = @import("../../../engine/sprite.zig");
 
 const initial_scene = "main_menu";
 
@@ -31,10 +32,20 @@ pub fn initGui(reg: *ecs.Registry) void {
                 .color = gui_setup.ColorPanelTitle
             });
         }
+
+        if (utils.containsTag(init.tags, "gameover-info-name-text")) {
+            reg.add(entity, cmp.RecolorText {
+                .color = gui_setup.ColorPanelInfo
+            });
+        }
+
+        if (utils.containsTag(init.tags, "gameover-item-list")) {
+            reg.add(entity, cmp.CreateItemList {});
+        }
     }
 }
 
-pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
+pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, items_cfg: *itm.ItemListCfg, allocator: std.mem.Allocator) !void {
     var continue_view = reg.view(.{ gcmp.ButtonClicked, cmp.ContinueBtn }, .{});
     var continue_iter = continue_view.entityIterator();
     while (continue_iter.next()) |_| {
@@ -52,5 +63,44 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
         text.color = recolor.color;
 
         reg.remove(cmp.RecolorText, entity);
+    }
+
+    var item_list_iter = reg.entityIterator(cmp.CreateItemList);
+    while (item_list_iter.next()) |entity| {
+        var it = items_cfg.map.iterator();
+        var root_ety = reg.create();
+        reg.add(root_ety, rcmp.Position { .x = 5, .y = 5 });
+        reg.add(root_ety, rcmp.AttachTo { .target = entity });
+        reg.add(root_ety, gcmp.LayoutChildren {
+            .axis = gcmp.LayoutAxis.Horizontal,
+            .pivot = gcmp.LayoutPivot.Begin,
+            .distance = 32 + 5,
+        });
+
+        while (it.next()) |kv| {
+            const item_count = props.get(kv.key_ptr.*);
+            if (item_count > 0) {
+                var item_ety = reg.create();
+                reg.add(item_ety, rcmp.SpriteResource {
+                    .atlas = kv.value_ptr.atlas,
+                    .sprite = kv.value_ptr.sprite,
+                });
+                reg.add(item_ety, rcmp.AttachTo { .target = root_ety });
+
+                if (item_count > 1) {
+                    var text_ety = reg.create();
+                    reg.add(text_ety, rcmp.Text {
+                        .color = gui_setup.ColorLabelText,
+                        .size = gui_setup.SizeText,
+                        .free = true,
+                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ item_count }),
+                    });
+                    reg.add(text_ety, rcmp.Position { .x = 20, .y = 22 });
+                    reg.add(text_ety, rcmp.AttachTo { .target = item_ety });
+                }
+            }
+        }
+
+        reg.remove(cmp.CreateItemList, entity);
     }
 }

@@ -14,6 +14,21 @@
                 "children": []
             },
             {
+                "position": { "x": 163, "y": 112 },
+                "text": { "size": 10, "text": "Items:\u0000" },
+                "tags": [ "gameover-info-name-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 205, "y": 97 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "popup_panel_bg"
+                },
+                "tags": [ "gameover-item-list" ],
+                "children": []
+            },
+            {
                 "position": { "x": 262, "y": 339 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",
