@@ -10,7 +10,7 @@ const rcmp = @import("../../render/components.zig");
 const gcmp = @import("../components.zig");
 const pr = @import("../../../engine/properties.zig");
 
-const textSelector = fn (props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8;
+const textSelector = fn (props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8;
 
 pub fn initViews(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -52,15 +52,15 @@ fn addSync(comptime ComponentT: type, reg: *ecs.Registry) void {
     }
 }
 
-fn selectValue(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
-    var value = props.get(name);
-    return std.fmt.allocPrintZ(allocator, "{d:.0}", .{ value }) catch "0";
+fn selectValue(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8 {
+    const value = props.get(name);
+    return std.fmt.allocPrintZ(allocator, "{d:.0}", .{ value }) catch "0" ++ .{ 0 };
 }
 
-fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) []const u8 {
-    var value = props.get(name);
-    var max = props.getInitial(name);
-    return std.fmt.allocPrintZ(allocator, "{d:.0}/{d:.0}", .{ value, max }) catch "0/0";
+fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8 {
+    const value = props.get(name);
+    const max = props.getInitial(name);
+    return std.fmt.allocPrintZ(allocator, "{d:.0}/{d:.0}", .{ value, max }) catch "0/0" ++ .{ 0 };
 }
 
 fn syncProperty(
@@ -74,7 +74,7 @@ fn syncProperty(
     var view = reg.view(.{ ComponentT, cmp.SyncView }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var value = selector(props, propertyName, allocator);
+        const value = selector(props, propertyName, allocator);
         if (reg.tryGet(rcmp.SetTextValue, entity)) |set_text| {
             if (set_text.free) {
                 allocator.free(set_text.text);

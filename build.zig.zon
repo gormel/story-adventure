@@ -7,13 +7,13 @@
     .name = "story-adventure",
     .version = "0.1.0",
     .dependencies = .{
-        .raylib = .{
-            .url = "https://github.com/raysan5/raylib/archive/6094869e3e845e90e1e8ae41b98e889fb3e13e78.tar.gz",
-            .hash = "12203b7a16bcf8d7fe4c9990a46d92b6f2e35531a4b82eb3bdf8ba4a0dbcc5f21415",
+        .@"raylib-zig" = .{
+            .url = "git+https://github.com/not-nik/raylib-zig?ref=devel#bc82c6ebd7b9ba31437f3dcf34064106749edcf7",
+            .hash = "1220c35d89a132529b7081dde0778f00719c0f6b76f7e88fe6c7af0843a0d92dfb7c",
         },
         .zig_ecs = .{
-            .url = "https://github.com/prime31/zig-ecs/archive/102c89962b0d08d7ade089f38cdff07cb8d8016d.tar.gz",
-            .hash = "1220ea2dc27bdf9d117f26bea24ec4a955506f5018b56a57973a0533e0e5f2792292",
+            .url = "https://github.com/prime31/zig-ecs/archive/bbd8e01d6002c8c89dcfc701f46a99322f1add8c.tar.gz",
+            .hash = "12203a661736d5fa516e47ed18fd8aeb5f5586708cd39355c3960067c532261c2e00",
         },
     }
 }

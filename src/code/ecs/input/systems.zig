@@ -37,8 +37,8 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     const position = reg.getConst(cmp.MousePositionInput, entity);
     const tracker = reg.getConst(cmp.MouseOverTracker, entity);
 
-    var px = @as(f32, @floatFromInt(position.x));
-    var py = @as(f32, @floatFromInt(position.y));
+    const px = @as(f32, @floatFromInt(position.x));
+    const py = @as(f32, @floatFromInt(position.y));
     var x = px;
     var y = py;
     reverseTransformXY(reg, entity, &x, &y);
@@ -58,7 +58,7 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
                 .width = scissor.width * scale_x, .height = scissor.height * scale_y,
             };
 
-            if (!rl.CheckCollisionPointRec(rl.Vector2 { .x = px, .y = py }, scissor_rect)) {
+            if (!rl.checkCollisionPointRec(rl.Vector2.init(px, py), scissor_rect)) {
                 return false;
             }
         }
@@ -67,7 +67,7 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     var target_rect = tracker.rect;
     target_rect.x = 0;
     target_rect.y = 0;
-    return rl.CheckCollisionPointRec(rl.Vector2 { .x = x, .y = y }, target_rect);
+    return rl.checkCollisionPointRec(rl.Vector2.init(x, y), target_rect);
 }
 
 pub fn capture(reg: *ecs.Registry, dt: f32) void {
@@ -101,10 +101,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
         reg.remove(cmp.InputWheel, entity);
     }
 
-    const mouse_delta = rl.GetMouseDelta();
-    const mouse_pos_x = rl.GetMouseX();
-    const mouse_pos_y = rl.GetMouseY();
-    const wheel = rl.GetMouseWheelMove();
+    const mouse_delta = rl.getMouseDelta();
+    const mouse_pos_x = rl.getMouseX();
+    const mouse_pos_y = rl.getMouseY();
+    const wheel = rl.getMouseWheelMove();
 
     var mouse_pos_iter = reg.entityIterator(cmp.MousePositionTracker);
     while (mouse_pos_iter.next()) |entity| {
@@ -153,7 +153,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var mouse_btn_press_iter = mouse_btn_press_view.entityIterator();
     while (mouse_btn_press_iter.next()) |entity| {
         const tracker = reg.get(cmp.MouseButtonTracker, entity);
-        if (rl.IsMouseButtonPressed(tracker.button)) {
+        if (rl.isMouseButtonPressed(tracker.button)) {
             reg.add(entity, cmp.InputPressed {});
             reg.add(entity, cmp.InputDown {});
         }
@@ -163,7 +163,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var mouse_btn_release_iter = mouse_btn_release_view.entityIterator();
     while (mouse_btn_release_iter.next()) |entity| {
         const tracker = reg.get(cmp.MouseButtonTracker, entity);
-        if (rl.IsMouseButtonReleased(tracker.button)) {
+        if (rl.isMouseButtonReleased(tracker.button)) {
             reg.add(entity, cmp.InputReleased {});
             reg.remove(cmp.InputDown, entity);
         }
@@ -173,7 +173,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var key_press_iter = key_press_view.entityIterator();
     while (key_press_iter.next()) |entity| {
         const tracker = reg.get(cmp.KeyInputTracker, entity);
-        if (rl.IsKeyPressed(tracker.key)) {
+        if (rl.isKeyPressed(tracker.key)) {
             reg.add(entity, cmp.InputPressed {});
             reg.add(entity, cmp.InputDown {});
         }
@@ -183,13 +183,13 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var key_release_iter = key_release_view.entityIterator();
     while (key_release_iter.next()) |entity| {
         const tracker = reg.get(cmp.KeyInputTracker, entity);
-        if (rl.IsKeyReleased(tracker.key)) {
+        if (rl.isKeyReleased(tracker.key)) {
             reg.add(entity, cmp.InputReleased {});
             reg.remove(cmp.InputDown, entity);
         }
     }
 
-    const char = @as(i32, rl.GetCharPressed());
+    const char = @as(i32, rl.getCharPressed());
     var char_view = reg.view(.{ cmp.CharInputTracker }, .{ cmp.InputChar });
     var char_iter = char_view.entityIterator();
     while (char_iter.next()) |entity| {
@@ -224,7 +224,7 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var track_wheel_view = reg.view(.{ cmp.MouseWheelTracker }, .{ cmp.InputWheel });
     var track_wheel_iter = track_wheel_view.entityIterator();
     while (track_wheel_iter.next()) |entity| {
-        if (@fabs(wheel) > 0) {
+        if (@abs(wheel) > 0) {
             reg.add(entity, cmp.InputWheel {
                 .delta = wheel,
             });

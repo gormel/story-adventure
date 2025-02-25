@@ -62,7 +62,7 @@ pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropCha
     var state_view = reg.view(.{ gcmp.GameState, gcmp.GameStateGameplay }, .{});
     var state_iter = state_view.entityIterator();
     while (state_iter.next()) |entity| {
-        var gameplay = reg.get(gcmp.GameStateGameplay, entity);
+        const gameplay = reg.get(gcmp.GameStateGameplay, entity);
         if (!reg.has(ccmp.Destroyed, gameplay.hud_scene)) {
             reg.add(gameplay.hud_scene, ccmp.Destroyed {});
         }
@@ -88,7 +88,7 @@ pub fn loadScene(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropCh
         if (std.mem.eql(u8, name, scene_desc.name)) {
             const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
             
-            var new_scene_entity = reg.create();
+            const new_scene_entity = reg.create();
             reg.add(new_scene_entity, scmp.SceneResource { .scene = parsed_scene.value });
             reg.add(new_scene_entity, rcmp.Position { .x = 0, .y = 0 });
             reg.add(new_scene_entity, rcmp.AttachTo { .target = null });

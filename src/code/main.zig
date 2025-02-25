@@ -26,10 +26,10 @@ pub fn main() !void {
     const screenWidth = 1024;
     const screenHeight = 650;
 
-    rl.InitWindow(screenWidth, screenHeight, "Journey");
-    defer rl.CloseWindow(); // Close window and OpenGL context
+    rl.initWindow(screenWidth, screenHeight, "Journey");
+    defer rl.closeWindow(); // Close window and OpenGL context
 
-    rl.SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+    rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     const allocator = std.heap.page_allocator;
@@ -47,7 +47,7 @@ pub fn main() !void {
     defer props.deinit();
 
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
-    var props_json = try std.json.Value.jsonParse(arena, &scanner, .{});
+    const props_json = try std.json.Value.jsonParse(arena, &scanner, .{ .max_value_len = 4096 });
 
     const items_cfg_text = @embedFile("assets/cfg/items.json");
     var items_cfg_json = try std.json.parseFromSlice(itm.ItemListCfg, arena, items_cfg_text, .{ .ignore_unknown_fields = true });
@@ -82,7 +82,7 @@ pub fn main() !void {
 
     var timer = try std.time.Timer.start();
     // Main game loop
-    while (!rl.WindowShouldClose()) { // Detect window close button or ESC key
+    while (!rl.windowShouldClose()) { // Detect window close button or ESC key
         
         const dt = @as(f32, @floatFromInt(timer.read())) / @as(f32, @floatFromInt(std.time.ns_per_s));
         timer.reset();
@@ -123,12 +123,12 @@ pub fn main() !void {
         render_systems.updateFlipbook(&reg, dt);
         render_systems.tween(&reg, dt);
 
-        rl.BeginDrawing();
-        rl.ClearBackground(rl.WHITE);
+        rl.beginDrawing();
+        rl.clearBackground(rl.Color.white);
 
         try render_systems.render(&reg);
 
-        rl.EndDrawing();
+        rl.endDrawing();
 
         //destroy triggers
         try game_systems.freeGameplayCustoms(&reg);

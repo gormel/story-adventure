@@ -3,7 +3,7 @@ const ecs = @import("zig-ecs");
 pub const CreateButton = struct {};
 pub const Button = struct {};
 pub const ButtonClicked = struct {};
-pub const CreateMessage = struct { parent: ?ecs.Entity, x: f32, y: f32, text: []const u8, free: bool };
+pub const CreateMessage = struct { parent: ?ecs.Entity, x: f32, y: f32, text: [:0]const u8, free: bool };
 pub const MessageDelay = struct { time: f32 };
 
 pub const PlayerPropertyChanged = struct { name: []const u8 };

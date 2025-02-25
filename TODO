@@ -1,5 +1,5 @@
-fea: loot view popup
 fea: in-game menu: exit, loot, statistics
+fea: loot view popup
 fea: global progress
 * props save/load
 * progress triggers

@@ -62,7 +62,7 @@ pub const Resources = struct {
 
             const absolute_tex_path = try self.allocator.dupeZ(u8, try std.fs.path.join(self.allocator, &.{ exe_dir, json.value.tex }));
             defer self.allocator.free(absolute_tex_path);
-            const tex = rl.LoadTexture(absolute_tex_path.ptr);
+            const tex = try rl.loadTexture(absolute_tex_path);
             atlas = Atlas {
                 .cfg = json,
                 .tex = tex,
@@ -117,7 +117,7 @@ pub const Resources = struct {
     pub fn deinit(self: *Resources) void {
         const it = self.atlases.iterator();
         while (it.next()) | pair | {
-            rl.UnloadTexture(pair.value_ptr.tex);
+            rl.unloadTexture(pair.value_ptr.tex);
             pair.value_ptr.cfg.deinit();
         }
         self.atlases.deinit();

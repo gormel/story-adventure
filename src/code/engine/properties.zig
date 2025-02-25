@@ -72,13 +72,13 @@ pub const Properties = struct {
         try self.map.put(name, actual);
 
         if (!self.silent) {
-            var entity = self.reg.create();
+            const entity = self.reg.create();
             self.reg.add(entity, cmp.TriggerPlayerPropertyChanged { .name = name });
         }
     }
 
     pub fn add(self: *Self, name: []const u8, value: f64) !void {
-        var current_value = self.get(name);
+        const current_value = self.get(name);
         try self.set(name, current_value + value);
     }
 

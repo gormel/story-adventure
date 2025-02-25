@@ -42,6 +42,14 @@ pub fn initGui(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "gameover-item-list")) {
             reg.add(entity, cmp.CreateItemList {});
         }
+
+        if (utils.containsTag(init.tags, "gameover-depth-text")) {
+            reg.add(entity, cmp.SetDepthText {});
+        }
+
+        if (utils.containsTag(init.tags, "gameover-slain-text")) {
+            reg.add(entity, cmp.SetSlainText {});
+        }
     }
 }
 
@@ -68,7 +76,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
     var item_list_iter = reg.entityIterator(cmp.CreateItemList);
     while (item_list_iter.next()) |entity| {
         var it = items_cfg.map.iterator();
-        var root_ety = reg.create();
+        const root_ety = reg.create();
         reg.add(root_ety, rcmp.Position { .x = 5, .y = 5 });
         reg.add(root_ety, rcmp.AttachTo { .target = entity });
         reg.add(root_ety, gcmp.LayoutChildren {
@@ -80,7 +88,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
         while (it.next()) |kv| {
             const item_count = props.get(kv.key_ptr.*);
             if (item_count > 0) {
-                var item_ety = reg.create();
+                const item_ety = reg.create();
                 reg.add(item_ety, rcmp.SpriteResource {
                     .atlas = kv.value_ptr.atlas,
                     .sprite = kv.value_ptr.sprite,
@@ -88,7 +96,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
                 reg.add(item_ety, rcmp.AttachTo { .target = root_ety });
 
                 if (item_count > 1) {
-                    var text_ety = reg.create();
+                    const text_ety = reg.create();
                     reg.add(text_ety, rcmp.Text {
                         .color = gui_setup.ColorLabelText,
                         .size = gui_setup.SizeText,
@@ -102,5 +110,31 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
         }
 
         reg.remove(cmp.CreateItemList, entity);
+    }
+
+    var depth_view = reg.view(.{ cmp.SetDepthText, rcmp.Text }, .{});
+    var depth_iter = depth_view.entityIterator();
+    while (depth_iter.next()) |entity| {
+        reg.remove(cmp.SetDepthText, entity);
+
+        const depth = props.get("scene_depth");
+        const depthText = try std.fmt.allocPrintZ(allocator, "{d}", .{ depth });
+        reg.add(entity, rcmp.SetTextValue {
+            .free = true,
+            .text = depthText,
+        });
+    }
+
+    var slain_view = reg.view(.{ cmp.SetSlainText, rcmp.Text }, .{});
+    var slain_iter = slain_view.entityIterator();
+    while (slain_iter.next()) |entity| {
+        reg.remove(cmp.SetSlainText, entity);
+
+        const slain = props.get("kill_count");
+        const slainText = try std.fmt.allocPrintZ(allocator, "{d}", .{ slain });
+        reg.add(entity, rcmp.SetTextValue {
+            .free = true,
+            .text = slainText,
+        });
     }
 }

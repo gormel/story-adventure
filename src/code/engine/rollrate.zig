@@ -12,7 +12,7 @@ pub fn select(
             max_weight += @field(item, weight_field);
         }
 
-        var roll = rnd.float(f64) * max_weight;
+        const roll = rnd.float(f64) * max_weight;
         var prev_weight: f64 = 0;
         for (table) |item| {
             const item_weight = @field(item, weight_field);

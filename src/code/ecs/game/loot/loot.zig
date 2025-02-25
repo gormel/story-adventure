@@ -244,7 +244,7 @@ pub const TileIndex = struct {
             }
         }
 
-        var roll = rollrate.select(TileRoll, "weight", roll_list[0..roll_size], self.rnd);
+        const roll = rollrate.select(TileRoll, "weight", roll_list[0..roll_size], self.rnd);
         if (roll) |ok_roll| {
             return ok_roll.tile;
         }

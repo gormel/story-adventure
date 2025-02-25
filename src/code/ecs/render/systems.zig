@@ -212,7 +212,7 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var update_middle_view = reg.view(.{ cmp.AttachTo, cmp.Parent }, .{ cmp.UpdateGlobalTransform });
     var update_middle_iter = update_middle_view.entityIterator();
     while (update_middle_iter.next()) |entity| {
-        var parent = update_middle_view.getConst(cmp.Parent, entity);
+        const parent = update_middle_view.getConst(cmp.Parent, entity);
         if (!reg.has(cmp.AttachTo, parent.entity)) {
             reg.add(entity, cmp.UpdateGlobalTransform {});
         }
@@ -324,7 +324,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenSetup }, .{ Destroyed });
     var complete_iter = complete_view.entityIterator();
     while (complete_iter.next()) |entity| {
-        var setup = reg.get(cmp.TweenSetup, entity);
+        const setup = reg.get(cmp.TweenSetup, entity);
         if (setup.remove_source and reg.valid(setup.entity)) {
             reg.add(setup.entity, Destroyed {});
         }
@@ -338,7 +338,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var start_view = reg.view(.{ cmp.TweenSetup }, .{ cmp.TweenInProgress, cmp.TweenComplete });
     var start_iter = start_view.entityIterator();
     while (start_iter.next()) |entity| {
-        var setup = reg.get(cmp.TweenSetup, entity);
+        const setup = reg.get(cmp.TweenSetup, entity);
         if (!reg.valid(setup.entity)) {
             reg.remove(cmp.TweenSetup, entity);
 
@@ -354,7 +354,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var view = reg.view(.{ cmp.TweenSetup, cmp.TweenInProgress }, .{ cmp.TweenComplete });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var setup = view.get(cmp.TweenSetup, entity);
+        const setup = view.get(cmp.TweenSetup, entity);
         if (!reg.valid(setup.entity)) {
             reg.remove(cmp.TweenSetup, entity);
             reg.remove(cmp.TweenInProgress, entity);
@@ -496,7 +496,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
     var complate_view = reg.view(.{ cmp.TweenSetup, cmp.TweenInProgress }, .{ cmp.TweenComplete });
     var complate_iter = complate_view.entityIterator();
     while (complate_iter.next()) |entity| {
-        var setup = view.get(cmp.TweenSetup, entity);
+        const setup = view.get(cmp.TweenSetup, entity);
         var progress = view.get(cmp.TweenInProgress, entity);
 
         if (progress.duration <= 0) {
@@ -660,9 +660,9 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const rot = reg.getConst(cmp.GlobalRotation, entity);
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
-    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    const origin = rl.Vector2 { .x = 0, .y = 0 };
 
-    var color = rl.WHITE;
+    var color = rl.Color.white;
     if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
         color.r = colorComponent.r;
         color.g = colorComponent.g;
@@ -675,7 +675,7 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .width = sprite.sprite.rect.width * scale.x,
         .height = sprite.sprite.rect.height * scale.y
     };
-    rl.DrawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, color);
+    rl.drawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, color);
 }
 
 fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -684,13 +684,13 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const rot = reg.getConst(cmp.GlobalRotation, entity);
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
-    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    const origin = rl.Vector2 { .x = 0, .y = 0 };
     const flen = @as(f64, @floatFromInt(flipbook.flipbook.frames.len));
     var idx = @as(usize, @intFromFloat(std.math.floor(flipbook.time / flipbook.flipbook.duration * flen)));
     idx = @min(flipbook.flipbook.frames.len - 1, idx);
-    var frame = flipbook.flipbook.frames[idx];
+    const frame = flipbook.flipbook.frames[idx];
 
-    var color = rl.WHITE;
+    var color = rl.Color.white;
     if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
         color.r = colorComponent.r;
         color.g = colorComponent.g;
@@ -703,7 +703,7 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .width = frame.width * scale.x,
         .height = frame.height * scale.y
     };
-    rl.DrawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, color);
+    rl.drawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, color);
 }
 
 fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -732,7 +732,7 @@ fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
         color.a = @intFromFloat(@as(f32, @floatFromInt(color.a)) * @as(f32, @floatFromInt(colorComponent.a)) / 255);
     }
 
-    rl.DrawRectanglePro(target_rect, origin, rot.a, color);
+    rl.drawRectanglePro(target_rect, origin, rot.a, color);
 }
 
 fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -755,10 +755,11 @@ fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
         color.a = @intFromFloat(@as(f32, @floatFromInt(color.a)) * @as(f32, @floatFromInt(colorComponent.a)) / 255);
     }
 
-    var position = rl.Vector2 { .x = pos.x, .y = pos.y };
+    const position = rl.Vector2 { .x = pos.x, .y = pos.y };
 
     if (text.text.len > 0) {
-        rl.DrawTextPro(rl.GetFontDefault(), text.text.ptr, position, origin, rot.a, text.size, 3, color);
+        const font = try rl.getFontDefault();
+        rl.drawTextPro(font, text.text, position, origin, rot.a, text.size, 3, color);
     }
 }
 
@@ -769,7 +770,7 @@ const render_fns = .{
     .{ .cmp = cmp.Text, .func = renderText },
 };
 
-fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?rl.Rectangle) void {
+fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?rl.Rectangle) !void {
     if (reg.has(cmp.Disabled, entity)) {
         return;
     }
@@ -795,12 +796,12 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
         };        
 
         if (parent_scissor_rect != null) {
-            scissor_rect = rl.GetCollisionRec(scissor_rect.?, parent_scissor_rect.?);
+            scissor_rect = rl.getCollisionRec(scissor_rect.?, parent_scissor_rect.?);
 
-            rl.EndScissorMode();
+            rl.endScissorMode();
         }
 
-        rl.BeginScissorMode(
+        rl.beginScissorMode(
             @as(i32, @intFromFloat(scissor_rect.?.x)),
             @as(i32, @intFromFloat(scissor_rect.?.y)),
             @as(i32, @intFromFloat(scissor_rect.?.width)),
@@ -811,15 +812,15 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
     }
     if (reg.tryGetConst(cmp.Children, entity)) |children| {
         for (children.children.items) |child_entity| {
-            renderObjects(reg, child_entity, scissor_rect);
+            try renderObjects(reg, child_entity, scissor_rect);
         }
     }
 
     if (shold_end_scissor) {
-        rl.EndScissorMode();
+        rl.endScissorMode();
 
         if (parent_scissor_rect != null) {
-            rl.BeginScissorMode(
+            rl.beginScissorMode(
                 @as(i32, @intFromFloat(parent_scissor_rect.?.x)),
                 @as(i32, @intFromFloat(parent_scissor_rect.?.y)),
                 @as(i32, @intFromFloat(parent_scissor_rect.?.width)),
@@ -833,6 +834,6 @@ pub fn render(reg: *ecs.Registry) !void {
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        renderObjects(reg, entity, null);
+        try renderObjects(reg, entity, null);
     }
 }

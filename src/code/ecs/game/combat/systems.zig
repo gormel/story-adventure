@@ -36,11 +36,11 @@ const ATTACK_PROP_NAME = "attack";
 const ARMOR_PROP_NAME = "armor";
 
 fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.CombatCfg, strategy: []const u8) ecs.Entity {
-    var root_ety = reg.create();
+    const root_ety = reg.create();
     reg.add(root_ety, rcmp.AttachTo { .target = parent });
 
     if (cfg.strategy.map.get(strategy)) |strategy_cfg| {
-        var icon_ety = reg.create();
+        const icon_ety = reg.create();
         reg.add(icon_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
         reg.add(icon_ety, rcmp.SpriteResource {
             .atlas = strategy_cfg.view.atlas,
@@ -50,7 +50,7 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
         reg.add(icon_ety, cmp.StrategyButton { .strategy_id = strategy });
         reg.add(icon_ety, rcmp.AttachTo { .target = root_ety });
 
-        var text_ety = reg.create();
+        const text_ety = reg.create();
         reg.add(text_ety, rcmp.Position { .x = STRATEGY_ICON_PADDING, .y = -gui_setup.SizeText / 2 });
         reg.add(text_ety, rcmp.Text {
             .size = gui_setup.SizeTextBig,
@@ -67,7 +67,7 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-strategy-container")) {
             var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
@@ -117,12 +117,12 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-hero-root")) {
-            var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
 
-            var sprite_ety = reg.create();
+            const sprite_ety = reg.create();
             reg.add(sprite_ety, rcmp.Position {
                 .x = -CHARACTER_SPRITE_SIZE / 2,
                 .y = -CHARACTER_SPRITE_SIZE / 2,
@@ -143,9 +143,9 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-enemy-root")) {
-            var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
 
             var to_select_size: usize = 0;
@@ -165,7 +165,7 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
                     try enemy_props.create(kv.key_ptr.*, kv.value_ptr.*);
                 }
 
-                var sprite_ety = reg.create();
+                const sprite_ety = reg.create();
                 reg.add(sprite_ety, rcmp.Position {
                     .x = -CHARACTER_SPRITE_SIZE / 2,
                     .y = -CHARACTER_SPRITE_SIZE / 2,
@@ -197,10 +197,10 @@ fn createAttackEffect(
     attack_cfg: combat.AttackViewCfg,
     dmg: f64
 ) void {
-    var char_pos = reg.get(rcmp.GlobalPosition, source);
-    var target_pos = reg.get(rcmp.GlobalPosition, target);
+    const char_pos = reg.get(rcmp.GlobalPosition, source);
+    const target_pos = reg.get(rcmp.GlobalPosition, target);
 
-    var projectile_ety = reg.create();
+    const projectile_ety = reg.create();
     reg.add(projectile_ety, rcmp.AttachTo { .target = target });
     reg.add(projectile_ety, rcmp.Position { .x = char_pos.x - target_pos.x, .y = char_pos.y - target_pos.y });
     reg.add(projectile_ety, cmp.AttackEffect {
@@ -210,7 +210,7 @@ fn createAttackEffect(
         .dmg = dmg,
     });
 
-    var image_ety = reg.create();
+    const image_ety = reg.create();
     reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
     reg.add(image_ety, rcmp.AttachTo { .target = projectile_ety });
     reg.add(image_ety, rcmp.SpriteResource {
@@ -218,7 +218,7 @@ fn createAttackEffect(
         .sprite = attack_cfg.effect,
     });
 
-    var x_tween_ety = reg.create();
+    const x_tween_ety = reg.create();
     reg.add(x_tween_ety, rcmp.TweenMove { .axis = rcmp.Axis.X });
     reg.add(x_tween_ety, rcmp.TweenSetup {
         .entity = projectile_ety,
@@ -233,7 +233,7 @@ fn createAttackEffect(
         .dmg = dmg,
     });
 
-    var y_tween_ety = reg.create();
+    const y_tween_ety = reg.create();
     reg.add(y_tween_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
     reg.add(y_tween_ety, rcmp.TweenSetup {
         .entity = projectile_ety,
@@ -265,7 +265,7 @@ fn resetModify(reg: *ecs.Registry, owner: ecs.Entity, source: ecs.Entity) void {
 }
 
 fn createModify(reg: *ecs.Registry, source: ecs.Entity, modify: std.json.ArrayHashMap(f64)) ecs.Entity {
-    var entity = reg.create();
+    const entity = reg.create();
 
     reg.add(entity, cmp.CharacterModify {
         .source_character = source,
@@ -312,7 +312,7 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
     while (attack_iter.next()) |entity| {
         var cfg = reg.get(cmp.CfgOwner, entity);
         var char = reg.get(cmp.Character, entity);
-        var attk = reg.get(cmp.Attack, entity);
+        const attk = reg.get(cmp.Attack, entity);
         var target_char = reg.get(cmp.Character, attk.target);
         
         if (cfg.cfg_json.value.strategy.map.get(attk.strategy)) |strategy_cfg| {
@@ -325,16 +325,16 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 try addModify(reg, entity, entity, strategy_cfg.modify, allocator);
                 try addModify(reg, attk.target, entity, strategy_cfg.modify_opp, allocator);
 
-                var armor = getPropValue(reg, ARMOR_PROP_NAME, attk.target);
-                var raw_dmg = getPropValue(reg, ATTACK_PROP_NAME, entity);
-                var dmg = @max(raw_dmg - armor, 1);
+                const armor = getPropValue(reg, ARMOR_PROP_NAME, attk.target);
+                const raw_dmg = getPropValue(reg, ATTACK_PROP_NAME, entity);
+                const dmg = @max(raw_dmg - armor, 1);
 
                 try target_char.props.add(HP_PROP_NAME, -dmg);
                 if (!reg.has(cmp.CheckDeath, attk.target)) {
                     reg.add(attk.target, cmp.CheckDeath {});
                 }
 
-                var message = reg.create();
+                const message = reg.create();
                 reg.add(message, gcmp.CreateMessage {
                     .parent = entity,
                     .x = -CHARACTER_SPRITE_SIZE / 2,
@@ -352,11 +352,11 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
 }
 
 fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackViewCfg) void {
-    var particle_ety = reg.create();
+    const particle_ety = reg.create();
     reg.add(particle_ety, rcmp.AttachTo { .target = null });
     reg.add(particle_ety, rcmp.Position { .x = x, .y = y });
 
-    var image_ety = reg.create();
+    const image_ety = reg.create();
     reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
     reg.add(image_ety, rcmp.AttachTo { .target = particle_ety });
     reg.add(image_ety, rcmp.SpriteResource {
@@ -364,7 +364,7 @@ fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackV
         .sprite = attack_cfg.effect,
     });
 
-    var x_scale_ety = reg.create();
+    const x_scale_ety = reg.create();
     reg.add(x_scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
     reg.add(x_scale_ety, rcmp.TweenSetup {
         .entity = particle_ety,
@@ -374,7 +374,7 @@ fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackV
         .remove_source = true,
     });
 
-    var rotate_ety = reg.create();
+    const rotate_ety = reg.create();
     reg.add(rotate_ety, rcmp.TweenRotate {});
     reg.add(rotate_ety, rcmp.TweenSetup {
         .entity = particle_ety,
@@ -394,7 +394,7 @@ pub fn attackEffect(reg: *ecs.Registry, dt: f32) void {
         if (effect.delay <= 0) {
             effect.delay = ATTACK_PARTICLE_DELAY;
 
-            var pos = reg.get(rcmp.GlobalPosition, entity);
+            const pos = reg.get(rcmp.GlobalPosition, entity);
 
             createParticle(reg, pos.x, pos.y, effect.cfg);
         }
@@ -405,12 +405,12 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
     var hit_view = reg.view(.{ cmp.AttackEffectTween, rcmp.TweenComplete }, .{});
     var hit_iter = hit_view.entityIterator();
     while (hit_iter.next()) |entity| {
-        var tween = reg.get(cmp.AttackEffectTween, entity);
-        var char = reg.get(cmp.Character, tween.target_char);
+        const tween = reg.get(cmp.AttackEffectTween, entity);
+        const char = reg.get(cmp.Character, tween.target_char);
 
 
         if (reg.has(cmp.Dead, tween.target_char)) {
-            var scale_ety = reg.create();
+            const scale_ety = reg.create();
             reg.add(scale_ety, cmp.DeathTween { .character = tween.target_char });
             reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
             reg.add(scale_ety, rcmp.TweenSetup {
@@ -422,7 +422,7 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
                 .repeat = rcmp.TweenRepeat.OnceForward,
             });
 
-            var rotate_ety = reg.create();
+            const rotate_ety = reg.create();
             reg.add(rotate_ety, rcmp.TweenRotate {});
             reg.add(rotate_ety, rcmp.TweenSetup {
                 .entity = tween.target_char,
@@ -434,8 +434,8 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
             });
 
         } else {
-            var dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
-            var message = reg.create();
+            const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
+            const message = reg.create();
             reg.add(message, gcmp.CreateMessage {
                 .parent = tween.target_char,
                 .x = -CHARACTER_SPRITE_SIZE / 2,
@@ -444,7 +444,7 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
                 .free = true,
             });
 
-            var scale_ety = reg.create();
+            const scale_ety = reg.create();
             reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
             reg.add(scale_ety, rcmp.TweenSetup {
                 .entity = tween.target_char,
@@ -455,7 +455,7 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
                 .repeat = rcmp.TweenRepeat.OncePinpong,
             });
 
-            var gb_color_ety = reg.create();
+            const gb_color_ety = reg.create();
             reg.add(gb_color_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.GB });
             reg.add(gb_color_ety, rcmp.TweenSetup {
                 .entity = char.view,
@@ -493,7 +493,7 @@ pub fn checkDeath(reg: *ecs.Registry) !void {
     while (iter.next()) |entity| {
         var char = reg.get(cmp.Character, entity);
 
-        var hp = char.props.get(HP_PROP_NAME);
+        const hp = char.props.get(HP_PROP_NAME);
         if (hp <= 0) {
             reg.add(entity, cmp.Dead {});
         }
@@ -506,7 +506,7 @@ pub fn initState(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-logic")) {
             reg.add(entity, cmp.CombatState {});
             reg.add(entity, cmp.CombatStatePlayerIdle {});
@@ -549,10 +549,10 @@ pub fn combatState(
         var click_view = reg.view(.{ gcmp.ButtonClicked, cmp.StrategyButton }, .{});
         var click_iter = click_view.entityIterator();
         while (click_iter.next()) |btn_entity| {
-            var btn = reg.get(cmp.StrategyButton, btn_entity);
+            const btn = reg.get(cmp.StrategyButton, btn_entity);
             
-            var hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
-            var enemy_ety = tryGetEntity(cmp.Enemy, reg) orelse continue;
+            const hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
+            const enemy_ety = tryGetEntity(cmp.Enemy, reg) orelse continue;
             
             reg.add(hero_ety, cmp.Attack {
                 .target = enemy_ety,
@@ -569,8 +569,8 @@ pub fn combatState(
     var player_attk_view = reg.view(.{ cmp.CombatState, cmp.CombatStatePlayerAttack, cmp.CombatStateAttackCompleteRequest }, .{ cmp.CombatStateEnemyAttack });
     var player_attk_iter = player_attk_view.entityIterator();
     while (player_attk_iter.next()) |entity| {
-        var hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
-        var enemy_ety = tryGetEntity(cmp.Enemy, reg) orelse continue;
+        const hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
+        const enemy_ety = tryGetEntity(cmp.Enemy, reg) orelse continue;
 
         if (reg.has(cmp.Dead, enemy_ety)) {
             reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
@@ -609,7 +609,7 @@ pub fn combatState(
     var enemy_attk_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackCompleteRequest }, .{ cmp.CombatStatePlayerIdle });
     var enemy_attk_iter = enemy_attk_view.entityIterator();
     while (enemy_attk_iter.next()) |entity| {
-        var hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
+        const hero_ety = tryGetEntity(cmp.Hero, reg) orelse continue;
 
         if (reg.has(cmp.Dead, hero_ety)) {
             reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
@@ -636,7 +636,7 @@ pub fn combatState(
     var enemy_dead_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyDead, cmp.CombatStateDeathCompleteRequest }, .{});
     var enemy_dead_iter = enemy_dead_view.entityIterator();
     while (enemy_dead_iter.next()) |entity| {
-        var state = reg.get(cmp.CombatStateEnemyDead, entity);
+        const state = reg.get(cmp.CombatStateEnemyDead, entity);
         var enemy = reg.get(cmp.Enemy, state.enemy);
 
         var iter = enemy.cfg.reward.map.iterator();

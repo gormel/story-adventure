@@ -43,7 +43,7 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
 }
 
 fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs.Entity) ecs.Entity {
-    var entity = reg.create();
+    const entity = reg.create();
     reg.add(entity, rcmp.SpriteResource {
         .atlas = "resources/atlases/gameplay.json",
         .sprite = "openable",
@@ -61,7 +61,7 @@ fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs
 }
 
 fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, anim: []const u8) ecs.Entity {
-    var entity = reg.create();
+    const entity = reg.create();
     reg.add(entity, rcmp.FlipbookResource {
         .atlas = "resources/atlases/gameplay.json",
         .flipbook = anim,
@@ -79,7 +79,7 @@ fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, 
 }
 
 fn createCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
-    var entity = reg.create();
+    const entity = reg.create();
     reg.add(entity, rcmp.AttachTo {
         .target = tile_ety,
     });
@@ -139,7 +139,7 @@ fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axi
         }
     }
 
-    var tween_ety = reg.create();
+    const tween_ety = reg.create();
     reg.add(tween_ety, rcmp.TweenMove {
         .axis = axis,
     });
@@ -154,13 +154,13 @@ fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axi
 }
 
 fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
-    var from_tile_pos = reg.get(rcmp.Position, from_tile_ety);
-    var to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
+    const from_tile_pos = reg.get(rcmp.Position, from_tile_ety);
+    const to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
     const dx = from_tile_pos.x - to_tile_pos.x;
     const dy = from_tile_pos.y - to_tile_pos.y;
 
     if (toDirection(dx, dy)) |dir| {
-        var char = reg.get(cmp.Character, char_ety);
+        const char = reg.get(cmp.Character, char_ety);
         var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
         
         switch (dir) {
@@ -194,7 +194,7 @@ fn moveCharacter(reg: *ecs.Registry, from_tile_ety: ecs.Entity, to_tile_ety: ecs
 fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: []const u8, rnd: *std.rand.Random) ecs.Entity {
     if (items.rollGroup(group, rnd) catch null) |item_name| {
         if (items.info(item_name)) |item| {
-            var entity = reg.create();
+            const entity = reg.create();
             reg.add(entity, rcmp.SpriteResource {
                 .atlas = item.atlas,
                 .sprite = item.sprite,
@@ -241,7 +241,7 @@ pub fn initGui(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "button-complete-loot")) {
             reg.add(entity, cmp.CompleteLootButton {});
         }
@@ -260,7 +260,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var init = reg.get(scmp.InitGameObject, entity);
+        const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "loot-start")) {
             const cfg_json = try std.json.parseFromSlice(
                 loot.LootCfg,
@@ -295,7 +295,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
                 const at = stack.pop();
                 if (try index.rollTile(at.x, at.y)) |tile_cfg| {
                     if (index.add(at.x, at.y, tile_cfg)) {
-                        var tile_ety = reg.create();
+                        const tile_ety = reg.create();
                         reg.add(tile_ety, rcmp.SpriteResource {
                             .atlas = tile_cfg.atlas,
                             .sprite = tile_cfg.sprite,
@@ -348,13 +348,13 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
 
             var loot_iter = cfg.loot.map.iterator();
             while (loot_iter.next()) |loot_kv| {
-                var loot_count = loot_kv.value_ptr;
+                const loot_count = loot_kv.value_ptr;
                 var cnt = rnd.intRangeAtMost(i32,
                     @as(i32, @intFromFloat(loot_count.min)),
                     @as(i32, @intFromFloat(loot_count.max)));
                 
                 while (cnt > 0) : (cnt -= 1) {
-                    var loot_tile = rr.select(LootRoll, "weight", loot_roll_table.items, rnd);
+                    const loot_tile = rr.select(LootRoll, "weight", loot_roll_table.items, rnd);
 
                     if (loot_tile) |ok_loot_tile| {
                         reg.add(ok_loot_tile.entity, cmp.RollItem { .group = loot_kv.key_ptr.* });
@@ -381,9 +381,9 @@ pub fn character(reg: *ecs.Registry) void {
     var anim_restore_view = reg.view(.{ rcmp.TweenComplete, cmp.CharacterMoveTween }, .{});
     var anim_restore_iter = anim_restore_view.entityIterator();
     while (anim_restore_iter.next()) |entity| {
-        var tween = reg.get(cmp.CharacterMoveTween, entity);
+        const tween = reg.get(cmp.CharacterMoveTween, entity);
         if (tween.reset_anim) {
-            var char = reg.get(cmp.Character, tween.char_entity);
+            const char = reg.get(cmp.Character, tween.char_entity);
             var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
             showAnimation(&anims, 0, reg);
         }
@@ -430,7 +430,7 @@ const ConnectionIterator = struct {
     }
 
     fn current(self: *Self) ?ecs.Entity {
-        var tile = self.reg.get(cmp.Tile, self.tile_ety);
+        const tile = self.reg.get(cmp.Tile, self.tile_ety);
         return switch (self.side) {
             .LEFT => tile.l,
             .UP => tile.u,
@@ -462,7 +462,7 @@ const ConnectionIterator = struct {
             }
         }
 
-        var curr = self.current();
+        const curr = self.current();
         self.rotate();
         self.iterations += 1;
         return curr;
@@ -501,7 +501,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
             continue;
         }
 
-        var opener = reg.getConst(cmp.Opener, entity);
+        const opener = reg.getConst(cmp.Opener, entity);
         if (!reg.has(cmp.Open, opener.tile)) {
             reg.add(opener.tile, cmp.Open {});
         }
@@ -510,9 +510,9 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
     var view = reg.view(.{ cmp.Open, cmp.Tile, rcmp.Parent }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var open = reg.get(cmp.Open, entity);
+        const open = reg.get(cmp.Open, entity);
         const parent = reg.getConst(rcmp.Parent, entity);
-        var loot_start = if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start|
+        const loot_start = if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start|
             loot_start else continue;
         
         const cost_property = loot_start.cfg_json.value.cost_property;
@@ -527,7 +527,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
             }
 
             if (reg.tryGet(cmp.TileOpener, entity)) |tile_opener| {
-                var opener = reg.getConst(cmp.Opener, tile_opener.entity);
+                const opener = reg.getConst(cmp.Opener, tile_opener.entity);
                 cleanupOpener(reg, tile_opener, entity);
 
                 var source_connection_iter = ConnectionIterator.init(reg, opener.source_tile);
@@ -567,7 +567,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
             }
 
             if (reg.tryGet(cmp.TileLoot, entity)) |tile_loot| {
-                var loot_on_tile = reg.get(cmp.Loot, tile_loot.entity);
+                const loot_on_tile = reg.get(cmp.Loot, tile_loot.entity);
                 _ = try items.add(loot_on_tile.item_name);
 
                 cleanupLoot(reg, tile_loot, entity);

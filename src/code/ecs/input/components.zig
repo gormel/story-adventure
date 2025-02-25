@@ -7,9 +7,9 @@ pub const MousePositionInput = struct { x: i32 = 0, y: i32 = 0 };
 pub const MousePositionChanged = struct { };
 pub const MouseOver = struct { };
 
-pub const MouseButtonTracker = struct { button: i32 };
+pub const MouseButtonTracker = struct { button: rl.MouseButton };
 
-pub const KeyInputTracker = struct { key: i32 };
+pub const KeyInputTracker = struct { key: rl.KeyboardKey };
 pub const CharInputTracker = struct {};
 
 pub const TapTracker = struct { delay: f32 };

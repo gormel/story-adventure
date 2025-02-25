@@ -45,7 +45,7 @@ pub fn button(reg: *ecs.Registry) void {
         
         reg.add(entity, icmp.MousePositionTracker { });
         reg.add(entity, icmp.MouseOverTracker { .rect = sprite.sprite.rect });
-        reg.add(entity, icmp.MouseButtonTracker { .button = rl.MOUSE_BUTTON_LEFT });
+        reg.add(entity, icmp.MouseButtonTracker { .button = rl.MouseButton.left });
 
         reg.remove(cmp.CreateButton, entity);
     }
@@ -82,7 +82,7 @@ pub fn properties(reg: *ecs.Registry) void {
     var set_view = reg.view(.{ cmp.TriggerPlayerPropertyChanged }, .{});
     var set_iter = set_view.entityIterator();
     while (set_iter.next()) |entity| {
-        var trigger = reg.get(cmp.TriggerPlayerPropertyChanged, entity);
+        const trigger = reg.get(cmp.TriggerPlayerPropertyChanged, entity);
         reg.add(entity, cmp.PlayerPropertyChanged { .name = trigger.name });
         reg.remove(cmp.TriggerPlayerPropertyChanged, entity);
     }
@@ -110,7 +110,7 @@ fn checkCondition(params: []sc.RuleParam, props: *pr.Properties) bool {
     }
 
     for (params) |param| {
-        var value = props.get(param.name);
+        const value = props.get(param.name);
         switch (param.operator) {
             .LT => { if (value >= param.value) { return false; } },
             .LE => { if (value > param.value) { return false; } },
@@ -123,7 +123,7 @@ fn checkCondition(params: []sc.RuleParam, props: *pr.Properties) bool {
 }
 
 pub fn initScene(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
-    var state_entity = reg.create();
+    const state_entity = reg.create();
     reg.add(state_entity, cmp.GameState {});
 
     _ = try game.loadScene(reg, props, change, allocator, initial_scene);
@@ -143,7 +143,7 @@ pub fn message(reg: *ecs.Registry, dt: f32) void {
     var create_view = reg.view(.{ cmp.CreateMessage }, .{});
     var create_iter = create_view.entityIterator();
     while (create_iter.next()) |entity| {
-        var create = reg.get(cmp.CreateMessage, entity);
+        const create = reg.get(cmp.CreateMessage, entity);
         if (create.parent) |parent| {
             if (reg.has(cmp.MessageDelay, parent)) {
                 continue;
@@ -163,7 +163,7 @@ pub fn message(reg: *ecs.Registry, dt: f32) void {
             .free = create.free,
         });
 
-        var move_ety = reg.create();
+        const move_ety = reg.create();
         reg.add(move_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
         reg.add(move_ety, rcmp.TweenSetup {
             .entity = entity,
@@ -173,7 +173,7 @@ pub fn message(reg: *ecs.Registry, dt: f32) void {
             .remove_source = true,
         });
 
-        var opacity_ety = reg.create();
+        const opacity_ety = reg.create();
         reg.add(opacity_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.A });
         reg.add(opacity_ety, rcmp.TweenSetup {
             .entity = entity,
@@ -197,8 +197,8 @@ pub fn changeScene(
     var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var scene = reg.get(cmp.GameplayScene, entity);
-        var scene_name = scene.name;
+        const scene = reg.get(cmp.GameplayScene, entity);
+        const scene_name = scene.name;
 
         var rule_count: usize = 0;
         var rules_to_roll = try allocator.alloc(sc.Rule, rules.*.len);
@@ -214,7 +214,7 @@ pub fn changeScene(
         }
 
         if (rule_count > 0) {
-            var roll = rollrate.select(sc.Rule, "weight", rules_to_roll[0..rule_count], rnd);
+            const roll = rollrate.select(sc.Rule, "weight", rules_to_roll[0..rule_count], rnd);
             if (roll) |ok_roll| {
                 reg.add(entity, ccmp.Destroyed {});
 
@@ -295,8 +295,8 @@ pub fn layoutChildren(reg: *ecs.Registry) void {
     var view = reg.view(.{ cmp.LayoutChildren, rcmp.Children }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        var layout = reg.get(cmp.LayoutChildren, entity);
-        var children = reg.get(rcmp.Children, entity);
+        const layout = reg.get(cmp.LayoutChildren, entity);
+        const children = reg.get(rcmp.Children, entity);
 
         var dx: f32 = 0;
         var dy: f32 = 0;

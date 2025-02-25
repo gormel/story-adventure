@@ -28,7 +28,7 @@ pub const EnemyCfg = struct {
 pub const StrategyViewCfg = struct {
     atlas: []const u8,
     icon: []const u8,
-    name: []const u8,
+    name: [:0]const u8,
 };
 
 pub const StrategyCfg = struct {

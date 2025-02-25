@@ -102,7 +102,7 @@
             },
             "params": {
                 "health": 100,
-                "attack": 500,
+                "attack": 5,
                 "armor": 1,
                 "stamina": 0
             },

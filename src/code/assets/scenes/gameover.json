@@ -29,6 +29,30 @@
                 "children": []
             },
             {
+                "position": { "x": 161, "y": 152 },
+                "text": { "size": 10, "text": "Depth:\u0000" },
+                "tags": [ "gameover-info-name-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 205, "y": 152 },
+                "text": { "size": 10, "text": "[DEPTH]\u0000" },
+                "tags": [ "gameover-info-name-text", "gameover-depth-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 167, "y": 182 },
+                "text": { "size": 10, "text": "Slain:\u0000" },
+                "tags": [ "gameover-info-name-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 205, "y": 182 },
+                "text": { "size": 10, "text": "[SLAIN_COUNT]\u0000" },
+                "tags": [ "gameover-info-name-text", "gameover-slain-text" ],
+                "children": []
+            },
+            {
                 "position": { "x": 262, "y": 339 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",

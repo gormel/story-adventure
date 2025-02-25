@@ -2,7 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 
 pub fn rotate(x: *f32, y: *f32, a: f32) void {
-    const rad = std.math.degreesToRadians(f32, -a);
+    const rad = std.math.degreesToRadians(-a);
     const cos = std.math.cos(rad);
     const sin = std.math.sin(rad);
 
