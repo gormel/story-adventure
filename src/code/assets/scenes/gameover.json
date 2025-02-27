@@ -1,73 +1,7 @@
 [
     {
         "position": { "x": 170, "y": 108 },
-        "sprite": {
-            "atlas": "resources/atlases/gui.json",
-            "sprite": "popup_bg"
-        },
-        "tags": [  ],
-        "children": [
-            {
-                "position": { "x": 245, "y": 21 },
-                "text": { "size": 36, "text": "Game Over\u0000" },
-                "tags": [ "gameover-title-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 163, "y": 112 },
-                "text": { "size": 10, "text": "Items:\u0000" },
-                "tags": [ "gameover-info-name-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 205, "y": 97 },
-                "sprite": {
-                    "atlas": "resources/atlases/gui.json",
-                    "sprite": "popup_panel_bg"
-                },
-                "tags": [ "gameover-item-list" ],
-                "children": []
-            },
-            {
-                "position": { "x": 161, "y": 152 },
-                "text": { "size": 10, "text": "Depth:\u0000" },
-                "tags": [ "gameover-info-name-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 205, "y": 152 },
-                "text": { "size": 10, "text": "[DEPTH]\u0000" },
-                "tags": [ "gameover-info-name-text", "gameover-depth-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 167, "y": 182 },
-                "text": { "size": 10, "text": "Slain:\u0000" },
-                "tags": [ "gameover-info-name-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 205, "y": 182 },
-                "text": { "size": 10, "text": "[SLAIN_COUNT]\u0000" },
-                "tags": [ "gameover-info-name-text", "gameover-slain-text" ],
-                "children": []
-            },
-            {
-                "position": { "x": 262, "y": 339 },
-                "sprite": {
-                    "atlas": "resources/atlases/gui.json",
-                    "sprite": "button"
-                },
-                "tags": [ "button", "gameover-button-continue" ],
-                "children": [
-                    {
-                        "position": { "x": 49, "y": 12 },
-                        "text": { "size": 10, "text": "Continue\u0000" },
-                        "tags": [  ],
-                        "children": []
-                    }
-                ]
-            }
-        ]
+        "tags": [ "gameover-stats-root" ],
+        "children": [ ]
     }
 ]

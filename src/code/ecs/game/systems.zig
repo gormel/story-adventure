@@ -13,6 +13,7 @@ const pr = @import("../../engine/properties.zig");
 const rollrate = @import("../../engine/rollrate.zig");
 const itm = @import("../../engine/items.zig");
 const gui_setup = @import("../../engine/gui_setup.zig");
+const main_menu_utils = @import("mainMenu/mainmenu.zig");
 
 const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
@@ -20,10 +21,9 @@ const hud = @import("hud/systems.zig");
 const loot = @import("loot/systems.zig");
 const combat = @import("combat/systems.zig");
 const gameover = @import("gameover/systems.zig");
+const gamestats = @import("gamestats/systems.zig");
 
 const SceneDesc = struct { name: []const u8, text: []const u8 };
-
-const initial_scene = "main_menu";
 
 pub fn initButton(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -126,7 +126,7 @@ pub fn initScene(reg: *ecs.Registry, props: *pr.Properties, change: *game.SceneP
     const state_entity = reg.create();
     reg.add(state_entity, cmp.GameState {});
 
-    _ = try game.loadScene(reg, props, change, allocator, initial_scene);
+    try main_menu_utils.loadScene(reg, props, change, allocator);
 }
 
 pub fn message(reg: *ecs.Registry, dt: f32) void {
@@ -255,6 +255,7 @@ pub fn initGameplayCustoms(
     try combat.initEnemy(reg, allocator, props, rnd);
     combat.initState(reg);
 
+    gamestats.initGui(reg);
     gameover.initGui(reg);
 }
 
@@ -283,7 +284,8 @@ pub fn updateGameplayCustoms(
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, change, rnd, allocator);
 
-    try gameover.gui(reg, props, change, items.item_list_cfg, allocator);
+    try gamestats.gui(reg, props, items.item_list_cfg, allocator);
+    try gameover.gui(reg, props, change, allocator);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
