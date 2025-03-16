@@ -30,7 +30,7 @@ scene:
             "atlas": "resources/atlases/star.json",
             "sprite": "star"
         },
-        "text": { "size": 15, "text": "abra-cadabra\u0000" },
+        "text": { "size": 15, "text": "abra-cadabra" },
         "tags": [ "user", "blink" ],
         "children": []
     }

@@ -8,7 +8,7 @@ pub const SceneObject = struct {
     sprite: ?Sprite = null,
     flipbook: ?Flipbook = null,
     text: ?Text = null,
-    tags: [][]u8,
+    tags: [][]const u8,
     children: []SceneObject,
 };
 

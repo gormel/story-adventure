@@ -9,7 +9,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "attack-strategy",
-                "name": "Attack\u0000"
+                "name": "Attack"
             },
             "condition": {}
         },
@@ -24,7 +24,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "double-attack-strategy",
-                "name": "Rage Attack\u0000"
+                "name": "Rage Attack"
             },
             "condition": {
                 "rage_attack": 1
@@ -39,7 +39,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "double-attack-strategy",
-                "name": "Double Attack\u0000"
+                "name": "Double Attack"
             },
             "condition": {
                 "double_attack": 1
@@ -54,7 +54,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "defence-strategy",
-                "name": "Defence\u0000"
+                "name": "Defence"
             },
             "condition": {
                 "defence_attack": 1
@@ -69,7 +69,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "shread-strategy",
-                "name": "Shread\u0000"
+                "name": "Shread"
             },
             "condition": {
                 "shread_attack": 1
@@ -86,7 +86,7 @@
             "view": {
                 "atlas": "resources/atlases/gui.json",
                 "icon": "attack-strategy",
-                "name": "Heavy\u0000"
+                "name": "Heavy"
             },
             "condition": {
                 "heavy_attack": 1

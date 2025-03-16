@@ -7,17 +7,16 @@ const utils = @import("../../../engine/utils.zig");
 const scmp = @import("../../scene/components.zig");
 const gcmp = @import("../components.zig");
 const pr = @import("../../../engine/properties.zig");
+const hud = @import("../hud/hud.zig");
 
-const hud_game_scene = "hud";
-
-pub fn initSwitch(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
+pub fn initSwitch(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "init-gameplay-start")) {
 
-            const hud_scene = try game.loadScene(reg, props, change, allocator, hud_game_scene);
+            const hud_scene = try hud.loadScene(reg, allocator);
 
             var state_view = reg.view(.{ gcmp.GameState }, .{ gcmp.GameStateGameplay });
             var state_iter = state_view.entityIterator();

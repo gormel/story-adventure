@@ -6,7 +6,7 @@
     },
     {
         "position": { "x": 487, "y": 99 },
-        "text": { "size": 12, "text": "STAKAN\u0000" },
+        "text": { "size": 12, "text": "STAKAN" },
         "tags": [],
         "children": []
     },
@@ -20,7 +20,7 @@
         "children": [
             {
                 "position": { "x": 58, "y": 9 },
-                "text": { "size": 12, "text": "START\u0000" },
+                "text": { "size": 12, "text": "START" },
                 "tags": [],
                 "children": []
             }
@@ -36,7 +36,7 @@
         "children": [
             {
                 "position": { "x": 58, "y": 9 },
-                "text": { "size": 12, "text": "ITEMS\u0000" },
+                "text": { "size": 12, "text": "ITEMS" },
                 "tags": [],
                 "children": []
             }

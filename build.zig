@@ -27,7 +27,7 @@ pub fn build(b: *std.Build) !void {
     });
     exe.step.dependOn(&add_resources.step);
     
-    const raylib_dep = b.dependency("raylib-zig", .{
+    const raylib_dep = b.dependency("raylib_zig", .{
         .target = target,
         .optimize = optimize,
     });

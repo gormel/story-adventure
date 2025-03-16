@@ -121,7 +121,7 @@ pub const TileIndex = struct {
     const Size = 10;
 
     cfg: *LootCfg,
-    rnd: *std.rand.Random,
+    rnd: *std.Random,
     allocator: std.mem.Allocator,
     index: []TilePtr,
     size_x: i32,
@@ -131,7 +131,7 @@ pub const TileIndex = struct {
         return @as(usize, @intCast(x + y * self.size_x));
     }
 
-    pub fn init(cfg: *LootCfg, rnd: *std.rand.Random, allocator: std.mem.Allocator) !Self {
+    pub fn init(cfg: *LootCfg, rnd: *std.Random, allocator: std.mem.Allocator) !Self {
         var index = try allocator.alloc(TilePtr, Size * Size);
         for (0..index.len) |idx| {
             index[idx].tile = null;

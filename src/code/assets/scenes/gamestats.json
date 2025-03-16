@@ -9,13 +9,13 @@
         "children": [
             {
                 "position": { "x": 245, "y": 21 },
-                "text": { "size": 36, "text": "[GAME_STATS]\u0000" },
+                "text": { "size": 36, "text": "[GAME_STATS]" },
                 "tags": [ "gamestats-title-text" ],
                 "children": []
             },
             {
                 "position": { "x": 163, "y": 112 },
-                "text": { "size": 10, "text": "Items:\u0000" },
+                "text": { "size": 10, "text": "Items:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
@@ -30,25 +30,25 @@
             },
             {
                 "position": { "x": 161, "y": 152 },
-                "text": { "size": 10, "text": "Depth:\u0000" },
+                "text": { "size": 10, "text": "Depth:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
             {
                 "position": { "x": 205, "y": 152 },
-                "text": { "size": 10, "text": "[DEPTH]\u0000" },
+                "text": { "size": 10, "text": "[DEPTH]" },
                 "tags": [ "gamestats-info-name-text", "gamestats-depth-text" ],
                 "children": []
             },
             {
                 "position": { "x": 167, "y": 182 },
-                "text": { "size": 10, "text": "Slain:\u0000" },
+                "text": { "size": 10, "text": "Slain:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
             {
                 "position": { "x": 205, "y": 182 },
-                "text": { "size": 10, "text": "[SLAIN_COUNT]\u0000" },
+                "text": { "size": 10, "text": "[SLAIN_COUNT]" },
                 "tags": [ "gamestats-info-name-text", "gamestats-slain-text" ],
                 "children": []
             },
@@ -62,7 +62,7 @@
                 "children": [
                     {
                         "position": { "x": 49, "y": 12 },
-                        "text": { "size": 10, "text": "Continue\u0000" },
+                        "text": { "size": 10, "text": "Continue" },
                         "tags": [  ],
                         "children": []
                     }

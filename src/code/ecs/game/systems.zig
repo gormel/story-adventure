@@ -14,6 +14,7 @@ const rollrate = @import("../../engine/rollrate.zig");
 const itm = @import("../../engine/items.zig");
 const gui_setup = @import("../../engine/gui_setup.zig");
 const main_menu_utils = @import("mainMenu/mainmenu.zig");
+const is = @import("../input/inputstack.zig");
 
 const main_menu = @import("mainMenu/systems.zig");
 const gameplay_start = @import("gameplayStart/systems.zig");
@@ -22,8 +23,7 @@ const loot = @import("loot/systems.zig");
 const combat = @import("combat/systems.zig");
 const gameover = @import("gameover/systems.zig");
 const gamestats = @import("gamestats/systems.zig");
-
-const SceneDesc = struct { name: []const u8, text: []const u8 };
+const gamemenu = @import("gamemenu/systems.zig");
 
 pub fn initButton(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -59,6 +59,26 @@ pub fn button(reg: *ecs.Registry) void {
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         reg.add(entity, cmp.ButtonClicked {});
+    }
+}
+
+pub fn inputCapture(reg: *ecs.Registry, input_stack: *is.InputStack) !void {
+    var set_iter = reg.entityIterator(cmp.SetInputCaptureScene);
+    while (set_iter.next()) |entity| {
+        reg.remove(cmp.SetInputCaptureScene, entity);
+
+        if (!reg.has(cmp.InputCaptureScene, entity)) {
+            reg.add(entity, cmp.InputCaptureScene {});
+        }
+        try input_stack.push(entity);
+    }
+}
+
+pub fn freeInputCapture(reg: *ecs.Registry, input_stack: *is.InputStack) void {
+    var free_view = reg.view(.{ ccmp.Destroyed, cmp.InputCaptureScene }, .{});
+    var free_iter = free_view.entityIterator();
+    while (free_iter.next()) |entity| {
+        input_stack.remove(entity);
     }
 }
 
@@ -122,11 +142,11 @@ fn checkCondition(params: []sc.RuleParam, props: *pr.Properties) bool {
     return true;
 }
 
-pub fn initScene(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
+pub fn initScene(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     const state_entity = reg.create();
     reg.add(state_entity, cmp.GameState {});
 
-    try main_menu_utils.loadScene(reg, props, change, allocator);
+    try main_menu_utils.loadScene(reg, allocator);
 }
 
 pub fn message(reg: *ecs.Registry, dt: f32) void {
@@ -191,7 +211,7 @@ pub fn changeScene(
     props: *pr.Properties,
     rules: *sc.Rules,
     change: *game.ScenePropChangeCfg,
-    rnd: *std.rand.Random,
+    rnd: *std.Random,
     allocator: std.mem.Allocator
 ) !void {
     var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene }, .{});
@@ -225,7 +245,10 @@ pub fn changeScene(
                     }
                 }
 
-                _ = try game.loadScene(reg, props, change, allocator, ok_roll.result_scene);
+                _ = try game.loadScene(reg, allocator, ok_roll.result_scene, .{
+                    .props = props,
+                    .change = change,
+                });
             }
         }
         
@@ -236,14 +259,13 @@ pub fn changeScene(
 pub fn initGameplayCustoms(
     reg: *ecs.Registry,
     props: *pr.Properties,
-    change: *game.ScenePropChangeCfg,
     allocator: std.mem.Allocator,
-    rnd: *std.rand.Random
+    rnd: *std.Random
 ) !void {
     main_menu.initScene(reg);
     main_menu.initStartButton(reg);
 
-    try gameplay_start.initSwitch(reg, props, change, allocator);
+    try gameplay_start.initSwitch(reg, allocator);
 
     hud.initViews(reg);
 
@@ -257,6 +279,7 @@ pub fn initGameplayCustoms(
 
     gamestats.initGui(reg);
     gameover.initGui(reg);
+    gamemenu.initGui(reg);
 }
 
 pub fn updateGameplayCustoms(
@@ -265,12 +288,13 @@ pub fn updateGameplayCustoms(
     change: *game.ScenePropChangeCfg,
     allocator: std.mem.Allocator,
     items: *itm.Items,
-    rnd: *std.rand.Random,
+    rnd: *std.Random,
     dt: f32
 ) !void {
     try main_menu.startGame(reg, props, change, allocator);
     gameplay_start.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
+    try hud.gui(reg, allocator);
 
     loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);
@@ -282,10 +306,11 @@ pub fn updateGameplayCustoms(
     try combat.attackEffectComplete(reg, allocator);
     combat.deathEffectComplete(reg);
     try combat.checkDeath(reg);
-    try combat.combatState(reg, props, change, rnd, allocator);
+    try combat.combatState(reg, props, rnd, allocator);
 
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
-    try gameover.gui(reg, props, change, allocator);
+    try gameover.gui(reg, allocator);
+    try gamemenu.gui(reg, allocator);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {

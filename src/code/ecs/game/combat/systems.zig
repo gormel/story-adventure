@@ -139,7 +139,7 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
     }
 }
 
-pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties, rnd: *std.rand.Random) !void {
+pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties, rnd: *std.Random) !void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
     while (init_iter.next()) |entity| {
@@ -539,8 +539,7 @@ fn setHidden(comptime Component: type, reg: *ecs.Registry, hidden: bool) void {
 pub fn combatState(
     reg: *ecs.Registry,
     props: *pr.Properties,
-    change: *game.ScenePropChangeCfg,
-    rnd: *std.rand.Random,
+    rnd: *std.Random,
     allocator: std.mem.Allocator
 ) !void {
     var idle_view = reg.view(.{ cmp.CombatState, cmp.CombatStatePlayerIdle }, .{ cmp.CombatStatePlayerAttack });
@@ -630,7 +629,7 @@ pub fn combatState(
     while (player_dead_iter.next()) |entity| {
         reg.remove(cmp.CombatStateDeathCompleteRequest, entity);
 
-        try game.gameOver(reg, props, change, allocator);
+        try game.gameOver(reg, allocator);
     }
 
     var enemy_dead_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyDead, cmp.CombatStateDeathCompleteRequest }, .{});

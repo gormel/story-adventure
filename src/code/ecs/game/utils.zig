@@ -1,15 +1,15 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
+const sc = @import("../../engine/scene.zig");
+const pr = @import("../../engine/properties.zig");
+const gameover = @import("gameover/gameover.zig");
+
 const cmp = @import("components.zig");
 const scmp = @import("../scene/components.zig");
 const rcmp = @import("../render/components.zig");
 const gcmp = @import("../game/components.zig");
 const ccmp = @import("../core/components.zig");
-const sc = @import("../../engine/scene.zig");
-const pr = @import("../../engine/properties.zig");
-
-const gameover_scene = "gameover";
 
 pub const ScenePropChangeItemCfg = struct {
     enter: std.json.ArrayHashMap(f64),
@@ -17,6 +17,10 @@ pub const ScenePropChangeItemCfg = struct {
 };
 
 pub const ScenePropChangeCfg = std.json.ArrayHashMap(ScenePropChangeItemCfg);
+pub const LoadSceneAdditionalArgs = struct {
+    props: ?*pr.Properties = null,
+    change: ?*ScenePropChangeCfg = null,
+};
 
 var scenes = &.{
     .{
@@ -51,6 +55,10 @@ var scenes = &.{
         .name = "gamestats",
         .text = @embedFile("../../assets/scenes/gamestats.json"),
     },
+    .{
+        .name = "game_menu",
+        .text = @embedFile("../../assets/scenes/gamemenu.json"),
+    },
 };
 
 pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {
@@ -62,7 +70,7 @@ pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {
     }
 }
 
-pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropChangeCfg, allocator: std.mem.Allocator) !void {
+pub fn gameOver(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var state_view = reg.view(.{ gcmp.GameState, gcmp.GameStateGameplay }, .{});
     var state_iter = state_view.entityIterator();
     while (state_iter.next()) |entity| {
@@ -72,8 +80,9 @@ pub fn gameOver(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropCha
         }
 
         destroyAll(gcmp.GameplayScene, reg);
-        const gameover_scene_entity = try loadScene(reg, props, change, allocator, gameover_scene);
-        reg.add(gameover_scene_entity, cmp.GameoverScene {});
+
+        const gameover_scene = try gameover.loadScene(reg, allocator);
+        reg.add(gameover_scene, cmp.GameoverScene {});
 
         reg.remove(gcmp.GameStateGameplay, entity);
     }
@@ -87,7 +96,7 @@ pub fn selectNextScene(reg: *ecs.Registry) void {
     }
 }
 
-pub fn loadScene(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropChangeCfg, allocator: std.mem.Allocator, name: []const u8) !ecs.Entity {
+pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const u8, additional: LoadSceneAdditionalArgs) !ecs.Entity {
     inline for (scenes) |scene_desc| {
         if (std.mem.eql(u8, name, scene_desc.name)) {
             const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
@@ -98,10 +107,14 @@ pub fn loadScene(reg: *ecs.Registry, props: *pr.Properties, change: *ScenePropCh
             reg.add(new_scene_entity, rcmp.AttachTo { .target = null });
             reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
 
-            if (change.map.get(name)) |change_item| {
-                var change_iter = change_item.enter.map.iterator();
-                while (change_iter.next()) |change_kv| {
-                    try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+            if (additional.change) |change| {
+                if (change.map.get(name)) |change_item| {
+                    if (additional.props) |props| {
+                        var change_iter = change_item.enter.map.iterator();
+                        while (change_iter.next()) |change_kv| {
+                            try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+                        }
+                    }
                 }
             }
 

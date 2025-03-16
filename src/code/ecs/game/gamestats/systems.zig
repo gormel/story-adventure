@@ -45,8 +45,6 @@ pub fn initGui(reg: *ecs.Registry) void {
 
         if (utils.containsTag(init.tags, "gamestats-depth-text")) {
             reg.add(entity, cmp.SetDepthText {});
-
-            std.debug.print("++++add set depth\n", .{});
         }
 
         if (utils.containsTag(init.tags, "gamestats-slain-text")) {

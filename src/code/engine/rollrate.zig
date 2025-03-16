@@ -4,7 +4,7 @@ pub fn select(
     comptime T: type,
     comptime weight_field: []const u8,
     table: []T,
-    rnd: *std.rand.Random
+    rnd: *std.Random
 ) ?T {
     if (table.len > 0) {
         var max_weight: f64 = 0;

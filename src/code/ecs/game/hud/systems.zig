@@ -2,13 +2,14 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const game = @import("../utils.zig");
-const cmp = @import("components.zig");
+const pr = @import("../../../engine/properties.zig");
 const utils = @import("../../../engine/utils.zig");
+const gamemenu = @import("../gamemenu/gamemenu.zig");
+const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
 const ccmp = @import("../../core/components.zig");
 const rcmp = @import("../../render/components.zig");
 const gcmp = @import("../components.zig");
-const pr = @import("../../../engine/properties.zig");
 
 const textSelector = fn (props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8;
 
@@ -40,6 +41,14 @@ pub fn initViews(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "attack-view")) {
             reg.add(entity, cmp.AttackView {});
             reg.add(entity, cmp.SyncView {});
+        }
+
+        if (utils.containsTag(init.tags, "hud-gamemenu-btn")) {
+            reg.add(entity, cmp.GameMenuButton {});
+        }
+
+        if (utils.containsTag(init.tags, "hud-popup-root")) {
+            reg.add(entity, cmp.PopupRoot {});
         }
     }
 }
@@ -121,4 +130,26 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
     syncProperty(cmp.GoldView, "gold", reg, props, allocator, selectValue);
     syncProperty(cmp.AttackView, "attack", reg, props, allocator, selectValue);
     syncProperty(cmp.ArmorView, "armor", reg, props, allocator, selectValue);
+}
+
+pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var gamemenu_btn_view = reg.view(.{ cmp.GameMenuButton, gcmp.ButtonClicked }, .{});
+    var gamemenu_btn_iter = gamemenu_btn_view.entityIterator();
+    while (gamemenu_btn_iter.next()) |_| {
+
+        var root_iter = reg.entityIterator(cmp.PopupRoot);
+        while (root_iter.next()) |root_ety| {
+            const scene_ety = try gamemenu.loadScene(reg, allocator);
+            reg.addOrReplace(scene_ety, rcmp.AttachTo { .target = root_ety });
+            reg.add(scene_ety, cmp.GameMenuScene {});
+        }
+    }
+
+    var close_gamemenu_view = reg.view(.{ cmp.CloseGameMenu, cmp.GameMenuScene }, .{});
+    var close_gamemenu_iter = close_gamemenu_view.entityIterator();
+    while (close_gamemenu_iter.next()) |entity| {
+        if (!reg.has(ccmp.Destroyed, entity)) {
+            reg.add(entity, ccmp.Destroyed {});
+        }
+    }
 }

@@ -31,7 +31,7 @@
         "body": [
             "{",
             "\t\"position\": { \"x\": 0, \"y\": 0 },",
-            "\t\"text\": { \"size\": 15, \"text\": \"TEXT_VALUE\\u0000\" },",
+            "\t\"text\": { \"size\": 15, \"text\": \"TEXT_VALUE\" },",
             "\t\"tags\": [  ],",
             "\t\"children\": []",
             "},"

@@ -1,0 +1,82 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "popup_bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 237, "y": 40 },
+                "text": { "size": 36, "text": "Game Menu" },
+                "tags": [ "gamemenu-title" ],
+                "children": []
+            },
+            {
+                "position": { "x": 261, "y": 131 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "gamemenu-continue-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 58, "y": 10 },
+                        "text": { "size": 10, "text": "Continue" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 261, "y": 177 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "gamemenu-items-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 66, "y": 10 },
+                        "text": { "size": 10, "text": "Items" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 261, "y": 223 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "gamemenu-settings-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 60, "y": 10 },
+                        "text": { "size": 10, "text": "Settings" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 261, "y": 269 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "gamemenu-exit-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 53, "y": 10 },
+                        "text": { "size": 10, "text": "Main Menu" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

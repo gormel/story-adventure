@@ -191,7 +191,7 @@ fn moveCharacter(reg: *ecs.Registry, from_tile_ety: ecs.Entity, to_tile_ety: ecs
     }
 }
 
-fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: []const u8, rnd: *std.rand.Random) ecs.Entity {
+fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: []const u8, rnd: *std.Random) ecs.Entity {
     if (items.rollGroup(group, rnd) catch null) |item_name| {
         if (items.info(item_name)) |item| {
             const entity = reg.create();
@@ -256,7 +256,7 @@ pub fn gui(reg: *ecs.Registry) void {
     }
 }
 
-pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand.Random) !void {
+pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Random) !void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -291,8 +291,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.rand
             var stack = std.ArrayList(Point).init(allocator);
             defer stack.deinit();
             try stack.append(center);
-            while (stack.items.len > 0) {
-                const at = stack.pop();
+            while (stack.pop()) |at| {
                 if (try index.rollTile(at.x, at.y)) |tile_cfg| {
                     if (index.add(at.x, at.y, tile_cfg)) {
                         const tile_ety = reg.create();
@@ -390,7 +389,7 @@ pub fn character(reg: *ecs.Registry) void {
     }
 }
 
-pub fn rollItem(reg: *ecs.Registry, items: *itm.Items, rnd: *std.rand.Random) void {
+pub fn rollItem(reg: *ecs.Registry, items: *itm.Items, rnd: *std.Random) void {
     var view = reg.view(.{ cmp.RollItem }, .{ cmp.TileLoot });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {

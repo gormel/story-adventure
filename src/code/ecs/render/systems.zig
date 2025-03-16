@@ -628,12 +628,12 @@ pub fn setTextParams(reg: *ecs.Registry, allocator: std.mem.Allocator) void {
     var color_view = reg.view(.{ cmp.SetTextColor, cmp.Text }, .{ cmp.TextColorUpdated });
     var color_iter = color_view.entityIterator();
     while (color_iter.next()) |entity| {
-       var text = color_view.get(cmp.Text, entity);
-       const set = color_view.getConst(cmp.SetTextColor, entity);
+        var text = color_view.get(cmp.Text, entity);
+        const set = color_view.getConst(cmp.SetTextColor, entity);
 
-       text.color = set.color;
-       reg.remove(cmp.SetTextColor, entity);
-       reg.add(entity, cmp.TextColorUpdated {});
+        text.color = set.color;
+        reg.remove(cmp.SetTextColor, entity);
+        reg.add(entity, cmp.TextColorUpdated {});
     }
 
     var value_view = reg.view(.{ cmp.SetTextValue, cmp.Text }, .{ cmp.TextValueUpdated });

@@ -15,6 +15,7 @@ const game_systems = @import("ecs/game/systems.zig");
 const pr = @import("engine/properties.zig");
 const itm = @import("engine/items.zig");
 const game = @import("ecs/game/utils.zig");
+const is = @import("ecs/input/inputstack.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
@@ -42,6 +43,9 @@ pub fn main() !void {
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
+    var input_stack = is.InputStack.init(arena);
+    defer input_stack.deinit();
+
     var restrictions_json = try std.json.parseFromSlice(pr.Restrictions, arena, restrictions_text, .{ .ignore_unknown_fields = true });
     var props = pr.Properties.init(arena, &reg, &restrictions_json.value);
     defer props.deinit();
@@ -60,7 +64,7 @@ pub fn main() !void {
 
     var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props, arena);
 
-    var pcg = std.rand.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
+    var pcg = std.Random.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
     //var pcg = std.rand.Pcg.init(123456789);
     var rnd = pcg.random();
 
@@ -77,7 +81,7 @@ pub fn main() !void {
     
     //game init systems
     try game_systems.initProperties(&reg, props_json.object, &props);
-    try game_systems.initScene(&reg, &props, &scene_prop_change_json.value, arena);
+    try game_systems.initScene(&reg, arena);
     //game init systems end
 
     var timer = try std.time.Timer.start();
@@ -91,7 +95,7 @@ pub fn main() !void {
         
         //debug logic end
 
-        input_systems.capture(&reg, dt);
+        input_systems.capture(&reg, dt, input_stack);
 
         core_systems.timer(&reg, dt);
         core_systems.destroyByTimer(&reg);
@@ -102,11 +106,11 @@ pub fn main() !void {
         try render_systems.updateGlobalTransform(&reg);
 
         game_systems.layoutChildren(&reg);
-        //layout-children
         //init obj systems
+        try game_systems.inputCapture(&reg, &input_stack);
         game_systems.initButton(&reg);
 
-        try game_systems.initGameplayCustoms(&reg, &props, &scene_prop_change_json.value, arena, &rnd);
+        try game_systems.initGameplayCustoms(&reg, &props, arena, &rnd);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
@@ -132,6 +136,7 @@ pub fn main() !void {
 
         //destroy triggers
         try game_systems.freeGameplayCustoms(&reg);
+        game_systems.freeInputCapture(&reg, &input_stack);
         render_systems.freeFlipbook(&reg);
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);

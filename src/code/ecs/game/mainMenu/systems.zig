@@ -59,6 +59,9 @@ pub fn startGame(reg: *ecs.Registry, props: *pr.Properties, change: *game.SceneP
             reg.remove(gcmp.GameStateMenu, state_entity);
         }
 
-        _ = try game.loadScene(reg, props, change, allocator, initial_game_scene);
+        _ = try game.loadScene(reg, allocator, initial_game_scene, .{
+            .props = props,
+            .change = change,
+        });
     }
 }

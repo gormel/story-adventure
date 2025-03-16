@@ -44,7 +44,7 @@ pub const Items = struct {
         };
     }
 
-    pub fn roll(self: *Self, rnd: *std.rand.Random) ?[]const u8 {
+    pub fn roll(self: *Self, rnd: *std.Random) ?[]const u8 {
         var table_size: usize = 0;
         var table = try self.allocator.alloc(ItemDropCfg, self.item_drop_list_cfg.len);
         defer self.allocator.free(table);
@@ -63,7 +63,7 @@ pub const Items = struct {
         return null;
     }
 
-    pub fn rollGroup(self: *Self, group: []const u8, rnd: *std.rand.Random) !?[]const u8 {
+    pub fn rollGroup(self: *Self, group: []const u8, rnd: *std.Random) !?[]const u8 {
         var table_size: usize = 0;
         var table = try self.allocator.alloc(ItemDropCfg, self.item_drop_list_cfg.len);
         defer self.allocator.free(table);

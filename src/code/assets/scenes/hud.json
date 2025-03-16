@@ -5,6 +5,11 @@
         "children": []
     },
     {
+        "position": { "x": 160, "y": 109 },
+        "tags": [ "hud-popup-root" ],
+        "children": []
+    },
+    {
         "position": { "x": 30, "y": 30 },
         "tags": [],
         "children": [
@@ -19,7 +24,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0/0\u0000" },
+                "text": { "size": 12, "text": "0/0" },
                 "tags": [ "health-view" ],
                 "children": []
             }
@@ -40,14 +45,14 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0/0\u0000" },
+                "text": { "size": 12, "text": "0/0" },
                 "tags": [ "stamina-view" ],
                 "children": []
             }
         ]
     },
     {
-        "position": { "x": 930, "y": 30 },
+        "position": { "x": 867, "y": 30 },
         "tags": [],
         "children": [
             {
@@ -61,14 +66,14 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0\u0000" },
+                "text": { "size": 12, "text": "0" },
                 "tags": [ "gold-view" ],
                 "children": []
             }
         ]
     },
     {
-        "position": { "x": 832, "y": 30 },
+        "position": { "x": 768, "y": 30 },
         "tags": [],
         "children": [
             {
@@ -82,14 +87,14 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0\u0000" },
+                "text": { "size": 12, "text": "0" },
                 "tags": [ "armor-view" ],
                 "children": []
             }
         ]
     },
     {
-        "position": { "x": 734, "y": 30 },
+        "position": { "x": 671, "y": 30 },
         "tags": [],
         "children": [
             {
@@ -103,8 +108,32 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0\u0000" },
+                "text": { "size": 12, "text": "0" },
                 "tags": [ "attack-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 958, "y": 30 },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button-square"
+                },
+                "tags": [ "button", "hud-gamemenu-btn" ],
+                "children": []
+            },
+            {
+                "position": { "x": 0, "y": 0 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "burger"
+                },
+                "tags": [  ],
                 "children": []
             }
         ]

@@ -13,7 +13,10 @@ ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
 ref: resources to @embedFile()
+ref: multiple fonts for each size
+ref: extract view creation from update
 
+fix: gameover and other statistic continue btn interceptors (gameover/systems.zig:34)
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
 fix: combat enemy strategy/damage overlap

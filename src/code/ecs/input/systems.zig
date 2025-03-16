@@ -1,9 +1,11 @@
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
-const cmp = @import("components.zig");
 const std = @import("std");
-const rcmp = @import("../render/components.zig");
+const is = @import("inputstack.zig");
 const utils = @import("../../engine/utils.zig");
+const game = @import("../game/utils.zig");
+const cmp = @import("components.zig");
+const rcmp = @import("../render/components.zig");
 
 fn getScissor(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
     if (reg.has(rcmp.Scissor, entity)) {
@@ -70,7 +72,15 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     return rl.checkCollisionPointRec(rl.Vector2.init(x, y), target_rect);
 }
 
-pub fn capture(reg: *ecs.Registry, dt: f32) void {
+fn isInputAllowed(reg: *ecs.Registry, entity: ecs.Entity, input_stack: is.InputStack) bool {
+    if (game.queryScene(reg, entity)) |scene_ety| {
+        return input_stack.isAccessible(scene_ety);
+    }
+
+    return true;
+}
+
+pub fn capture(reg: *ecs.Registry, dt: f32, input_stack: is.InputStack) void {
     var pressed_iter = reg.entityIterator(cmp.InputPressed);
     while (pressed_iter.next()) |entity| {
         reg.remove(cmp.InputPressed, entity);
@@ -108,6 +118,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
 
     var mouse_pos_iter = reg.entityIterator(cmp.MousePositionTracker);
     while (mouse_pos_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         var position = reg.getOrAdd(cmp.MousePositionInput, entity);
         position.x = mouse_pos_x;
         position.y = mouse_pos_y;
@@ -120,6 +134,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var add_over_ms_view = reg.view(.{ cmp.MousePositionInput, cmp.MousePositionChanged, cmp.MouseOverTracker }, .{ cmp.MouseOver });
     var add_over_ms_iter = add_over_ms_view.entityIterator();
     while (add_over_ms_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         if (mouseOver(reg, entity)) {
             reg.add(entity, cmp.MouseOver {});
         }
@@ -128,6 +146,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var add_over_trns_view = reg.view(.{ cmp.MousePositionInput, rcmp.GlobalTransformUpdated, cmp.MouseOverTracker }, .{ cmp.MouseOver });
     var add_over_trns_iter = add_over_trns_view.entityIterator();
     while (add_over_trns_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         if (mouseOver(reg, entity)) {
             reg.add(entity, cmp.MouseOver {});
         }
@@ -152,6 +174,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var mouse_btn_press_view = reg.view(.{ cmp.MouseButtonTracker }, .{ cmp.InputDown });
     var mouse_btn_press_iter = mouse_btn_press_view.entityIterator();
     while (mouse_btn_press_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         const tracker = reg.get(cmp.MouseButtonTracker, entity);
         if (rl.isMouseButtonPressed(tracker.button)) {
             reg.add(entity, cmp.InputPressed {});
@@ -162,6 +188,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var mouse_btn_release_view = reg.view(.{ cmp.MouseButtonTracker, cmp.InputDown }, .{});
     var mouse_btn_release_iter = mouse_btn_release_view.entityIterator();
     while (mouse_btn_release_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         const tracker = reg.get(cmp.MouseButtonTracker, entity);
         if (rl.isMouseButtonReleased(tracker.button)) {
             reg.add(entity, cmp.InputReleased {});
@@ -172,6 +202,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var key_press_view = reg.view(.{ cmp.KeyInputTracker }, .{ cmp.InputDown });
     var key_press_iter = key_press_view.entityIterator();
     while (key_press_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         const tracker = reg.get(cmp.KeyInputTracker, entity);
         if (rl.isKeyPressed(tracker.key)) {
             reg.add(entity, cmp.InputPressed {});
@@ -182,6 +216,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var key_release_view = reg.view(.{ cmp.KeyInputTracker, cmp.InputDown }, .{});
     var key_release_iter = key_release_view.entityIterator();
     while (key_release_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         const tracker = reg.get(cmp.KeyInputTracker, entity);
         if (rl.isKeyReleased(tracker.key)) {
             reg.add(entity, cmp.InputReleased {});
@@ -193,6 +231,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var char_view = reg.view(.{ cmp.CharInputTracker }, .{ cmp.InputChar });
     var char_iter = char_view.entityIterator();
     while (char_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         if (char > 0) {
             reg.add(entity, cmp.InputChar { .char = @intCast(char) });
         }
@@ -201,6 +243,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var tap_reg_view = reg.view(.{ cmp.InputPressed, cmp.TapTracker }, .{ cmp.TapCandidate });
     var tap_reg_iter = tap_reg_view.entityIterator();
     while (tap_reg_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         const tracker = reg.getConst(cmp.TapTracker, entity);
         reg.add(entity, cmp.TapCandidate { .time_remain = tracker.delay });
     }
@@ -224,6 +270,10 @@ pub fn capture(reg: *ecs.Registry, dt: f32) void {
     var track_wheel_view = reg.view(.{ cmp.MouseWheelTracker }, .{ cmp.InputWheel });
     var track_wheel_iter = track_wheel_view.entityIterator();
     while (track_wheel_iter.next()) |entity| {
+        if (!isInputAllowed(reg, entity, input_stack)) {
+            continue;
+        }
+
         if (@abs(wheel) > 0) {
             reg.add(entity, cmp.InputWheel {
                 .delta = wheel,

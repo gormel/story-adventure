@@ -4,7 +4,7 @@ const pr = @import("../../../engine/properties.zig");
 const game = @import("../utils.zig");
 const gcmp = @import("../components.zig");
 
-pub const SCENE_NAME = "gamestats";
+pub const SCENE_NAME = "gameover";
 
 pub fn loadScene(
         reg: *ecs.Registry,
