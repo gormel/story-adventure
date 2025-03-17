@@ -55,7 +55,7 @@ fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(entity, cmp.Opener { .tile = tile_ety, .source_tile = source_tile_ety });
 
-    reg.add(entity, gcmp.CreateButton {});
+    reg.add(entity, gcmp.CreateButton { .animated = false });
 
     return entity;
 }

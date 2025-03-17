@@ -114,7 +114,7 @@ pub fn main() !void {
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 
-        game_systems.button(&reg);
+        game_systems.button(&reg, dt);
         game_systems.message(&reg, dt);
         game_systems.properties(&reg);
         try game_systems.changeScene(&reg, &props, &rules, &scene_prop_change_json.value, &rnd, arena);

@@ -1,8 +1,10 @@
 const ecs = @import("zig-ecs");
 
-pub const CreateButton = struct {};
+pub const CreateButton = struct { animated: bool = true };
 pub const Button = struct {};
 pub const ButtonClicked = struct {};
+pub const AnimatedButton = struct {};
+pub const ButtonAnimating = struct { delay: f32 };
 pub const CreateMessage = struct { parent: ?ecs.Entity, x: f32, y: f32, text: [:0]const u8, free: bool };
 pub const MessageDelay = struct { time: f32 };
 

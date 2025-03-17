@@ -25,6 +25,20 @@ const gameover = @import("gameover/systems.zig");
 const gamestats = @import("gamestats/systems.zig");
 const gamemenu = @import("gamemenu/systems.zig");
 
+const BUTTON_ANIM_DELAY = 0.2;
+const BUTTON_ANIM_SCALE = 1.1;
+
+fn setupTween(reg: *ecs.Registry, ety: ecs.Entity, from: f32, to: f32, dur: f32, target: ecs.Entity) void {
+    reg.add(ety, rcmp.TweenSetup {
+        .from = from,
+        .to = to,
+        .duration = dur,
+        .entity = target,
+        .repeat = .OncePinpong,
+        .easing = .EaseOut,
+    });
+}
+
 pub fn initButton(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
     var iter = view.entityIterator();
@@ -36,10 +50,12 @@ pub fn initButton(reg: *ecs.Registry) void {
     }
 }
 
-pub fn button(reg: *ecs.Registry) void {
+pub fn button(reg: *ecs.Registry, dt: f32) void {
     var create_view = reg.view(.{ cmp.CreateButton, rcmp.Sprite }, .{});
     var create_iter = create_view.entityIterator();
     while (create_iter.next()) |entity| {
+        const create = reg.get(cmp.CreateButton, entity);
+
         reg.add(entity, cmp.Button {});
         const sprite = create_view.getConst(rcmp.Sprite, entity);
         
@@ -47,12 +63,66 @@ pub fn button(reg: *ecs.Registry) void {
         reg.add(entity, icmp.MouseOverTracker { .rect = sprite.sprite.rect });
         reg.add(entity, icmp.MouseButtonTracker { .button = rl.MouseButton.left });
 
+        if (create.animated) {
+            reg.add(entity, cmp.AnimatedButton {});
+        }
+
         reg.remove(cmp.CreateButton, entity);
     }
 
     var clicked_iter = reg.entityIterator(cmp.ButtonClicked);
     while (clicked_iter.next()) |entity| {
         reg.remove(cmp.ButtonClicked, entity);
+    }
+
+    var anim_view = reg.view(.{ icmp.MouseOver, icmp.MouseOverTracker, cmp.AnimatedButton }, .{ cmp.ButtonAnimating });
+    var anim_iter = anim_view.entityIterator();
+    while (anim_iter.next()) |entity| {
+        const tracker = reg.get(icmp.MouseOverTracker, entity);
+
+        const dx: f32 = tracker.rect.width * (BUTTON_ANIM_SCALE - 1) / 2;
+        const dy: f32 = tracker.rect.height * (BUTTON_ANIM_SCALE - 1) / 2;
+
+        var px: f32 = 0;
+        var py: f32 = 0;
+        if (reg.tryGet(rcmp.Position, entity)) |pos| {
+            px = pos.x;
+            py = pos.y;
+        }
+
+        var sx: f32 = 1;
+        var sy: f32 = 1;
+        if (reg.tryGet(rcmp.Scale, entity)) |scale| {
+            sx = scale.x;
+            sy = scale.y;
+        }
+
+        const sanimx = reg.create();
+        reg.add(sanimx, rcmp.TweenScale { .axis = .X });
+        setupTween(reg, sanimx, sx, sx * BUTTON_ANIM_SCALE, BUTTON_ANIM_DELAY, entity);
+
+        const sanimy = reg.create();
+        reg.add(sanimy, rcmp.TweenScale { .axis = .Y });
+        setupTween(reg, sanimy, sy, sy * BUTTON_ANIM_SCALE, BUTTON_ANIM_DELAY, entity);
+
+        const manimx = reg.create();
+        reg.add(manimx, rcmp.TweenMove { .axis = .X });
+        setupTween(reg, manimx, px, px - dx, BUTTON_ANIM_DELAY, entity);
+
+        const manimy = reg.create();
+        reg.add(manimy, rcmp.TweenMove { .axis = .Y });
+        setupTween(reg, manimy, py, py - dy, BUTTON_ANIM_DELAY, entity);
+
+        reg.add(entity, cmp.ButtonAnimating { .delay = BUTTON_ANIM_DELAY });
+    }
+
+    var animclean_iter = reg.entityIterator(cmp.ButtonAnimating);
+    while (animclean_iter.next()) |entity| {
+        const anim = reg.get(cmp.ButtonAnimating, entity);
+        anim.delay -= dt;
+        if (anim.delay <= 0 and !reg.has(icmp.MouseOver, entity)) {
+            reg.remove(cmp.ButtonAnimating, entity);
+        }
     }
 
     var view = reg.view(.{ icmp.MouseOver, icmp.InputPressed, cmp.Button }, .{ cmp.ButtonClicked });
