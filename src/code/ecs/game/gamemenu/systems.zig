@@ -9,8 +9,9 @@ const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
 const sp = @import("../../../engine/sprite.zig");
-const main_menu = @import("../mainMenu/mainmenu.zig");
-const game_stats = @import("../gamestats/gamestats.zig");
+const mainmenu = @import("../mainMenu/mainmenu.zig");
+const gamestats = @import("../gamestats/gamestats.zig");
+const iteminfo = @import("../iteminfo/iteminfo.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -37,7 +38,7 @@ pub fn initGui(reg: *ecs.Registry) void {
         }
 
         if (utils.containsTag(init.tags, "gamemenu-items-btn")) {
-            reg.add(entity, cmp.ItemsBtn {});
+            reg.add(entity, cmp.ItemsBtn { .owner_scene = init.scene });
         }
 
         if (utils.containsTag(init.tags, "gamemenu-settings-btn")) {
@@ -65,5 +66,21 @@ pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var mainmenu_iter = mainmenu_view.entityIterator();
     while (mainmenu_iter.next()) |_| {
         try game.gameOver(reg, allocator);
+    }
+
+    var iteminfo_view = reg.view(.{ gcmp.ButtonClicked, cmp.ItemsBtn }, .{});
+    var iteminfo_iter = iteminfo_view.entityIterator();
+    while (iteminfo_iter.next()) |entity| {
+        const btn = reg.get(cmp.ItemsBtn, entity);
+
+        const scene_ety = try gamestats.loadScene(reg, allocator, "Items", false);
+        reg.addOrReplace(scene_ety, rcmp.AttachTo { .target = btn.owner_scene });
+        reg.add(scene_ety, cmp.ItemsScene {});
+    }
+
+    var iteminfoclose_view = reg.view(.{ gscmp.Continue, cmp.ItemsScene }, .{});
+    var iteminfoclose_iter = iteminfoclose_view.entityIterator();
+    while (iteminfoclose_iter.next()) |entity| {
+        reg.add(entity, ccmp.Destroyed {});
     }
 }

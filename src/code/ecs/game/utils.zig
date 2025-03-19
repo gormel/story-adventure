@@ -59,6 +59,10 @@ var scenes = &.{
         .name = "game_menu",
         .text = @embedFile("../../assets/scenes/gamemenu.json"),
     },
+    .{
+        .name = "iteminfo",
+        .text = @embedFile("../../assets/scenes/iteminfo.json"),
+    },
 };
 
 pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {

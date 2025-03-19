@@ -5,7 +5,9 @@
         "parameters": {
             "health": 10
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "potion-hp-rare": {
         "atlas": "resources/atlases/items.json",
@@ -13,7 +15,9 @@
         "parameters": {
             "health": 20
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "potion-hp-epic": {
         "atlas": "resources/atlases/items.json",
@@ -21,7 +25,9 @@
         "parameters": {
             "health": 50
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "potion-stamina-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -29,7 +35,9 @@
         "parameters": {
             "stamina": 15
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "potion-stamina-rare": {
         "atlas": "resources/atlases/items.json",
@@ -37,7 +45,9 @@
         "parameters": {
             "stamina": 30
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "potion-stamina-epic": {
         "atlas": "resources/atlases/items.json",
@@ -45,7 +55,9 @@
         "parameters": {
             "stamina": 70
         },
-        "one_time": true
+        "one_time": true,
+        "name": "",
+        "description": ""
     },
     "sword-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -53,7 +65,9 @@
         "parameters": {
             "attack": 5
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "sword-rare": {
         "atlas": "resources/atlases/items.json",
@@ -61,7 +75,9 @@
         "parameters": {
             "attack": 10
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "sword-epic": {
         "atlas": "resources/atlases/items.json",
@@ -69,7 +85,9 @@
         "parameters": {
             "attack": 20
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "star-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -78,7 +96,9 @@
             "attack": 3,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "star-rare": {
         "atlas": "resources/atlases/items.json",
@@ -87,7 +107,9 @@
             "attack": 6,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "star-epic": {
         "atlas": "resources/atlases/items.json",
@@ -96,7 +118,9 @@
             "attack": 12,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "spear-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -105,7 +129,9 @@
             "attack": 3,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "spear-rare": {
         "atlas": "resources/atlases/items.json",
@@ -114,7 +140,9 @@
             "attack": 6,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "spear-epic": {
         "atlas": "resources/atlases/items.json",
@@ -123,7 +151,9 @@
             "attack": 12,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "heavy-spear-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -132,7 +162,9 @@
             "attack": 3,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "heavy-spear-rare": {
         "atlas": "resources/atlases/items.json",
@@ -141,7 +173,9 @@
             "attack": 6,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     },
     "heavy-spear-epic": {
         "atlas": "resources/atlases/items.json",
@@ -150,6 +184,8 @@
             "attack": 12,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time": false,
+        "name": "",
+        "description": ""
     }
 }

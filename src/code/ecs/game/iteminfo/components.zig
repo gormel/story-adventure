@@ -1,0 +1,1 @@
+pub const InitScene = struct { item: [] const u8 };

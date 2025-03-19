@@ -1,0 +1,55 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "popup_bg_small"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 33, "y": 33 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "item-icon-bg"
+                },
+                "tags": [  ],
+                "children": [
+                    {
+                        "position": { "x": 5, "y": 5 },
+                        "tags": [ "iteminfo-icon-root" ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 84, "y": 41 },
+                "text": { "size": 24, "text": "[ITEM_NAME]" },
+                "tags": [ "iteminfo-name-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 42, "y": 94 },
+                "text": { "size": 15, "text": "[ITEM_DESCRIPTION]" },
+                "tags": [ "iteminfo-description-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 141, "y": 233 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "iteminfo-back-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 68, "y": 10 },
+                        "text": { "size": 10, "text": "Back" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

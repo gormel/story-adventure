@@ -22,7 +22,7 @@ pub fn initGui(reg: *ecs.Registry) void {
         const init = reg.get(scmp.InitGameObject, entity);
 
         if (utils.containsTag(init.tags, "gamestats-button-continue")) {
-            reg.add(entity, cmp.ContinueBtn {});
+            reg.add(entity, cmp.ContinueBtn { .owner_scene = init.scene });
         }
 
         if (utils.containsTag(init.tags, "gamestats-title-text")) {
@@ -132,5 +132,15 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
             .free = true,
             .text = slainText,
         });
+    }
+
+    var continue_view = reg.view(.{ gcmp.ButtonClicked, cmp.ContinueBtn }, .{});
+    var continue_iter = continue_view.entityIterator();
+    while (continue_iter.next()) |entity| {
+        const btn = reg.get(cmp.ContinueBtn, entity);
+
+        if (!reg.has(cmp.Continue, btn.owner_scene)) {
+            reg.add(btn.owner_scene, cmp.Continue {});
+        }
     }
 }

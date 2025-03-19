@@ -25,16 +25,22 @@ pub fn initGui(reg: *ecs.Registry) void {
         const init = reg.get(scmp.InitGameObject, entity);
 
         if (utils.containsTag(init.tags, "gameover-stats-root")) {
-            reg.add(entity, cmp.AttachGamestats {});
+            reg.add(entity, cmp.AttachGamestats { .owner_scene = init.scene });
         }
     }
 }
 
 pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
-    var continue_view = reg.view(.{ gcmp.ButtonClicked, gscmp.ContinueBtn }, .{});
+    var continue_view = reg.view(.{ gscmp.Continue, cmp.GameStatsScene }, .{});
     var continue_iter = continue_view.entityIterator();
-    while (continue_iter.next()) |_| {
-        game.destroyAll(gcmp.GameoverScene, reg);
+    while (continue_iter.next()) |entity| {
+        const gamestats = reg.get(cmp.GameStatsScene, entity);
+        
+        if (!reg.has(ccmp.Destroyed, gamestats.gameover_scene)) {
+            reg.add(gamestats.gameover_scene, ccmp.Destroyed {});
+        }
+
+        reg.remove(gscmp.Continue, entity);
 
         try main_menu.loadScene(reg, allocator);
     }
@@ -42,10 +48,12 @@ pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var gamestats_view = reg.view(.{ cmp.AttachGamestats }, .{});
     var gamestats_iter = gamestats_view.entityIterator();
     while (gamestats_iter.next()) |entity| {
-        reg.remove(cmp.AttachGamestats, entity);
+        const attach = reg.get(cmp.AttachGamestats, entity);
 
-        const scene_ety = try game_stats.loadScene(reg, allocator);
-        reg.add(scene_ety, gscmp.InitState { .title = "Game Over" });
+        const scene_ety = try game_stats.loadScene(reg, allocator, "Game Over", false);
         reg.addOrReplace(scene_ety, rcmp.AttachTo { .target = entity });
+        reg.add(scene_ety, cmp.GameStatsScene { .gameover_scene = attach.owner_scene });
+
+        reg.remove(cmp.AttachGamestats, entity);
     }
 }

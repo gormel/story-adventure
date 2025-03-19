@@ -9,6 +9,8 @@ pub const ItemCfg = struct {
     sprite: []const u8,
     parameters: std.json.ArrayHashMap(f64),
     one_time: bool,
+    name: [:0]const u8,
+    description: [:0]const u8,
 };
 
 pub const ItemListCfg = std.json.ArrayHashMap(ItemCfg);
