@@ -14,6 +14,6 @@ pub fn loadScene(
 ) !ecs.Entity {
     const ety = try game.loadScene(reg, allocator, SCENE_NAME, .{});
     reg.add(ety, gcmp.SetInputCaptureScene {});
-    reg.add(ety, cmp.InitScene { .item = item });
+    reg.add(ety, cmp.SceneSetup { .item = item });
     return ety;
 }

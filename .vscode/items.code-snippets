@@ -9,7 +9,9 @@
             "\t\"parameters\": {",
             "\t\t$0",
             "\t},",
-            "\t\"one_time\": ${3:true}",
+            "\t\"one_time\": ${3:true},",
+            "\t\"name\": \"Item Name\",",
+            "\t\"description\": \"Item description (may contains \\${param})\"",
             "},",
         ]
     }

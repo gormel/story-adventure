@@ -8,6 +8,7 @@ fea: trader scene
 * cfg: group -> count
 fea: trap scene
 fea: dexterity (max dex attacks first)
+fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon

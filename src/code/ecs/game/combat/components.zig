@@ -26,6 +26,7 @@ pub const CombatStatePlayerIdle = struct {};
 pub const CombatStatePlayerAttack = struct {};
 pub const CombatStateEnemyAttack = struct {};
 pub const CombatStateAttackCompleteRequest = struct { source_char: ecs.Entity };
+pub const CombatStateAttackFailedRequest = struct {};
 pub const CombatStatePlayerDead = struct {};
 pub const CombatStateEnemyDead = struct { enemy: ecs.Entity };
 pub const CombatStateDeathCompleteRequest = struct {};

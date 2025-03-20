@@ -6,8 +6,8 @@
             "health": 10
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "HP Potion",
+        "description": "hp +${health}"
     },
     "potion-hp-rare": {
         "atlas": "resources/atlases/items.json",
@@ -16,8 +16,8 @@
             "health": 20
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "HP Potion",
+        "description": "hp +${health}"
     },
     "potion-hp-epic": {
         "atlas": "resources/atlases/items.json",
@@ -26,8 +26,8 @@
             "health": 50
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "HP Potion",
+        "description": "hp +${health}"
     },
     "potion-stamina-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -36,8 +36,8 @@
             "stamina": 15
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "Stamina Potion",
+        "description": "stamina +${stamina}"
     },
     "potion-stamina-rare": {
         "atlas": "resources/atlases/items.json",
@@ -46,8 +46,8 @@
             "stamina": 30
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "Stamina Potion",
+        "description": "stamina +${stamina}"
     },
     "potion-stamina-epic": {
         "atlas": "resources/atlases/items.json",
@@ -56,8 +56,8 @@
             "stamina": 70
         },
         "one_time": true,
-        "name": "",
-        "description": ""
+        "name": "Stamina Potion",
+        "description": "stamina +${stamina}"
     },
     "sword-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -66,8 +66,8 @@
             "attack": 5
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Just a sword",
+        "description": "dmg +${attack}"
     },
     "sword-rare": {
         "atlas": "resources/atlases/items.json",
@@ -76,8 +76,8 @@
             "attack": 10
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Just a sword",
+        "description": "dmg +${attack}"
     },
     "sword-epic": {
         "atlas": "resources/atlases/items.json",
@@ -86,8 +86,8 @@
             "attack": 20
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Just a sword",
+        "description": "dmg +${attack}"
     },
     "star-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -97,8 +97,8 @@
             "shread_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Morning Star",
+        "description": "Allows shread attack \n\ndmg +${attack}"
     },
     "star-rare": {
         "atlas": "resources/atlases/items.json",
@@ -108,8 +108,8 @@
             "shread_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Morning Star",
+        "description": "Allows shread attack \n\ndmg +${attack}"
     },
     "star-epic": {
         "atlas": "resources/atlases/items.json",
@@ -119,8 +119,8 @@
             "shread_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Morning Star",
+        "description": "Allows shread attack \n\ndmg +${attack}"
     },
     "spear-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -130,8 +130,8 @@
             "double_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Spear",
+        "description": "Allows double attack \n\ndmg +${attack}"
     },
     "spear-rare": {
         "atlas": "resources/atlases/items.json",
@@ -141,8 +141,8 @@
             "double_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Spear",
+        "description": "Allows double attack \n\ndmg +${attack}"
     },
     "spear-epic": {
         "atlas": "resources/atlases/items.json",
@@ -152,8 +152,8 @@
             "double_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Spear",
+        "description": "Allows double attack \n\ndmg +${attack}"
     },
     "heavy-spear-cmn": {
         "atlas": "resources/atlases/items.json",
@@ -163,8 +163,8 @@
             "heavy_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Heavy Spear",
+        "description": "Allows heavy attack \n\ndmg +${attack}"
     },
     "heavy-spear-rare": {
         "atlas": "resources/atlases/items.json",
@@ -174,8 +174,8 @@
             "heavy_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Heavy Spear",
+        "description": "Allows heavy attack \n\ndmg +${attack}"
     },
     "heavy-spear-epic": {
         "atlas": "resources/atlases/items.json",
@@ -185,7 +185,7 @@
             "heavy_attack": 1
         },
         "one_time": false,
-        "name": "",
-        "description": ""
+        "name": "Heavy Spear",
+        "description": "Allows heavy attack \n\ndmg +${attack}"
     }
 }

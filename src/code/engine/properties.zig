@@ -87,5 +87,12 @@ pub const Properties = struct {
         while (it.next()) |kv| {
             try self.set(kv.key_ptr.*, kv.value_ptr.*);
         }
+
+        var curr_it = self.map.iterator();
+        while (curr_it.next()) |kv| {
+            if (!self.initial.contains(kv.key_ptr.*)) {
+                try self.set(kv.key_ptr.*, 0);
+            }
+        }
     }
 };

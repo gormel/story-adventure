@@ -67,6 +67,11 @@
                         "children": []
                     }
                 ]
+            },
+            {
+                "position": { "x": 121, "y": 75 },
+                "tags": [ "gamestats-iteminfo-root" ],
+                "children": []
             }
         ]
     }

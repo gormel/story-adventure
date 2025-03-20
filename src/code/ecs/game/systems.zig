@@ -24,6 +24,7 @@ const combat = @import("combat/systems.zig");
 const gameover = @import("gameover/systems.zig");
 const gamestats = @import("gamestats/systems.zig");
 const gamemenu = @import("gamemenu/systems.zig");
+const iteminfo = @import("iteminfo/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -350,6 +351,7 @@ pub fn initGameplayCustoms(
     gamestats.initGui(reg);
     gameover.initGui(reg);
     gamemenu.initGui(reg);
+    iteminfo.initGui(reg);
 }
 
 pub fn updateGameplayCustoms(
@@ -381,6 +383,7 @@ pub fn updateGameplayCustoms(
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
     try gameover.gui(reg, allocator);
     try gamemenu.gui(reg, allocator);
+    try iteminfo.gui(reg, items.item_list_cfg, allocator);
 }
 
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {

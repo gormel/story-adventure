@@ -278,7 +278,6 @@ fn createModify(reg: *ecs.Registry, source: ecs.Entity, modify: std.json.ArrayHa
 fn addModify(reg: *ecs.Registry, target: ecs.Entity, source: ecs.Entity, modify: std.json.ArrayHashMap(f64), allocator: std.mem.Allocator) !void {
     if (reg.tryGet(cmp.CharacterModifyList, target)) |modify_list| {
         try modify_list.entities.append(createModify(reg, source, modify));
-
     } else {
         var entities = std.ArrayList(ecs.Entity).init(allocator);
         try entities.append(createModify(reg, source, modify));
@@ -344,6 +343,20 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 });
 
                 createAttackEffect(reg, entity, attk.target, cfg.cfg_json.value.attack_view, dmg); 
+            } else {
+                var state_iter = reg.entityIterator(cmp.CombatState);
+                while (state_iter.next()) |state_entity| {
+                    reg.addOrReplace(state_entity, cmp.CombatStateAttackFailedRequest {});
+                }
+
+                const message = reg.create();
+                reg.add(message, gcmp.CreateMessage {
+                    .parent = entity,
+                    .x = -CHARACTER_SPRITE_SIZE / 2,
+                    .y = -CHARACTER_SPRITE_SIZE / 2,
+                    .text = "Cannot pay attack cost!",
+                    .free = false,
+                });
             }
         }
 
@@ -408,7 +421,6 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
         const tween = reg.get(cmp.AttackEffectTween, entity);
         const char = reg.get(cmp.Character, tween.target_char);
 
-
         if (reg.has(cmp.Dead, tween.target_char)) {
             const scale_ety = reg.create();
             reg.add(scale_ety, cmp.DeathTween { .character = tween.target_char });
@@ -467,8 +479,7 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
             });
         }
 
-        var state_view = reg.view(.{ cmp.CombatState }, .{ });
-        var state_iter = state_view.entityIterator();
+        var state_iter = reg.entityIterator(cmp.CombatState);
         while (state_iter.next()) |state_entity| {
             reg.addOrReplace(state_entity, cmp.CombatStateAttackCompleteRequest { .source_char = tween.source_char });
         }
@@ -579,6 +590,8 @@ pub fn combatState(
         }
         
         var enemy = reg.get(cmp.Enemy, enemy_ety);
+        const cfg = reg.get(cmp.CfgOwner, enemy_ety);
+        var char = reg.get(cmp.Character, enemy_ety);
         const TableT = struct { weight: f64, strategy: []const u8 };
         var table_size: usize = 0;
         var table = try allocator.alloc(TableT, enemy.cfg.strategy.map.count());
@@ -586,9 +599,13 @@ pub fn combatState(
 
         var strat_iter = enemy.cfg.strategy.map.iterator();
         while (strat_iter.next()) |kv| {
-            table[table_size].weight = kv.value_ptr.*;
-            table[table_size].strategy = kv.key_ptr.*;
-            table_size += 1;
+            if (cfg.cfg_json.value.strategy.map.get(kv.key_ptr.*)) |strat_cfg| {
+                if (condition.check(strat_cfg.cost, &char.props)) {
+                    table[table_size].weight = kv.value_ptr.*;
+                    table[table_size].strategy = kv.key_ptr.*;
+                    table_size += 1;
+                }
+            }
         }
 
         if (rr.select(TableT, "weight", table[0..table_size], rnd)) |table_item| {
@@ -596,13 +613,13 @@ pub fn combatState(
                 .target = hero_ety,
                 .strategy = table_item.strategy,
             });
-
-            reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
-            reg.remove(cmp.CombatStatePlayerAttack, entity);
-            reg.add(entity, cmp.CombatStateEnemyAttack {});
         } else {
-            unreachable;
+            reg.add(entity, cmp.CombatStateAttackFailedRequest {});
         }
+
+        reg.remove(cmp.CombatStatePlayerAttack, entity);
+        reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
+        reg.add(entity, cmp.CombatStateEnemyAttack {});
     }
 
     var enemy_attk_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackCompleteRequest }, .{ cmp.CombatStatePlayerIdle });
@@ -646,5 +663,25 @@ pub fn combatState(
         reg.remove(cmp.CombatStateDeathCompleteRequest, entity);
 
         game.selectNextScene(reg);
+    }
+
+    var enemyattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackFailedRequest }, .{});
+    var enemyattackfailed_iter = enemyattackfailed_view.entityIterator();
+    while (enemyattackfailed_iter.next()) |entity| {
+        setHidden(cmp.StrategyRoot, reg, false);
+
+        reg.remove(cmp.CombatStateAttackFailedRequest, entity);
+        reg.remove(cmp.CombatStateEnemyAttack, entity);
+        reg.add(entity, cmp.CombatStatePlayerIdle {});
+    }
+
+    var playerattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStatePlayerAttack, cmp.CombatStateAttackFailedRequest }, .{});
+    var playerattackfailed_iter = playerattackfailed_view.entityIterator();
+    while (playerattackfailed_iter.next()) |entity| {
+        setHidden(cmp.StrategyRoot, reg, false);
+
+        reg.remove(cmp.CombatStateAttackFailedRequest, entity);
+        reg.remove(cmp.CombatStatePlayerAttack, entity);
+        reg.add(entity, cmp.CombatStatePlayerIdle {});
     }
 }
