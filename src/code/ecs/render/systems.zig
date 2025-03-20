@@ -318,14 +318,16 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         reg.removeIfExists(cmp.TweenInProgress, entity);
         reg.removeIfExists(cmp.TweenComplete, entity);
 
-        reg.add(entity, Destroyed {});
+        if (!reg.has(Destroyed, entity)) {
+            reg.add(entity, Destroyed {});
+        }
     }
 
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenSetup }, .{ Destroyed });
     var complete_iter = complete_view.entityIterator();
     while (complete_iter.next()) |entity| {
         const setup = reg.get(cmp.TweenSetup, entity);
-        if (setup.remove_source and reg.valid(setup.entity)) {
+        if (setup.remove_source and reg.valid(setup.entity) and !reg.has(Destroyed, setup.entity)) {
             reg.add(setup.entity, Destroyed {});
         }
 
@@ -342,7 +344,9 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         if (!reg.valid(setup.entity)) {
             reg.remove(cmp.TweenSetup, entity);
 
-            reg.add(entity, Destroyed {});
+            if (!reg.has(Destroyed, entity)) {
+                reg.add(entity, Destroyed {});
+            }
             continue;
         }
 
@@ -359,7 +363,9 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             reg.remove(cmp.TweenSetup, entity);
             reg.remove(cmp.TweenInProgress, entity);
 
-            reg.add(entity, Destroyed {});
+            if (!reg.has(Destroyed, entity)) {
+                reg.add(entity, Destroyed {});
+            }
             continue;
         }
 
