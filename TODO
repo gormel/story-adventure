@@ -1,8 +1,7 @@
-fea: in-game menu: exit, loot, statistics
-fea: loot view popup
 fea: global progress
 * props save/load
 * progress triggers
+fea: loot view popup
 fea: unique monster attack
 fea: trader scene
 * cfg: group -> count
