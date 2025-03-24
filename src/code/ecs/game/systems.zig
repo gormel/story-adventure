@@ -133,6 +133,32 @@ pub fn button(reg: *ecs.Registry, dt: f32) void {
     }
 }
 
+pub fn hover(reg: *ecs.Registry) void {
+    var show_view = reg.view(.{ icmp.MouseOver, cmp.Hover }, .{ cmp.Hovered });
+    var show_iter = show_view.entityIterator();
+    while (show_iter.next()) |entity| {
+        const hover_ety = reg.get(cmp.Hover, entity);
+
+        if (reg.has(rcmp.Disabled, hover_ety.entity)) {
+            reg.remove(rcmp.Disabled, hover_ety.entity);
+        }
+
+        reg.add(entity, cmp.Hovered {});
+    }
+
+    var hide_view = reg.view(.{ cmp.Hover, cmp.Hovered }, .{ icmp.MouseOver });
+    var hide_iter = hide_view.entityIterator();
+    while (hide_iter.next()) |entity| {
+        const hover_ety = reg.get(cmp.Hover, entity);
+
+        if (!reg.has(rcmp.Disabled, hover_ety.entity)) {
+            reg.add(hover_ety.entity, rcmp.Disabled {});
+        }
+
+        reg.remove(cmp.Hovered, entity);
+    }
+}
+
 pub fn inputCapture(reg: *ecs.Registry, input_stack: *is.InputStack) !void {
     var set_iter = reg.entityIterator(cmp.SetInputCaptureScene);
     while (set_iter.next()) |entity| {
@@ -160,6 +186,8 @@ pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *pr.P
             try props.create(key, value.float);
         }
     }
+
+    try props.load();
 }
 
 pub fn properties(reg: *ecs.Registry) void {
@@ -381,7 +409,7 @@ pub fn updateGameplayCustoms(
     try combat.combatState(reg, props, rnd, allocator);
 
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
-    try gameover.gui(reg, allocator);
+    try gameover.gui(reg, props, allocator);
     try gamemenu.gui(reg, allocator);
     try iteminfo.gui(reg, items.item_list_cfg, allocator);
 }
@@ -389,6 +417,7 @@ pub fn updateGameplayCustoms(
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
     loot.freeLootStart(reg);
     combat.freeCombat(reg);
+    gamestats.free(reg);
 }
 
 pub fn layoutChildren(reg: *ecs.Registry) void {

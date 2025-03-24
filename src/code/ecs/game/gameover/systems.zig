@@ -30,7 +30,7 @@ pub fn initGui(reg: *ecs.Registry) void {
     }
 }
 
-pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+pub fn gui(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
     var continue_view = reg.view(.{ gscmp.Continue, cmp.GameStatsScene }, .{});
     var continue_iter = continue_view.entityIterator();
     while (continue_iter.next()) |entity| {
@@ -41,6 +41,8 @@ pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         }
 
         reg.remove(gscmp.Continue, entity);
+
+        try props.save();
 
         try main_menu.loadScene(reg, allocator);
     }

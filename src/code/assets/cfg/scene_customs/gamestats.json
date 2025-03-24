@@ -1,0 +1,6 @@
+{
+    "item_hover_view": {
+        "atlas": "resources/atlases/gui.json",
+        "sprite": "item-icon-highlight"
+    }
+}

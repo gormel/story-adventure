@@ -196,8 +196,8 @@ fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: 
         if (items.info(item_name)) |item| {
             const entity = reg.create();
             reg.add(entity, rcmp.SpriteResource {
-                .atlas = item.atlas,
-                .sprite = item.sprite,
+                .atlas = item.view.atlas,
+                .sprite = item.view.sprite,
             });
             reg.add(entity, rcmp.AttachTo {
                 .target = tile_ety,

@@ -1,191 +1,227 @@
 {
     "potion-hp-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-red-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-red-cmn",
+            "name": "HP Potion",
+            "description": "hp +${health}"
+        },
         "parameters": {
             "health": 10
         },
-        "one_time": true,
-        "name": "HP Potion",
-        "description": "hp +${health}"
+        "one_time": true
     },
     "potion-hp-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-red-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-red-rare",
+            "name": "HP Potion",
+            "description": "hp +${health}"
+        },
         "parameters": {
             "health": 20
         },
-        "one_time": true,
-        "name": "HP Potion",
-        "description": "hp +${health}"
+        "one_time": true
     },
     "potion-hp-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-red-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-red-epic",
+            "name": "HP Potion",
+            "description": "hp +${health}"
+        },
         "parameters": {
             "health": 50
         },
-        "one_time": true,
-        "name": "HP Potion",
-        "description": "hp +${health}"
+        "one_time": true
     },
     "potion-stamina-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-yellow-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-yellow-cmn",
+            "name": "Stamina Potion",
+            "description": "stamina +${stamina}"
+        },
         "parameters": {
             "stamina": 15
         },
-        "one_time": true,
-        "name": "Stamina Potion",
-        "description": "stamina +${stamina}"
+        "one_time": true
     },
     "potion-stamina-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-yellow-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-yellow-rare",
+            "name": "Stamina Potion",
+            "description": "stamina +${stamina}"
+        },
         "parameters": {
             "stamina": 30
         },
-        "one_time": true,
-        "name": "Stamina Potion",
-        "description": "stamina +${stamina}"
+        "one_time": true
     },
     "potion-stamina-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "potion-yellow-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "potion-yellow-epic",
+            "name": "Stamina Potion",
+            "description": "stamina +${stamina}"
+        },
         "parameters": {
             "stamina": 70
         },
-        "one_time": true,
-        "name": "Stamina Potion",
-        "description": "stamina +${stamina}"
+        "one_time": true
     },
     "sword-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "sword-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "sword-cmn",
+            "name": "Just a sword",
+            "description": "dmg +${attack}"
+        },
         "parameters": {
             "attack": 5
         },
-        "one_time": false,
-        "name": "Just a sword",
-        "description": "dmg +${attack}"
+        "one_time": false
     },
     "sword-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "sword-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "sword-rare",
+            "name": "Just a sword",
+            "description": "dmg +${attack}"
+        },
         "parameters": {
             "attack": 10
         },
-        "one_time": false,
-        "name": "Just a sword",
-        "description": "dmg +${attack}"
+        "one_time": false
     },
     "sword-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "sword-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "sword-epic",
+            "name": "Just a sword",
+            "description": "dmg +${attack}"
+        },
         "parameters": {
             "attack": 20
         },
-        "one_time": false,
-        "name": "Just a sword",
-        "description": "dmg +${attack}"
+        "one_time": false
     },
     "star-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "star-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "star-cmn",
+            "name": "Morning Star",
+            "description": "Allows shread attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 3,
             "shread_attack": 1
         },
-        "one_time": false,
-        "name": "Morning Star",
-        "description": "Allows shread attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "star-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "star-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "star-rare",
+            "name": "Morning Star",
+            "description": "Allows shread attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 6,
             "shread_attack": 1
         },
-        "one_time": false,
-        "name": "Morning Star",
-        "description": "Allows shread attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "star-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "star-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "star-epic",
+            "name": "Morning Star",
+            "description": "Allows shread attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 12,
             "shread_attack": 1
         },
-        "one_time": false,
-        "name": "Morning Star",
-        "description": "Allows shread attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "spear-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "spear-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "spear-cmn",
+            "name": "Spear",
+            "description": "Allows double attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 3,
             "double_attack": 1
         },
-        "one_time": false,
-        "name": "Spear",
-        "description": "Allows double attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "spear-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "spear-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "spear-rare",
+            "name": "Spear",
+            "description": "Allows double attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 6,
             "double_attack": 1
         },
-        "one_time": false,
-        "name": "Spear",
-        "description": "Allows double attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "spear-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "spear-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "spear-epic",
+            "name": "Spear",
+            "description": "Allows double attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 12,
             "double_attack": 1
         },
-        "one_time": false,
-        "name": "Spear",
-        "description": "Allows double attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "heavy-spear-cmn": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "heavy-spear-cmn",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "heavy-spear-cmn",
+            "name": "Heavy Spear",
+            "description": "Allows heavy attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 3,
             "heavy_attack": 1
         },
-        "one_time": false,
-        "name": "Heavy Spear",
-        "description": "Allows heavy attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "heavy-spear-rare": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "heavy-spear-rare",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "heavy-spear-rare",
+            "name": "Heavy Spear",
+            "description": "Allows heavy attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 6,
             "heavy_attack": 1
         },
-        "one_time": false,
-        "name": "Heavy Spear",
-        "description": "Allows heavy attack \n\ndmg +${attack}"
+        "one_time": false
     },
     "heavy-spear-epic": {
-        "atlas": "resources/atlases/items.json",
-        "sprite": "heavy-spear-epic",
+        "view": {
+            "atlas": "resources/atlases/items.json",
+            "sprite": "heavy-spear-epic",
+            "name": "Heavy Spear",
+            "description": "Allows heavy attack \n\ndmg +${attack}"
+        },
         "parameters": {
             "attack": 12,
             "heavy_attack": 1
         },
-        "one_time": false,
-        "name": "Heavy Spear",
-        "description": "Allows heavy attack \n\ndmg +${attack}"
+        "one_time": false
     }
 }

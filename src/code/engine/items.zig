@@ -4,13 +4,17 @@ const rr = @import("../engine/rollrate.zig");
 const utils = @import("../engine/utils.zig");
 const condition = @import("../engine/condition.zig");
 
-pub const ItemCfg = struct {
+pub const ItemViewCfg = struct {
     atlas: []const u8,
     sprite: []const u8,
-    parameters: std.json.ArrayHashMap(f64),
-    one_time: bool,
     name: [:0]const u8,
     description: [:0]const u8,
+};
+
+pub const ItemCfg = struct {
+    view: ItemViewCfg,
+    parameters: std.json.ArrayHashMap(f64),
+    one_time: bool,
 };
 
 pub const ItemListCfg = std.json.ArrayHashMap(ItemCfg);

@@ -1,10 +1,14 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
+const rl = @import("raylib");
 const cmp = @import("../ecs/game/components.zig");
 
-pub const Restrictions = struct {
+const SAVE_FILENAME = "props.json";
+
+pub const Setup = struct {
     min: std.json.ArrayHashMap(f64),
     max: std.json.ArrayHashMap(f64),
+    save: []const []const u8,
 };
 
 pub const Properties = struct {
@@ -14,16 +18,16 @@ pub const Properties = struct {
     map: std.StringArrayHashMap(f64),
     initial: std.StringArrayHashMap(f64),
     silent: bool,
-    restrictions: ?*Restrictions,
+    setup: ?*Setup,
 
-    pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry, restrictions: *Restrictions) Self {
+    pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry, setup: *Setup) Self {
         return .{
             .reg = reg,
             .allocator = allocator,
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
             .silent = false,
-            .restrictions = restrictions,
+            .setup = setup,
         };
     }
 
@@ -34,7 +38,7 @@ pub const Properties = struct {
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
             .silent = true,
-            .restrictions = null,
+            .setup = null,
         };
     }
 
@@ -59,12 +63,12 @@ pub const Properties = struct {
     pub fn set(self: *Self, name: []const u8, value: f64) !void {
         var actual = value;
 
-        if (self.restrictions) |restrictions| {
-            if (restrictions.min.map.get(name)) |min| {
+        if (self.setup) |setup| {
+            if (setup.min.map.get(name)) |min| {
                 actual = @max(min, actual);
             }
 
-            if (restrictions.max.map.get(name)) |max| {
+            if (setup.max.map.get(name)) |max| {
                 actual = @min(max, actual);
             }
         }
@@ -92,6 +96,51 @@ pub const Properties = struct {
         while (curr_it.next()) |kv| {
             if (!self.initial.contains(kv.key_ptr.*)) {
                 try self.set(kv.key_ptr.*, 0);
+            }
+        }
+    }
+
+    pub fn save(self: *Self) !void {
+        if (self.setup) |setup| {
+            var saveobj = std.json.ObjectMap.init(self.allocator);
+            defer saveobj.deinit();
+
+            for (setup.save) |propname| {
+                if (self.map.get(propname)) |propvalue| {
+                    try saveobj.put(propname, std.json.Value { .float = propvalue });
+                }
+            }
+
+            var savemap = try std.json.ArrayHashMap(f64)
+                .jsonParseFromValue(self.allocator, std.json.Value { .object = saveobj }, .{});
+            
+            var strlist = std.ArrayList(u8).init(self.allocator);
+            defer strlist.deinit();
+
+            const strwriter = strlist.writer();
+            var jwriter = std.json.WriteStream(@TypeOf(strwriter), .checked_to_arbitrary_depth)
+                .init(self.allocator, strwriter, .{});
+            defer jwriter.deinit();
+
+            try savemap.jsonStringify(&jwriter);
+            const jsontext = try std.fmt.allocPrintZ(self.allocator, "{s}", .{ strlist.items });
+            defer self.allocator.free(jsontext);
+
+            _ = rl.saveFileText(SAVE_FILENAME, jsontext);
+        }
+    }
+
+    pub fn load(self: *Self) !void {
+        if (rl.fileExists(SAVE_FILENAME)) {
+            const savetext = rl.loadFileText(SAVE_FILENAME);
+            defer rl.unloadFileText(savetext);
+
+            const savemap = try std.json.parseFromSlice(std.json.ArrayHashMap(f64), self.allocator, savetext, .{ });
+            defer savemap.deinit();
+
+            var it = savemap.value.map.iterator();
+            while (it.next()) |kv| {
+                try self.set(kv.key_ptr.*, kv.value_ptr.*);
             }
         }
     }

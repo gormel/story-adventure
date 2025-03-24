@@ -8,6 +8,9 @@ pub const ButtonAnimating = struct { delay: f32 };
 pub const CreateMessage = struct { parent: ?ecs.Entity, x: f32, y: f32, text: [:0]const u8, free: bool };
 pub const MessageDelay = struct { time: f32 };
 
+pub const Hover = struct { entity: ecs.Entity };
+pub const Hovered = struct {};
+
 pub const PlayerPropertyChanged = struct { name: []const u8 };
 pub const TriggerPlayerPropertyChanged = struct { name: []const u8 };
 

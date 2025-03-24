@@ -11,6 +11,7 @@ const easing = @import("../../render/easing.zig");
 const sp = @import("../../../engine/sprite.zig");
 const main_menu = @import("../mainMenu/mainmenu.zig");
 const iteminfo = @import("../iteminfo/iteminfo.zig");
+const gamestats = @import("gamestats.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -18,6 +19,8 @@ const rcmp = @import("../../render/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
 const iicmp = @import("../iteminfo/components.zig");
+
+const cfg_text = @embedFile("../../../assets/cfg/scene_customs/gamestats.json");
 
 pub fn initGui(reg: *ecs.Registry) void {
     var iter = reg.entityIterator(scmp.InitGameObject);
@@ -77,6 +80,10 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
 
     var item_list_iter = reg.entityIterator(cmp.CreateItemList);
     while (item_list_iter.next()) |entity| {
+        
+        const cfg_json = try std.json.parseFromSlice(gamestats.GamestatsCfg, allocator, cfg_text, .{});
+        reg.add(entity, cmp.ItemList { .cfg_json = cfg_json });
+
         const root_ety = reg.create();
         reg.add(root_ety, rcmp.Position { .x = 5, .y = 5 });
         reg.add(root_ety, rcmp.AttachTo { .target = entity });
@@ -92,12 +99,21 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
             if (item_count > 0) {
                 const item_ety = reg.create();
                 reg.add(item_ety, rcmp.SpriteResource {
-                    .atlas = kv.value_ptr.atlas,
-                    .sprite = kv.value_ptr.sprite,
+                    .atlas = kv.value_ptr.view.atlas,
+                    .sprite = kv.value_ptr.view.sprite,
                 });
                 reg.add(item_ety, rcmp.AttachTo { .target = root_ety });
                 reg.add(item_ety, gcmp.CreateButton { .animated = false });
                 reg.add(item_ety, cmp.ItemBtn { .item = kv.key_ptr.* });
+                
+                const hover_ety = reg.create();
+                reg.add(hover_ety, rcmp.SpriteResource {
+                    .atlas = cfg_json.value.item_hover_view.atlas,
+                    .sprite = cfg_json.value.item_hover_view.sprite,
+                });
+                reg.add(hover_ety, rcmp.AttachTo { .target = item_ety });
+                reg.add(hover_ety, rcmp.Disabled {});
+                reg.add(item_ety, gcmp.Hover { .entity = hover_ety });
 
                 if (item_count > 1) {
                     const text_ety = reg.create();
@@ -173,5 +189,15 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
         if (!reg.has(ccmp.Destroyed, entity)) {
             reg.add(entity, ccmp.Destroyed {});
         }
+    }
+}
+
+pub fn free(reg: *ecs.Registry) void {
+    var itemlist_view = reg.view(.{ cmp.ItemList, ccmp.Destroyed }, .{});
+    var itemlist_iter = itemlist_view.entityIterator();
+    while (itemlist_iter.next()) |entity| {
+        const list = reg.get(cmp.ItemList, entity);
+
+        list.cfg_json.deinit();
     }
 }

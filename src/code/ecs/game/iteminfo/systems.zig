@@ -51,7 +51,7 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
 
         if (reg.tryGet(cmp.SceneSetup, name.owner_scene)) |setup| {
             if (items_cfg.map.get(setup.item)) |item_cfg| {
-                reg.addOrReplace(name_ety, rcmp.SetTextValue { .text = item_cfg.name });
+                reg.addOrReplace(name_ety, rcmp.SetTextValue { .text = item_cfg.view.name });
             }
         }
 
@@ -64,7 +64,8 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
 
         if (reg.tryGet(cmp.SceneSetup, desc.owner_scene)) |setup| {
             if (items_cfg.map.get(setup.item)) |item_cfg| {
-                const matched_desc = try utils.matchParams(allocator, item_cfg.description, &item_cfg.parameters);
+                const matched_desc = try utils.matchParams(allocator,
+                    item_cfg.view.description, &item_cfg.parameters);
 
                 reg.addOrReplace(desc_ety, rcmp.SetTextValue { .text = matched_desc, .free = true });
             }
@@ -81,8 +82,8 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
                 const icon_ety = reg.create();
 
                 reg.add(icon_ety, rcmp.SpriteResource {
-                    .atlas = item_cfg.atlas,
-                    .sprite = item_cfg.sprite,
+                    .atlas = item_cfg.view.atlas,
+                    .sprite = item_cfg.view.sprite,
                 });
                 reg.add(icon_ety, rcmp.AttachTo { .target = root_ety });
             }

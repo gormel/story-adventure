@@ -19,7 +19,7 @@ const is = @import("ecs/input/inputstack.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
-const restrictions_text = @embedFile("assets/cfg/property_restrictions.json");
+const propsetup_text = @embedFile("assets/cfg/property_setup.json");
 
 pub fn main() !void {
     // Initialization
@@ -46,8 +46,8 @@ pub fn main() !void {
     var input_stack = is.InputStack.init(arena);
     defer input_stack.deinit();
 
-    var restrictions_json = try std.json.parseFromSlice(pr.Restrictions, arena, restrictions_text, .{ .ignore_unknown_fields = true });
-    var props = pr.Properties.init(arena, &reg, &restrictions_json.value);
+    var propsetup_json = try std.json.parseFromSlice(pr.Setup, arena, propsetup_text, .{ .ignore_unknown_fields = true });
+    var props = pr.Properties.init(arena, &reg, &propsetup_json.value);
     defer props.deinit();
 
     var scanner = std.json.Scanner.initCompleteInput(arena, props_text);
@@ -116,6 +116,7 @@ pub fn main() !void {
 
         game_systems.button(&reg, dt);
         game_systems.message(&reg, dt);
+        game_systems.hover(&reg);
         game_systems.properties(&reg);
         try game_systems.changeScene(&reg, &props, &rules, &scene_prop_change_json.value, &rnd, arena);
 

@@ -180,3 +180,14 @@ left: 939px;
 top: 357px;
 
 background: url(item-icon-bg.png);
+
+
+/* item-icon-highlight */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 1071px;
+top: 283px;
+
+background: url(item-icon-highlight.png);
