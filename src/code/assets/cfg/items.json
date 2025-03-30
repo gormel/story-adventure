@@ -6,10 +6,10 @@
             "name": "HP Potion",
             "description": "hp +${health}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "health": 10
-        },
-        "one_time": true
+        }
     },
     "potion-hp-rare": {
         "view": {
@@ -18,10 +18,10 @@
             "name": "HP Potion",
             "description": "hp +${health}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "health": 20
-        },
-        "one_time": true
+        }
     },
     "potion-hp-epic": {
         "view": {
@@ -30,10 +30,10 @@
             "name": "HP Potion",
             "description": "hp +${health}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "health": 50
-        },
-        "one_time": true
+        }
     },
     "potion-stamina-cmn": {
         "view": {
@@ -42,10 +42,10 @@
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "stamina": 15
-        },
-        "one_time": true
+        }
     },
     "potion-stamina-rare": {
         "view": {
@@ -54,10 +54,10 @@
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "stamina": 30
-        },
-        "one_time": true
+        }
     },
     "potion-stamina-epic": {
         "view": {
@@ -66,10 +66,10 @@
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
-        "parameters": {
+        "parameters": {},
+        "one_time_parameters": {
             "stamina": 70
-        },
-        "one_time": true
+        }
     },
     "sword-cmn": {
         "view": {
@@ -81,7 +81,7 @@
         "parameters": {
             "attack": 5
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "sword-rare": {
         "view": {
@@ -93,7 +93,7 @@
         "parameters": {
             "attack": 10
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "sword-epic": {
         "view": {
@@ -105,7 +105,7 @@
         "parameters": {
             "attack": 20
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "star-cmn": {
         "view": {
@@ -118,7 +118,7 @@
             "attack": 3,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "star-rare": {
         "view": {
@@ -131,7 +131,7 @@
             "attack": 6,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "star-epic": {
         "view": {
@@ -144,7 +144,7 @@
             "attack": 12,
             "shread_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "spear-cmn": {
         "view": {
@@ -157,7 +157,7 @@
             "attack": 3,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "spear-rare": {
         "view": {
@@ -170,7 +170,7 @@
             "attack": 6,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "spear-epic": {
         "view": {
@@ -183,7 +183,7 @@
             "attack": 12,
             "double_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "heavy-spear-cmn": {
         "view": {
@@ -196,7 +196,7 @@
             "attack": 3,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "heavy-spear-rare": {
         "view": {
@@ -209,7 +209,7 @@
             "attack": 6,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     },
     "heavy-spear-epic": {
         "view": {
@@ -222,6 +222,6 @@
             "attack": 12,
             "heavy_attack": 1
         },
-        "one_time": false
+        "one_time_parameters": {}
     }
 }

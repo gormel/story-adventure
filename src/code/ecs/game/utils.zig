@@ -22,6 +22,11 @@ pub const LoadSceneAdditionalArgs = struct {
     change: ?*ScenePropChangeCfg = null,
 };
 
+pub const RenderLayers = struct {
+    pub const GAMEPLAY = 1;
+    pub const HUD = 2;
+};
+
 var scenes = &.{
     .{
         .name = "main_menu",
@@ -62,6 +67,10 @@ var scenes = &.{
     .{
         .name = "iteminfo",
         .text = @embedFile("../../assets/scenes/iteminfo.json"),
+    },
+    .{
+        .name = "itemcollection",
+        .text = @embedFile("../../assets/scenes/itemcollection.json"),
     },
 };
 

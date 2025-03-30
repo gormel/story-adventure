@@ -1,0 +1,54 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "popup_bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 212, "y": 40 },
+                "text": { "size": 36, "text": "Item Collection" },
+                "tags": [ "itemcollection-title-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 117, "y": 103 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "itemcollection-grid-bg"
+                },
+                "tags": [ ],
+                "children": [
+                    {
+                        "position": { "x": 5, "y": 5 },
+                        "tags": [ "itemcollection-grid-root" ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 262, "y": 369 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "button"
+                },
+                "tags": [ "button", "itemcollection-continue-btn" ],
+                "children": [
+                    {
+                        "position": { "x": 58, "y": 10 },
+                        "text": { "size": 10, "text": "Continue" },
+                        "tags": [  ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 121, "y": 75 },
+                "tags": [ "itemcollection-smallpopup-root" ],
+                "children": []
+            }
+        ]
+    }
+]

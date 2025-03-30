@@ -83,6 +83,7 @@ fn syncProperty(
     var view = reg.view(.{ ComponentT, cmp.SyncView }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
+        reg.remove(cmp.SyncView, entity);
         const value = selector(props, propertyName, allocator);
         if (reg.tryGet(rcmp.SetTextValue, entity)) |set_text| {
             if (set_text.free) {

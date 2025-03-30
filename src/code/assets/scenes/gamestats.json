@@ -53,7 +53,7 @@
                 "children": []
             },
             {
-                "position": { "x": 262, "y": 339 },
+                "position": { "x": 262, "y": 369 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",
                     "sprite": "button"

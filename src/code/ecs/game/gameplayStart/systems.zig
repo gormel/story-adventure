@@ -2,12 +2,14 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const game = @import("../utils.zig");
-const cmp = @import("components.zig");
 const utils = @import("../../../engine/utils.zig");
-const scmp = @import("../../scene/components.zig");
-const gcmp = @import("../components.zig");
 const pr = @import("../../../engine/properties.zig");
 const hud = @import("../hud/hud.zig");
+
+const cmp = @import("components.zig");
+const scmp = @import("../../scene/components.zig");
+const gcmp = @import("../components.zig");
+const rcmp = @import("../../render/components.zig");
 
 pub fn initSwitch(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -17,6 +19,7 @@ pub fn initSwitch(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         if (utils.containsTag(init.tags, "init-gameplay-start")) {
 
             const hud_scene = try hud.loadScene(reg, allocator);
+            reg.addOrReplace(hud_scene, rcmp.Order { .order = game.RenderLayers.HUD });
 
             var state_view = reg.view(.{ gcmp.GameState }, .{ gcmp.GameStateGameplay });
             var state_iter = state_view.entityIterator();

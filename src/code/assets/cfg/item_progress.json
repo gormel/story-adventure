@@ -1,0 +1,20 @@
+{
+    "potion-hp-cmn": "save-potion-hp-cmn",
+    "potion-hp-rare": "save-potion-hp-rare",
+    "potion-hp-epic": "save-potion-hp-epic",
+    "potion-stamina-cmn": "save-potion-stamina-cmn",
+    "potion-stamina-rare": "save-potion-stamina-rare",
+    "potion-stamina-epic": "save-potion-stamina-epic",
+    "sword-cmn": "save-sword-cmn",
+    "sword-rare": "save-sword-rare",
+    "sword-epic": "save-sword-epic",
+    "star-cmn": "save-star-cmn",
+    "star-rare": "save-star-rare",
+    "star-epic": "save-star-epic",
+    "spear-cmn": "save-spear-cmn",
+    "spear-rare": "save-spear-rare",
+    "spear-epic": "save-spear-epic",
+    "heavy-spear-cmn": "save-heavy-spear-cmn",
+    "heavy-spear-rare": "save-heavy-spear-rare",
+    "heavy-spear-epic": "save-heavy-spear-epic"
+}

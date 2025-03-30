@@ -14,7 +14,7 @@ pub const ItemViewCfg = struct {
 pub const ItemCfg = struct {
     view: ItemViewCfg,
     parameters: std.json.ArrayHashMap(f64),
-    one_time: bool,
+    one_time_parameters: std.json.ArrayHashMap(f64),
 };
 
 pub const ItemListCfg = std.json.ArrayHashMap(ItemCfg);
@@ -28,17 +28,21 @@ pub const ItemDropCfg = struct {
 
 pub const ItemDropListCfg = []ItemDropCfg;
 
+pub const ItemProgressCfg = std.json.ArrayHashMap([]const u8);
+
 pub const Items = struct {
     const Self = @This();
 
     item_list_cfg: *ItemListCfg,
     item_drop_list_cfg: *ItemDropListCfg,
+    item_progress_cfg: *ItemProgressCfg,
     props: *pr.Properties,
     allocator: std.mem.Allocator,
 
     pub fn init(
         item_list_cfg: *ItemListCfg,
         item_drop_list_cfg: *ItemDropListCfg,
+        item_progress_cfg: *ItemProgressCfg,
         props: *pr.Properties,
         allocator: std.mem.Allocator
     ) Self {
@@ -46,6 +50,7 @@ pub const Items = struct {
             .item_list_cfg = item_list_cfg,
             .props = props,
             .item_drop_list_cfg = item_drop_list_cfg,
+            .item_progress_cfg = item_progress_cfg,
             .allocator = allocator
         };
     }
@@ -103,8 +108,12 @@ pub const Items = struct {
                 try self.props.add(kv.key_ptr.*, kv.value_ptr.*);
             }
 
-            if (!item_cfg.one_time) {
+            if (item_cfg.parameters.map.count() > 0) {
                 try self.props.add(name, 1);
+            }
+
+            if (self.item_progress_cfg.map.get(name)) |prog_prop| {
+                try self.props.set(prog_prop, 1);
             }
 
             return true;
@@ -114,7 +123,7 @@ pub const Items = struct {
 
     pub fn del(self: *Self, name: []const u8) !void {
         if (self.item_list_cfg.map.get(name)) |item_cfg| {
-            if (item_cfg.one_time) {
+            if (item_cfg.parameters.map.count() == 0) {
                 unreachable;
             }
 

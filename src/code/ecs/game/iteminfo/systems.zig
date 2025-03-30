@@ -64,8 +64,11 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
 
         if (reg.tryGet(cmp.SceneSetup, desc.owner_scene)) |setup| {
             if (items_cfg.map.get(setup.item)) |item_cfg| {
+                const one_time_matched_desc = try utils.matchParams(allocator,
+                    item_cfg.view.description, &item_cfg.one_time_parameters);
+                    defer allocator.free(one_time_matched_desc);
                 const matched_desc = try utils.matchParams(allocator,
-                    item_cfg.view.description, &item_cfg.parameters);
+                    one_time_matched_desc, &item_cfg.parameters);
 
                 reg.addOrReplace(desc_ety, rcmp.SetTextValue { .text = matched_desc, .free = true });
             }

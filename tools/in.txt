@@ -2,7 +2,7 @@
 
 position: relative;
 width: 1124px;
-height: 433px;
+height: 660px;
 
 
 
@@ -191,3 +191,14 @@ left: 1071px;
 top: 283px;
 
 background: url(item-icon-highlight.png);
+
+
+/* itemcollection-grid-bg */
+
+position: absolute;
+width: 441px;
+height: 227px;
+left: 0px;
+top: 433px;
+
+background: url(itemcollection-grid-bg.png);

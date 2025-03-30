@@ -17,8 +17,12 @@ pub const Properties = struct {
     allocator: std.mem.Allocator,
     map: std.StringArrayHashMap(f64),
     initial: std.StringArrayHashMap(f64),
+    loaded: std.StringArrayHashMap(f64),
     silent: bool,
     setup: ?*Setup,
+
+    loadedText: ?[:0] u8,
+    loadedJson: ?std.json.Parsed(std.json.ArrayHashMap(f64)),
 
     pub fn init(allocator: std.mem.Allocator, reg: *ecs.Registry, setup: *Setup) Self {
         return .{
@@ -26,8 +30,12 @@ pub const Properties = struct {
             .allocator = allocator,
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
+            .loaded = std.StringArrayHashMap(f64).init(allocator),
             .silent = false,
             .setup = setup,
+            
+            .loadedText = null,
+            .loadedJson = null,
         };
     }
 
@@ -37,25 +45,49 @@ pub const Properties = struct {
             .allocator = allocator,
             .map = std.StringArrayHashMap(f64).init(allocator),
             .initial = std.StringArrayHashMap(f64).init(allocator),
+            .loaded = std.StringArrayHashMap(f64).init(allocator),
             .silent = true,
             .setup = null,
+
+            .loadedText = null,
+            .loadedJson = null,
         };
     }
 
     pub fn deinit(self: *Self) void {
+        std.debug.print("++++props.deinit\n", .{ });
         self.map.deinit();
         self.initial.deinit();
+
+        if (self.loadedJson) |json| {
+            json.deinit();
+        }
+
+        if (self.loadedText) |text| {
+            rl.unloadFileText(text);
+        }
     }
 
     pub fn get(self: *Self, name: []const u8) f64 {
+        if (self.map.get(name)) |value| {
+            std.debug.print("++++props.get {s}={}\n", .{ name, value });
+        } else {
+            std.debug.print("++++props.get {s}=null\n", .{ name });
+        }
         return self.map.get(name) orelse 0;
     }
 
     pub fn getInitial(self: *Self, name: []const u8) f64 {
+        if (self.initial.get(name)) |value| {
+            std.debug.print("++++props.getInitial {s}={}\n", .{ name, value });
+        } else {
+            std.debug.print("++++props.getInitial {s}=null\n", .{ name });
+        }
         return self.initial.get(name) orelse 0;
     }
 
     pub fn create(self: *Self, name: []const u8, value: f64) !void {
+        std.debug.print("++++props.create {s}={}\n", .{ name, value });
         try self.set(name, value);
         try self.initial.put(name, value);
     }
@@ -73,6 +105,7 @@ pub const Properties = struct {
             }
         }
         
+        std.debug.print("++++props.set {s}={}\n", .{ name, actual });
         try self.map.put(name, actual);
 
         if (!self.silent) {
@@ -82,25 +115,32 @@ pub const Properties = struct {
     }
 
     pub fn add(self: *Self, name: []const u8, value: f64) !void {
+        std.debug.print("++++props.add {s}+={}\n", .{ name, value });
         const current_value = self.get(name);
         try self.set(name, current_value + value);
     }
 
     pub fn reset(self: *Self) !void {
+        std.debug.print("++++props.reset\n", .{ });
         var it = self.initial.iterator();
         while (it.next()) |kv| {
-            try self.set(kv.key_ptr.*, kv.value_ptr.*);
+            if (!self.loaded.contains(kv.key_ptr.*)) {
+                try self.set(kv.key_ptr.*, kv.value_ptr.*);
+            }
         }
 
         var curr_it = self.map.iterator();
         while (curr_it.next()) |kv| {
-            if (!self.initial.contains(kv.key_ptr.*)) {
-                try self.set(kv.key_ptr.*, 0);
+            if (!self.loaded.contains(kv.key_ptr.*)) {
+                if (!self.initial.contains(kv.key_ptr.*)) {
+                    try self.set(kv.key_ptr.*, 0);
+                }
             }
         }
     }
 
     pub fn save(self: *Self) !void {
+        std.debug.print("++++props.save\n", .{ });
         if (self.setup) |setup| {
             var saveobj = std.json.ObjectMap.init(self.allocator);
             defer saveobj.deinit();
@@ -131,16 +171,24 @@ pub const Properties = struct {
     }
 
     pub fn load(self: *Self) !void {
+        std.debug.print("++++props.load\n", .{ });
         if (rl.fileExists(SAVE_FILENAME)) {
-            const savetext = rl.loadFileText(SAVE_FILENAME);
-            defer rl.unloadFileText(savetext);
+            if (self.loadedJson) |json| {
+                json.deinit();
+            }
 
-            const savemap = try std.json.parseFromSlice(std.json.ArrayHashMap(f64), self.allocator, savetext, .{ });
-            defer savemap.deinit();
+            if (self.loadedText) |text| {
+                rl.unloadFileText(text);
+            }
 
-            var it = savemap.value.map.iterator();
+            self.loadedText = rl.loadFileText(SAVE_FILENAME);
+            self.loadedJson = try std.json.parseFromSlice(
+                std.json.ArrayHashMap(f64), self.allocator, self.loadedText.?, .{ });
+
+            var it = self.loadedJson.?.value.map.iterator();
             while (it.next()) |kv| {
                 try self.set(kv.key_ptr.*, kv.value_ptr.*);
+                try self.loaded.put(kv.key_ptr.*, kv.value_ptr.*);
             }
         }
     }

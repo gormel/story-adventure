@@ -7,6 +7,23 @@
         "attack": 1
     },
     "save": [
-        "potion-hp-cmn"
+        "save-potion-hp-cmn",
+        "save-potion-hp-rare",
+        "save-potion-hp-epic",
+        "save-potion-stamina-cmn",
+        "save-potion-stamina-rare",
+        "save-potion-stamina-epic",
+        "save-sword-cmn",
+        "save-sword-rare",
+        "save-sword-epic",
+        "save-star-cmn",
+        "save-star-rare",
+        "save-star-epic",
+        "save-spear-cmn",
+        "save-spear-rare",
+        "save-spear-epic",
+        "save-heavy-spear-cmn",
+        "save-heavy-spear-rare",
+        "save-heavy-spear-epic"
     ]
 }

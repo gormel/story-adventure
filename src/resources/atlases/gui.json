@@ -119,6 +119,13 @@
             "y": 283,
             "w": 32,
             "h": 32
+        },
+        {
+            "name": "itemcollection-grid-bg",
+            "x": 0,
+            "y": 433,
+            "w": 441,
+            "h": 227
         }
     ],
     "animations": []

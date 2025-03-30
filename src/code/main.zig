@@ -62,7 +62,16 @@ pub fn main() !void {
         arena, item_drop_cfg_text, .{ .ignore_unknown_fields = true });
     defer item_drop_cfg_json.deinit();
 
-    var items = itm.Items.init(&items_cfg_json.value, &item_drop_cfg_json.value, &props, arena);
+    const item_progress_cfg_text = @embedFile("assets/cfg/item_progress.json");
+    var item_progress_cfg_json = try std.json.parseFromSlice(itm.ItemProgressCfg,
+        arena, item_progress_cfg_text, .{ .ignore_unknown_fields = true });
+    defer item_progress_cfg_json.deinit();
+
+    var items = itm.Items.init(
+        &items_cfg_json.value,
+        &item_drop_cfg_json.value,
+        &item_progress_cfg_json.value,
+        &props, arena);
 
     var pcg = std.Random.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
     //var pcg = std.rand.Pcg.init(123456789);
@@ -80,8 +89,10 @@ pub fn main() !void {
     //debug init end
     
     //game init systems
+    std.debug.print("++++init\n", .{});
     try game_systems.initProperties(&reg, props_json.object, &props);
     try game_systems.initScene(&reg, arena);
+    std.debug.print("++++init end\n", .{});
     //game init systems end
 
     var timer = try std.time.Timer.start();

@@ -5,11 +5,6 @@
         "children": []
     },
     {
-        "position": { "x": 160, "y": 109 },
-        "tags": [ "hud-popup-root" ],
-        "children": []
-    },
-    {
         "position": { "x": 30, "y": 30 },
         "tags": [],
         "children": [
@@ -137,5 +132,10 @@
                 "children": []
             }
         ]
+    },
+    {
+        "position": { "x": 160, "y": 109 },
+        "tags": [ "hud-popup-root" ],
+        "children": []
     }
 ]
