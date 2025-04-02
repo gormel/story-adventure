@@ -9,8 +9,8 @@ const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
 const sp = @import("../../../engine/sprite.zig");
-const main_menu = @import("../mainMenu/mainmenu.zig");
-const game_stats = @import("../gamestats/gamestats.zig");
+const mainmenu = @import("../mainmenu/mainmenu.zig");
+const gamestats = @import("../gamestats/gamestats.zig");
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
 const rcmp = @import("../../render/components.zig");
@@ -34,17 +34,17 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocat
     var continue_view = reg.view(.{ gscmp.Continue, cmp.GameStatsScene }, .{});
     var continue_iter = continue_view.entityIterator();
     while (continue_iter.next()) |entity| {
-        const gamestats = reg.get(cmp.GameStatsScene, entity);
+        const gamestats_setup = reg.get(cmp.GameStatsScene, entity);
         
-        if (!reg.has(ccmp.Destroyed, gamestats.gameover_scene)) {
-            reg.add(gamestats.gameover_scene, ccmp.Destroyed {});
+        if (!reg.has(ccmp.Destroyed, gamestats_setup.gameover_scene)) {
+            reg.add(gamestats_setup.gameover_scene, ccmp.Destroyed {});
         }
 
         reg.remove(gscmp.Continue, entity);
 
         try props.save();
 
-        try main_menu.loadScene(reg, allocator);
+        try mainmenu.loadScene(reg, allocator);
     }
 
     var gamestats_view = reg.view(.{ cmp.AttachGamestats }, .{});
@@ -52,7 +52,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocat
     while (gamestats_iter.next()) |entity| {
         const attach = reg.get(cmp.AttachGamestats, entity);
 
-        const scene_ety = try game_stats.loadScene(reg, allocator, "Game Over", false);
+        const scene_ety = try gamestats.loadScene(reg, allocator, "Game Over", false);
         reg.addOrReplace(scene_ety, rcmp.AttachTo { .target = entity });
         reg.add(scene_ety, cmp.GameStatsScene { .gameover_scene = attach.owner_scene });
 

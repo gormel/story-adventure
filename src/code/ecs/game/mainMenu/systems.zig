@@ -14,7 +14,7 @@ const rcmp = @import("../../render/components.zig");
 
 const itemcollection = @import("../itemcollection/itemcollection.zig");
 
-const initial_game_scene = "gameplay_start";
+const initial_game_scene = "gameplaystart";
 
 pub fn initGui(reg: *ecs.Registry) void {
     var view = reg.view(.{ scmp.InitGameObject }, .{});

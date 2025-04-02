@@ -1,0 +1,58 @@
+{
+    "stalls": [
+        {
+            "count": 4,
+            "group": "potion",
+            "name": "Potions",
+            "position": 1
+        },
+        {
+            "count": 4,
+            "group": "weapon",
+            "name": "Weapon",
+            "position": 2
+        },
+        {
+            "count": 4,
+            "group": "armor",
+            "name": "Armor",
+            "position": 3
+        },
+        {
+            "count": 4,
+            "group": "ammo",
+            "name": "Ammo",
+            "position": 4
+        }
+    ],
+    "prices": {
+        "potion-hp-cmn": 50,
+        "potion-hp-rare": 200,
+        "potion-hp-epic": 750,
+        "potion-stamina-cmn": 30,
+        "potion-stamina-rare": 150,
+        "potion-stamina-epic": 500,
+        "sword-cmn": 10,
+        "sword-rare": 100,
+        "sword-epic": 1000,
+        "star-cmn": 20,
+        "star-rare": 200,
+        "star-epic": 2000,
+        "spear-cmn": 40,
+        "spear-rare": 400,
+        "spear-epic": 4000,
+        "heavy-spear-cmn": 30,
+        "heavy-spear-rare": 300,
+        "heavy-spear-epic": 3000
+    },
+    "hover_view": {
+        "atlas": "resources/atlases/gui.json",
+        "sprite": "item-icon-highlight"
+    },
+    "money_property": "gold",
+    "reroll_cost": {
+        "property": "gold",
+        "base_value": 100,
+        "multiplyer": 10
+    }
+}

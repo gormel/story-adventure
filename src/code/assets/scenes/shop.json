@@ -1,0 +1,57 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "shop-init" ],
+        "children": []
+    },
+    {
+        "position": { "x": 65, "y": 201 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "shop-sign"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
+        "position": { "x": 378, "y": 203 },
+        "tags": [ "shop-stall-root-1" ],
+        "children": []
+    },
+    {
+        "position": { "x": 680, "y": 203 },
+        "tags": [ "shop-stall-root-2" ],
+        "children": []
+    },
+    {
+        "position": { "x": 378, "y": 368 },
+        "tags": [ "shop-stall-root-3" ],
+        "children": []
+    },
+    {
+        "position": { "x": 680, "y": 368 },
+        "tags": [ "shop-stall-root-4" ],
+        "children": []
+    },
+    {
+        "position": { "x": 432, "y": 533 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button-160x32"
+        },
+        "tags": [ "button", "shop-next-btn" ],
+        "children": [
+            {
+                "position": { "x": 52, "y": 10 },
+                "text": { "size": 12, "text": "GO NEXT" },
+                "tags": [  ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 292, "y": 184 },
+        "tags": [ "shop-itempopup-root" ],
+        "children": []
+    }
+]

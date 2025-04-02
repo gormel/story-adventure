@@ -9,7 +9,6 @@ const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
 const sp = @import("../../../engine/sprite.zig");
-const main_menu = @import("../mainMenu/mainmenu.zig");
 const iteminfo = @import("../iteminfo/iteminfo.zig");
 const gamestats = @import("gamestats.zig");
 

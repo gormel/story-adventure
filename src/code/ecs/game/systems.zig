@@ -8,7 +8,7 @@ const pr = @import("../../engine/properties.zig");
 const rollrate = @import("../../engine/rollrate.zig");
 const itm = @import("../../engine/items.zig");
 const gui_setup = @import("../../engine/gui_setup.zig");
-const main_menu_utils = @import("mainMenu/mainmenu.zig");
+const mainmenu_utils = @import("mainmenu/mainmenu.zig");
 const is = @import("../input/inputstack.zig");
 
 const cmp = @import("components.zig");
@@ -17,8 +17,8 @@ const icmp = @import("../input/components.zig");
 const rcmp = @import("../render/components.zig");
 const ccmp = @import("../core/components.zig");
 
-const main_menu = @import("mainMenu/systems.zig");
-const gameplay_start = @import("gameplayStart/systems.zig");
+const mainmenu = @import("mainmenu/systems.zig");
+const gameplaystart = @import("gameplaystart/systems.zig");
 const hud = @import("hud/systems.zig");
 const loot = @import("loot/systems.zig");
 const combat = @import("combat/systems.zig");
@@ -27,6 +27,7 @@ const gamestats = @import("gamestats/systems.zig");
 const gamemenu = @import("gamemenu/systems.zig");
 const iteminfo = @import("iteminfo/systems.zig");
 const itemcollection = @import("itemcollection/systems.zig");
+const shop = @import("shop/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -188,9 +189,7 @@ pub fn initProperties(reg: *ecs.Registry, json: std.json.ObjectMap, props: *pr.P
         try props.create(entry.key_ptr.*, entry.value_ptr.float);
     }
 
-    std.debug.print("++++load props\n", .{});
     try props.load();
-    std.debug.print("++++load props end\n", .{});
 }
 
 pub fn properties(reg: *ecs.Registry) void {
@@ -248,7 +247,7 @@ pub fn initScene(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     const state_entity = reg.create();
     reg.add(state_entity, cmp.GameState {});
 
-    try main_menu_utils.loadScene(reg, allocator);
+    try mainmenu_utils.loadScene(reg, allocator);
 }
 
 pub fn message(reg: *ecs.Registry, dt: f32) void {
@@ -364,9 +363,9 @@ pub fn initGameplayCustoms(
     allocator: std.mem.Allocator,
     rnd: *std.Random
 ) !void {
-    main_menu.initGui(reg);
+    mainmenu.initGui(reg);
 
-    try gameplay_start.initSwitch(reg, allocator);
+    try gameplaystart.initSwitch(reg, allocator);
 
     hud.initViews(reg);
 
@@ -377,6 +376,10 @@ pub fn initGameplayCustoms(
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
     combat.initState(reg);
+
+    try shop.initShop(reg, allocator);
+    try shop.initStall(reg);
+    try shop.initItem(reg);
 
     gamestats.initGui(reg);
     gameover.initGui(reg);
@@ -394,8 +397,8 @@ pub fn updateGameplayCustoms(
     rnd: *std.Random,
     dt: f32
 ) !void {
-    try main_menu.gui(reg, props, change, allocator);
-    gameplay_start.doSwitch(reg);
+    try mainmenu.gui(reg, props, change, allocator);
+    gameplaystart.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
     try hud.gui(reg, allocator);
 
@@ -411,6 +414,10 @@ pub fn updateGameplayCustoms(
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, rnd, allocator);
 
+    shop.scene(reg);
+    try shop.stall(reg, allocator, items, rnd, props);
+    try shop.item(reg, allocator, items, props);
+
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
     try gameover.gui(reg, props, allocator);
     try gamemenu.gui(reg, allocator);
@@ -421,6 +428,7 @@ pub fn updateGameplayCustoms(
 pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
     loot.freeLootStart(reg);
     combat.freeCombat(reg);
+    shop.free(reg);
     gamestats.free(reg);
     itemcollection.free(reg);
 }

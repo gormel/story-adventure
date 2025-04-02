@@ -2,7 +2,7 @@
 
 position: relative;
 width: 1124px;
-height: 660px;
+height: 696px;
 
 
 
@@ -17,7 +17,7 @@ top: 283px;
 background: url(popup_panel_bg.png);
 
 
-/* button */
+/* button-160x32 */
 
 position: absolute;
 width: 160px;
@@ -138,7 +138,7 @@ top: 357px;
 background: url(shread-strategy.png);
 
 
-/* button-square */
+/* button-32x32 */
 
 position: absolute;
 width: 32px;
@@ -198,7 +198,51 @@ background: url(item-icon-highlight.png);
 position: absolute;
 width: 441px;
 height: 227px;
-left: 0px;
+left: 238px;
 top: 433px;
 
 background: url(itemcollection-grid-bg.png);
+
+
+/* button-42x15 */
+
+position: absolute;
+width: 42px;
+height: 15px;
+left: 981px;
+top: 357px;
+
+background: url(button-42x15.png);
+
+
+/* stall-bg */
+
+position: absolute;
+width: 267px;
+height: 139px;
+left: 683px;
+top: 421px;
+
+background: url(stall-bg.png);
+
+
+/* stall-refresh */
+
+position: absolute;
+width: 19px;
+height: 19px;
+left: 1103px;
+top: 282px;
+
+background: url(stall-refresh.png);
+
+
+/* shop-sign */
+
+position: absolute;
+width: 238px;
+height: 263px;
+left: 0px;
+top: 433px;
+
+background: url(shop-sign.png);

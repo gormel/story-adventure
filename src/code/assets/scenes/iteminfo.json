@@ -38,7 +38,7 @@
                 "position": { "x": 141, "y": 233 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",
-                    "sprite": "button"
+                    "sprite": "button-160x32"
                 },
                 "tags": [ "button", "iteminfo-back-btn" ],
                 "children": [

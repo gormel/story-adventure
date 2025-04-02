@@ -1,0 +1,38 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "stall-bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 26, "y": 23 },
+                "tags": [ "shop-stall-items-root" ],
+                "children": []
+            },
+            {
+                "position": { "x": 83, "y": 119 },
+                "text": { "size": 15, "text": "[STALL_NAME]" },
+                "tags": [ "shop-stall-name-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 200, "y": 116 },
+                "sprite": {
+                    "atlas": "resources/atlases/gui.json",
+                    "sprite": "stall-refresh"
+                },
+                "tags": [ "button", "shop-stall-refresh-btn" ],
+                "children": []
+            },
+            {
+                "position": { "x": 225, "y": 120 },
+                "text": { "size": 15, "text": "[REROLL_COST]" },
+                "tags": [ "shop-stall-rerollcost-text" ],
+                "children": []
+            }
+        ]
+    }
+]

@@ -1,9 +1,8 @@
 fea: unique monster attack
-fea: trader scene
-* cfg: group -> count
 fea: trap scene
 fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
+fea: combat location to fill free space
 
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
@@ -11,6 +10,10 @@ ref: x5 items, x5 monsters (x3 grades for each)
 ref: resources to @embedFile()
 ref: multiple fonts for each size
 ref: extract view creation from update
+ref: loot max size x/y setup, max tile count setup
+ref: itemcollection, statistics to itemtemplate scene
+ref: "new" sign in gameover statistisc for items
+ref: reroll for resource instead of money
 
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
@@ -31,7 +34,7 @@ https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
 * поиск лута (скан территории) [+хп, -стамина, +предмет]
 * торговля (рандом с ценами как у рога в пое/в бдо) [+хп, -голд, +предмет]
 * сражение с противником (автобой с выбором стратегии) [-хп?, -стамина, +голд]
-* препядствие (выбор обойти, попробовать преодолеть за награду) [-хп?, -стамина, +предмет]
+* препядствие (выбор обойти, попробовать преодолеть за награду) [-хп?, -предмет?, -стамина, +предмет]
 
 общий механ
 * без стамины -Х хп за сцену

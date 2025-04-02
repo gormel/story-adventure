@@ -29,16 +29,16 @@ pub const RenderLayers = struct {
 
 var scenes = &.{
     .{
-        .name = "main_menu",
-        .text = @embedFile("../../assets/scenes/main_menu.json"),
+        .name = "mainmenu",
+        .text = @embedFile("../../assets/scenes/mainmenu.json"),
     },
     .{
         .name = "hud",
         .text = @embedFile("../../assets/scenes/hud.json"),
     },
     .{
-        .name = "gameplay_start",
-        .text = @embedFile("../../assets/scenes/gameplay_start.json"),
+        .name = "gameplaystart",
+        .text = @embedFile("../../assets/scenes/gameplaystart.json"),
     },
     .{
         .name = "empty",
@@ -71,6 +71,18 @@ var scenes = &.{
     .{
         .name = "itemcollection",
         .text = @embedFile("../../assets/scenes/itemcollection.json"),
+    },
+    .{
+        .name = "shop",
+        .text = @embedFile("../../assets/scenes/shop.json"),
+    },
+    .{
+        .name = "shopitemtemplate",
+        .text = @embedFile("../../assets/scenes/shopitemtemplate.json"),
+    },
+    .{
+        .name = "shopstalltemplate",
+        .text = @embedFile("../../assets/scenes/shopstalltemplate.json"),
     },
 };
 

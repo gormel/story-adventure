@@ -89,6 +89,9 @@ pub const Resources = struct {
                 };
             }
         }
+
+        const err = std.io.getStdErr();
+        try err.writer().print("ERROR: Cannot load sprite [{s}] from atlas [{s}]\n", .{ sprite_name, atlas_path });
         unreachable;
     }
 

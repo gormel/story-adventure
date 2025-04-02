@@ -1,0 +1,49 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "item-icon-bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 5, "y": 5 },
+                "tags": [ "shop-item-item-root" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 0, "y": 49 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button-42x15"
+        },
+        "tags": [ "button", "shop-item-buy-btn" ],
+        "children": [
+            {
+                "position": { "x": 8, "y": 2 },
+                "text": { "size": 12, "text": "[PRICE]" },
+                "tags": [ "shop-item-price-text" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 0, "y": 49 },
+        "sprite": {
+            "atlas": "resources/atlases/gui.json",
+            "sprite": "button-42x15"
+        },
+        "tags": [ "shop-item-sold-panel" ],
+        "children": [
+            {
+                "position": { "x": 4, "y": 2 },
+                "text": { "size": 12, "text": "SOLD" },
+                "tags": [],
+                "children": []
+            }
+        ]
+    }
+]

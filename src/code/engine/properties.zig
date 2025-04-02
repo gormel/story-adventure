@@ -55,7 +55,6 @@ pub const Properties = struct {
     }
 
     pub fn deinit(self: *Self) void {
-        std.debug.print("++++props.deinit\n", .{ });
         self.map.deinit();
         self.initial.deinit();
 
@@ -69,25 +68,14 @@ pub const Properties = struct {
     }
 
     pub fn get(self: *Self, name: []const u8) f64 {
-        if (self.map.get(name)) |value| {
-            std.debug.print("++++props.get {s}={}\n", .{ name, value });
-        } else {
-            std.debug.print("++++props.get {s}=null\n", .{ name });
-        }
         return self.map.get(name) orelse 0;
     }
 
     pub fn getInitial(self: *Self, name: []const u8) f64 {
-        if (self.initial.get(name)) |value| {
-            std.debug.print("++++props.getInitial {s}={}\n", .{ name, value });
-        } else {
-            std.debug.print("++++props.getInitial {s}=null\n", .{ name });
-        }
         return self.initial.get(name) orelse 0;
     }
 
     pub fn create(self: *Self, name: []const u8, value: f64) !void {
-        std.debug.print("++++props.create {s}={}\n", .{ name, value });
         try self.set(name, value);
         try self.initial.put(name, value);
     }
@@ -105,7 +93,6 @@ pub const Properties = struct {
             }
         }
         
-        std.debug.print("++++props.set {s}={}\n", .{ name, actual });
         try self.map.put(name, actual);
 
         if (!self.silent) {
@@ -115,13 +102,11 @@ pub const Properties = struct {
     }
 
     pub fn add(self: *Self, name: []const u8, value: f64) !void {
-        std.debug.print("++++props.add {s}+={}\n", .{ name, value });
         const current_value = self.get(name);
         try self.set(name, current_value + value);
     }
 
     pub fn reset(self: *Self) !void {
-        std.debug.print("++++props.reset\n", .{ });
         var it = self.initial.iterator();
         while (it.next()) |kv| {
             if (!self.loaded.contains(kv.key_ptr.*)) {
@@ -140,7 +125,6 @@ pub const Properties = struct {
     }
 
     pub fn save(self: *Self) !void {
-        std.debug.print("++++props.save\n", .{ });
         if (self.setup) |setup| {
             var saveobj = std.json.ObjectMap.init(self.allocator);
             defer saveobj.deinit();
@@ -171,7 +155,6 @@ pub const Properties = struct {
     }
 
     pub fn load(self: *Self) !void {
-        std.debug.print("++++props.load\n", .{ });
         if (rl.fileExists(SAVE_FILENAME)) {
             if (self.loadedJson) |json| {
                 json.deinit();

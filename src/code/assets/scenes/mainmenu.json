@@ -14,7 +14,7 @@
         "position": { "x": 432, "y": 190 },
         "sprite": {
             "atlas": "resources/atlases/gui.json",
-            "sprite": "button"
+            "sprite": "button-160x32"
         },
         "tags": [ "button", "mainmenu-startgame-btn" ],
         "children": [
@@ -30,7 +30,7 @@
         "position": { "x": 432, "y": 243 },
         "sprite": {
             "atlas": "resources/atlases/gui.json",
-            "sprite": "button"
+            "sprite": "button-160x32"
         },
         "tags": [ "button", "mainmenu-items-btn" ],
         "children": [

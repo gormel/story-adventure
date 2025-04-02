@@ -56,7 +56,7 @@
                 "position": { "x": 262, "y": 369 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",
-                    "sprite": "button"
+                    "sprite": "button-160x32"
                 },
                 "tags": [ "button", "gamestats-button-continue" ],
                 "children": [

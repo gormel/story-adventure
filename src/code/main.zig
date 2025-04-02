@@ -89,10 +89,8 @@ pub fn main() !void {
     //debug init end
     
     //game init systems
-    std.debug.print("++++init\n", .{});
     try game_systems.initProperties(&reg, props_json.object, &props);
     try game_systems.initScene(&reg, arena);
-    std.debug.print("++++init end\n", .{});
     //game init systems end
 
     var timer = try std.time.Timer.start();

@@ -117,7 +117,7 @@
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
                     "atlas": "resources/atlases/gui.json",
-                    "sprite": "button-square"
+                    "sprite": "button-32x32"
                 },
                 "tags": [ "button", "hud-gamemenu-btn" ],
                 "children": []

@@ -9,7 +9,7 @@
             "h": 42
         },
         {
-            "name": "button",
+            "name": "button-160x32",
             "x": 683,
             "y": 325,
             "w": 160,
@@ -86,7 +86,7 @@
             "h": 64
         },
         {
-            "name": "button-square",
+            "name": "button-32x32",
             "x": 1003,
             "y": 325,
             "w": 32,
@@ -122,10 +122,38 @@
         },
         {
             "name": "itemcollection-grid-bg",
-            "x": 0,
+            "x": 238,
             "y": 433,
             "w": 441,
             "h": 227
+        },
+        {
+            "name": "button-42x15",
+            "x": 981,
+            "y": 357,
+            "w": 42,
+            "h": 15
+        },
+        {
+            "name": "stall-bg",
+            "x": 683,
+            "y": 421,
+            "w": 267,
+            "h": 139
+        },
+        {
+            "name": "stall-refresh",
+            "x": 1103,
+            "y": 282,
+            "w": 19,
+            "h": 19
+        },
+        {
+            "name": "shop-sign",
+            "x": 0,
+            "y": 433,
+            "w": 238,
+            "h": 263
         }
     ],
     "animations": []
