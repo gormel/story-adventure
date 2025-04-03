@@ -3,6 +3,7 @@ fea: trap scene
 fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 fea: combat location to fill free space
+fea: "new" sign in gameover statistisc for items
 
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
@@ -11,14 +12,12 @@ ref: resources to @embedFile()
 ref: multiple fonts for each size
 ref: extract view creation from update
 ref: loot max size x/y setup, max tile count setup
-ref: itemcollection, statistics to itemtemplate scene
-ref: "new" sign in gameover statistisc for items
+ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll for resource instead of money
 
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
-fix: при очистке дерева сцены, дочерние элементы репозиционируются в 0 перед удалением и перерисовываются
-fix: плавающий, предмет не сохранился в коллекции
+fix: плавающий; предмет не сохранился в коллекции
 
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure

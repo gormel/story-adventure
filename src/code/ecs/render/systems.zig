@@ -780,6 +780,10 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
     if (reg.has(cmp.Disabled, entity)) {
         return;
     }
+    
+    if (reg.has(Destroyed, entity)) {
+        return;
+    }
 
     if (!reg.has(cmp.Hidden, entity)) {
         inline for (render_fns) |map| {
