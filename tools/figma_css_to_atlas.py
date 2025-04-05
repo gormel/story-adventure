@@ -96,7 +96,7 @@ with io.open('in.txt') as fp:
     objs = read_objs(stream)
     
     atlas = {}
-    atlas["tex"] = "resources/textures/" + objs[0]["header"] + ".png"
+    atlas["tex"] = "textures/" + objs[0]["header"] + ".png"
     atlas["sprites"] = []
     atlas["animations"] = []
     

@@ -63,6 +63,10 @@ pub const Resources = struct {
             const absolute_tex_path = try self.allocator.dupeZ(u8, try std.fs.path.join(self.allocator, &.{ exe_dir, json.value.tex }));
             defer self.allocator.free(absolute_tex_path);
             const tex = try rl.loadTexture(absolute_tex_path);
+
+            const img = rl.loadImageFromMemory(".png", &.{});
+            _ = try rl.loadTextureFromImage(img);
+            
             atlas = Atlas {
                 .cfg = json,
                 .tex = tex,

@@ -1,0 +1,132 @@
+{
+    "tex": "textures/items.png",
+    "sprites": [
+        {
+            "name": "potion-red-cmn",
+            "x": 0,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-red-rare",
+            "x": 32,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-red-epic",
+            "x": 64,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-yellow-rare",
+            "x": 32,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-yellow-epic",
+            "x": 64,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "potion-yellow-cmn",
+            "x": 0,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "star-cmn",
+            "x": 96,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "star-epic",
+            "x": 160,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "star-rare",
+            "x": 128,
+            "y": 0,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword-cmn",
+            "x": 96,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword-epic",
+            "x": 160,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "sword-rare",
+            "x": 128,
+            "y": 32,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "heavy-spear-cmn",
+            "x": 96,
+            "y": 64,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "heavy-spear-epic",
+            "x": 160,
+            "y": 64,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "heavy-spear-rare",
+            "x": 128,
+            "y": 64,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "spear-cmn",
+            "x": 96,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "spear-epic",
+            "x": 160,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        },
+        {
+            "name": "spear-rare",
+            "x": 128,
+            "y": 96,
+            "w": 32,
+            "h": 32
+        }
+    ],
+    "animations": []
+}

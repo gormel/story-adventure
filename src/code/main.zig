@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
+const assets = @import("assets");
 const sc = @import("engine/scene.zig");
 const render_systems = @import("ecs/render/systems.zig");
 const rcmp = @import("ecs/render/components.zig");
@@ -85,6 +86,10 @@ pub fn main() !void {
     var scene_prop_change_json = try std.json.parseFromSlice(
         game.ScenePropChangeCfg, arena, scene_prop_change_text, .{ .ignore_unknown_fields = true });
     //debug init
+
+    for (assets.filenames, 0..) |fnm, i| {
+        std.debug.print("{s}: {s}", .{ fnm, assets.filedatas[i] });
+    }
 
     //debug init end
     

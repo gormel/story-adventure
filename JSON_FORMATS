@@ -1,6 +1,6 @@
 atlas:
 {
-    "tex": "resources/textures/star.png",
+    "tex": "textures/star.png",
     "sprites": [
         {
             "name": "star",
