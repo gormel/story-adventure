@@ -2,7 +2,7 @@
     {
         "position": { "x": 0, "y": 0 },
         "sprite": {
-            "atlas": "resources/atlases/gui.json",
+            "atlas": "atlases/gui.json",
             "sprite": "stall-bg"
         },
         "tags": [  ],
@@ -21,7 +21,7 @@
             {
                 "position": { "x": 200, "y": 116 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "stall-refresh"
                 },
                 "tags": [ "button", "shop-stall-refresh-btn" ],

@@ -46,7 +46,7 @@
         "heavy-spear-epic": 3000
     },
     "hover_view": {
-        "atlas": "resources/atlases/gui.json",
+        "atlas": "atlases/gui.json",
         "sprite": "item-icon-highlight"
     },
     "money_property": "gold",

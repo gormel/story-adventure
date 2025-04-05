@@ -27,7 +27,7 @@ scene:
     {
         "position": { "x": 100, "y": 150 },
         "sprite": {
-            "atlas": "resources/atlases/star.json",
+            "atlas": "atlases/star.json",
             "sprite": "star"
         },
         "text": { "size": 15, "text": "abra-cadabra" },
@@ -55,7 +55,7 @@ scene_rules:
 items:
 {
     "potion-hp-small": {
-        "atlas": "resources/atlases/items.json",
+        "atlas": "atlases/items.json",
         "sprite": "potion-red",
         "parameters": {
             "health": 100,
@@ -83,7 +83,7 @@ loot_scene:
     "tiles": [
         {
             "weight": 1,
-            "atlas": "resources/tiles.json",
+            "atlas": "tiles.json",
             "sprite": "cross",
             "connections": [
                 "UP",
@@ -106,7 +106,7 @@ combat_scene:
                 "attack": 2
             },
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "attack-strategy",
                 "name": "attack"
             }
@@ -126,7 +126,7 @@ combat_scene:
                 "stamina": 0
             },
             "view": {
-                "atlas": "resources/atlases/gameplay.json",
+                "atlas": "atlases/gameplay.json",
                 "idle": "lizard-wizard-idle"
             },
             "condition": {}

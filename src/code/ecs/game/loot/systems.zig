@@ -29,7 +29,7 @@ const TileSizeY = 32;
 fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
     const fog_ety = reg.create();
     reg.add(fog_ety, rcmp.SpriteResource {
-        .atlas = "resources/atlases/gameplay.json",
+        .atlas = "atlases/gameplay.json",
         .sprite = "hidden_loot",
     });
     reg.add(fog_ety, rcmp.AttachTo {
@@ -45,7 +45,7 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
 fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs.Entity) ecs.Entity {
     const entity = reg.create();
     reg.add(entity, rcmp.SpriteResource {
-        .atlas = "resources/atlases/gameplay.json",
+        .atlas = "atlases/gameplay.json",
         .sprite = "openable",
     });
     reg.add(entity, rcmp.AttachTo {
@@ -63,7 +63,7 @@ fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs
 fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, anim: []const u8) ecs.Entity {
     const entity = reg.create();
     reg.add(entity, rcmp.FlipbookResource {
-        .atlas = "resources/atlases/gameplay.json",
+        .atlas = "atlases/gameplay.json",
         .flipbook = anim,
     });
     reg.add(entity, rcmp.AttachTo {

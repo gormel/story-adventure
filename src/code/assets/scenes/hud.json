@@ -11,7 +11,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "heart"
                 },
                 "tags": [],
@@ -32,7 +32,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "power"
                 },
                 "tags": [],
@@ -53,7 +53,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "coin"
                 },
                 "tags": [],
@@ -74,7 +74,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "shield"
                 },
                 "tags": [],
@@ -95,7 +95,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "sword"
                 },
                 "tags": [],
@@ -116,7 +116,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "button-32x32"
                 },
                 "tags": [ "button", "hud-gamemenu-btn" ],
@@ -125,7 +125,7 @@
             {
                 "position": { "x": 0, "y": 0 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "burger"
                 },
                 "tags": [  ],

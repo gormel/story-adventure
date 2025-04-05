@@ -4,19 +4,20 @@ const ecs = @import("zig-ecs");
 const assets = @import("assets");
 const sc = @import("engine/scene.zig");
 const render_systems = @import("ecs/render/systems.zig");
-const rcmp = @import("ecs/render/components.zig");
 const core_systems = @import("ecs/core/systems.zig");
-const ccmp = @import("ecs/core/components.zig");
 const input_systems = @import("ecs/input/systems.zig");
-const icmp = @import("ecs/input/components.zig");
 const scene_systems = @import("ecs/scene/systems.zig");
-const scmp = @import("ecs/scene/components.zig");
 const rs = @import("engine/resources.zig");
 const game_systems = @import("ecs/game/systems.zig");
 const pr = @import("engine/properties.zig");
 const itm = @import("engine/items.zig");
 const game = @import("ecs/game/utils.zig");
 const is = @import("ecs/input/inputstack.zig");
+
+const rcmp = @import("ecs/render/components.zig");
+const ccmp = @import("ecs/core/components.zig");
+const icmp = @import("ecs/input/components.zig");
+const scmp = @import("ecs/scene/components.zig");
 
 const props_text = @embedFile("assets/cfg/player_properties.json");
 const rules_text = @embedFile("assets/cfg/scene_rules.json");
@@ -39,7 +40,7 @@ pub fn main() !void {
     defer arena_allocator.deinit();
     const arena = arena_allocator.allocator();
 
-    var res = rs.Resources.init(arena);
+    var res = try rs.Resources.init(arena);
 
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
@@ -86,10 +87,6 @@ pub fn main() !void {
     var scene_prop_change_json = try std.json.parseFromSlice(
         game.ScenePropChangeCfg, arena, scene_prop_change_text, .{ .ignore_unknown_fields = true });
     //debug init
-
-    for (assets.filenames, 0..) |fnm, i| {
-        std.debug.print("{s}: {s}", .{ fnm, assets.filedatas[i] });
-    }
 
     //debug init end
     

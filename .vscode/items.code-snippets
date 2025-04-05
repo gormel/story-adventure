@@ -4,7 +4,7 @@
         "scope": "json",
         "body": [
             "\"${1:item-name}\": {",
-            "\t\"atlas\": \"resources/atlases/items.json\",",
+            "\t\"atlas\": \"atlases/items.json\",",
             "\t\"sprite\": \"${2:item-sprite}\",",
             "\t\"parameters\": {",
             "\t\t$0",

@@ -1,74 +1,73 @@
 const std = @import("std");
 const rl = @import("raylib");
+const assets = @import("assets");
 const sp = @import("sprite.zig");
+
+pub const Error = error {
+    AssetFileNotFound,
+    UnknownTextureFormat,
+    SpriteNotFound,
+};
 
 pub const Resources = struct {
     const Atlas = struct {
         cfg: std.json.Parsed(sp.AtlasCfg),
+        img: rl.Image,
         tex: rl.Texture2D,
     };
 
     atlases: std.StringHashMap(Atlas),
-    jsons: std.StringHashMap(std.json.Value),
-    json_texts: std.ArrayList([]u8),
+    assets: std.StringHashMap([]const u8),
     allocator: std.mem.Allocator,
 
-    pub fn init(allocator: std.mem.Allocator) Resources {
+    pub fn init(allocator: std.mem.Allocator) !Resources {
+        var assetmap = std.StringHashMap([]const u8).init(allocator);
+        for (assets.filenames, 0..) |fname, i| {
+            try assetmap.put(fname, assets.filedatas[i]);
+        }
+
         return Resources {
             .allocator = allocator,
             .atlases = std.StringHashMap(Atlas).init(allocator),
-            .jsons = std.StringHashMap(std.json.Value).init(allocator),
-            .json_texts = std.ArrayList([]u8).init(allocator),
+            .assets = assetmap,
         };
     }
-    
-    pub fn loadJson(self: *Resources, json_path: []const u8) !std.json.Value {
-        if (self.jsons.get(json_path)) |json| {
-            return json;
-        } else {
-            const exe_dir = try std.fs.selfExeDirPathAlloc(self.allocator);
-            defer self.allocator.free(exe_dir);
-            const absolute_json_path = try std.fs.path.join(self.allocator, &.{ exe_dir, json_path });
-            defer self.allocator.free(absolute_json_path);
 
-            const file = try std.fs.openFileAbsolute(absolute_json_path, .{});
-            defer file.close();
-            const text = try file.readToEndAlloc(self.allocator, 1024 * 1024 * 5);
-            try self.json_texts.append(text);
-            var scanner = std.json.Scanner.initCompleteInput(self.allocator, text);
-            defer scanner.deinit();
-            const json = try std.json.Value.jsonParse(self.allocator, &scanner, .{});
-
-            try self.jsons.put(json_path, json);
-
-            return json;
+    fn getAssetData(self: *Resources, asset_path: []const u8) ![]const u8 {
+        const normalized_asset_path = try self.allocator.dupe(u8, asset_path);
+        
+        if (std.fs.path.sep == '/') {
+            std.mem.replaceScalar(u8, normalized_asset_path, '\\', std.fs.path.sep);
+        } else if (std.fs.path.sep == '\\') {
+            std.mem.replaceScalar(u8, normalized_asset_path, '/', std.fs.path.sep);
         }
-        unreachable;
+
+        if (self.assets.get(normalized_asset_path)) |assetdata| {
+            return assetdata;
+        }
+
+        const err = std.io.getStdErr().writer();
+        try err.print("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
+        return Error.AssetFileNotFound;
     }
 
     fn getAtlas(self: *Resources, atlas_path: []const u8) !Atlas {
         var atlas = self.atlases.get(atlas_path);
         if (atlas == null) {
-            const exe_dir = try std.fs.selfExeDirPathAlloc(self.allocator);
-            defer self.allocator.free(exe_dir);
-            const absolute_atlas_path = try std.fs.path.join(self.allocator, &.{ exe_dir, atlas_path });
-            defer self.allocator.free(absolute_atlas_path);
-
-            const file = try std.fs.openFileAbsolute(absolute_atlas_path, .{});
-            defer file.close();
-            const text = try file.readToEndAlloc(self.allocator, 1024 * 1024 * 5);
-            defer self.allocator.free(text);
+            const text = try self.getAssetData(atlas_path);
             const json = try std.json.parseFromSlice(sp.AtlasCfg, self.allocator, text, .{ .ignore_unknown_fields = true });
 
-            const absolute_tex_path = try self.allocator.dupeZ(u8, try std.fs.path.join(self.allocator, &.{ exe_dir, json.value.tex }));
-            defer self.allocator.free(absolute_tex_path);
-            const tex = try rl.loadTexture(absolute_tex_path);
-
-            const img = rl.loadImageFromMemory(".png", &.{});
-            _ = try rl.loadTextureFromImage(img);
+            const tex_path = json.value.tex;
+            const ext = std.fs.path.extension(tex_path);
+            const extz = try self.allocator.dupeZ(u8, ext);
+            defer self.allocator.free(extz);
+            const img_data = try self.getAssetData(tex_path);
+            const img = try rl.loadImageFromMemory(extz, img_data);
+            const tex = try rl.loadTextureFromImage(img);
             
             atlas = Atlas {
                 .cfg = json,
+                .img = img,
                 .tex = tex,
             };
             try self.atlases.put(atlas_path, atlas.?);
@@ -94,9 +93,9 @@ pub const Resources = struct {
             }
         }
 
-        const err = std.io.getStdErr();
-        try err.writer().print("ERROR: Cannot load sprite [{s}] from atlas [{s}]\n", .{ sprite_name, atlas_path });
-        unreachable;
+        const err = std.io.getStdErr().writer();
+        try err.print("ERROR: Cannot load sprite [{s}] from atlas [{s}]\n", .{ sprite_name, atlas_path });
+        return Error.SpriteNotFound;
     }
 
     pub fn loadFlipbook(self: *Resources, atlas_path: []const u8, flipbook_name: []const u8) !sp.Flipbook {
@@ -122,29 +121,14 @@ pub const Resources = struct {
     }
 
     pub fn deinit(self: *Resources) void {
-        const it = self.atlases.iterator();
-        while (it.next()) | pair | {
-            rl.unloadTexture(pair.value_ptr.tex);
-            pair.value_ptr.cfg.deinit();
+        const atlas_it = self.atlases.iterator();
+        while (atlas_it.next()) |kv| {
+            rl.unloadTexture(kv.value_ptr.tex);
+            rl.unloadImage(kv.value_ptr.img);
+            kv.value_ptr.cfg.deinit();
         }
+
         self.atlases.deinit();
-
-        self.jsons.deinit();
-
-        for (self.json_texts.items) |str| {
-            self.allocator.free(str);
-        }
+        self.assets.deinit();
     }
 };
-
-test "resource allocations" {
-    const except = std.testing.expect;
-    const allocator = std.testing.allocator;
-    
-    var res = Resources.init(allocator);
-    defer res.deinit();
-
-    const path = try std.fs.path.join(allocator, &.{ "resources", "atlases", "star.json" });
-    _ = res.loadSprite(path, "star");
-    except(false);
-}

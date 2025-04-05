@@ -7,7 +7,7 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "attack-strategy",
                 "name": "Attack"
             },
@@ -22,7 +22,7 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "double-attack-strategy",
                 "name": "Rage Attack"
             },
@@ -37,7 +37,7 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "double-attack-strategy",
                 "name": "Double Attack"
             },
@@ -52,7 +52,7 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "defence-strategy",
                 "name": "Defence"
             },
@@ -67,7 +67,7 @@
                 "armor": 0.5
             },
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "shread-strategy",
                 "name": "Shread"
             },
@@ -84,7 +84,7 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "resources/atlases/gui.json",
+                "atlas": "atlases/gui.json",
                 "icon": "attack-strategy",
                 "name": "Heavy"
             },
@@ -107,7 +107,7 @@
                 "stamina": 0
             },
             "view": {
-                "atlas": "resources/atlases/gameplay.json",
+                "atlas": "atlases/gameplay.json",
                 "idle": "enemy_lizard_wizard"
             },
             "condition": {},
@@ -118,11 +118,11 @@
         }
     ],
     "hero_view": {
-        "atlas": "resources/atlases/gameplay.json",
+        "atlas": "atlases/gameplay.json",
         "idle": "anm-hero_right-1-2"
     },
     "attack_view": {
-        "atlas": "resources/atlases/gameplay.json",
+        "atlas": "atlases/gameplay.json",
         "effect": "attack_effect"
     }
 }

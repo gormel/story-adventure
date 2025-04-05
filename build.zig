@@ -17,21 +17,26 @@ fn addAssetsOption(
     var buf: [std.fs.max_path_bytes]u8 = undefined;
     const path = try std.fs.cwd().realpath("src/code/assets", buf[0..]);
 
-    var dir = try std.fs.openDirAbsolute(path, .{ .iterate=true });
-    var it = dir.iterate();
-    while (try it.next()) |file| {
-        if (file.kind != .file) {
+    var dir = try std.fs.openDirAbsolute(path, .{ .iterate = true });
+    defer dir.close();
+
+    var it = try dir.walk(b.allocator);
+    while (try it.next()) |entry| {
+        if (entry.kind != .file) {
             continue;
         }
 
-        const fp = try std.fs.openFileAbsolute(file.name, .{});
+        const fp = try entry.dir.openFile(entry.basename, .{});
         defer fp.close();
         
-        fp.readAll()
+        const meta = try fp.metadata();
+        const fbuf: [] u8 = try b.allocator.alloc(u8, meta.size());
+        defer b.allocator.free(fbuf);
 
-        try files.append(b.dupe(file.name));
-        try filedatas.append(filedata);
-        
+        const read = try fp.readAll(fbuf);
+
+        try files.append(b.dupe(entry.path));
+        try filedatas.append(b.dupe(fbuf[0..read]));
     }
 
     options.addOption([]const []const u8, "filenames", files.items);

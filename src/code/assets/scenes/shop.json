@@ -7,7 +7,7 @@
     {
         "position": { "x": 65, "y": 201 },
         "sprite": {
-            "atlas": "resources/atlases/gui.json",
+            "atlas": "atlases/gui.json",
             "sprite": "shop-sign"
         },
         "tags": [  ],
@@ -36,7 +36,7 @@
     {
         "position": { "x": 432, "y": 533 },
         "sprite": {
-            "atlas": "resources/atlases/gui.json",
+            "atlas": "atlases/gui.json",
             "sprite": "button-160x32"
         },
         "tags": [ "button", "shop-next-btn" ],

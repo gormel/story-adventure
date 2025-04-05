@@ -8,12 +8,12 @@ fea: "new" sign in gameover statistisc for items
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
-ref: resources to @embedFile()
 ref: multiple fonts for each size
 ref: extract view creation from update
 ref: loot max size x/y setup, max tile count setup
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll for resource instead of money
+ref: move atlas + sprite setup to loot config
 
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink

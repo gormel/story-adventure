@@ -2,7 +2,7 @@
     {
         "position": { "x": 0, "y": 0 },
         "sprite": {
-            "atlas": "resources/atlases/gui.json",
+            "atlas": "atlases/gui.json",
             "sprite": "popup_bg"
         },
         "tags": [  ],
@@ -16,7 +16,7 @@
             {
                 "position": { "x": 261, "y": 131 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-continue-btn" ],
@@ -32,7 +32,7 @@
             {
                 "position": { "x": 261, "y": 177 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-items-btn" ],
@@ -48,7 +48,7 @@
             {
                 "position": { "x": 261, "y": 223 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-settings-btn" ],
@@ -64,7 +64,7 @@
             {
                 "position": { "x": 261, "y": 269 },
                 "sprite": {
-                    "atlas": "resources/atlases/gui.json",
+                    "atlas": "atlases/gui.json",
                     "sprite": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-exit-btn" ],
