@@ -4,15 +4,17 @@ fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 fea: combat location to fill free space
 fea: "new" sign in gameover statistisc for items
+fea: combat completion screen + disable travel icon in combat
+fea: game intro + scene story intro
 
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
 ref: multiple fonts for each size
 ref: extract view creation from update
-ref: loot max size x/y setup, max tile count setup
+ref: loot max size x/y setup; min, max tile count setup
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
-ref: reroll for resource instead of money
+ref: reroll in store for resource instead of money
 ref: move atlas + sprite setup to loot config
 
 fix: loot hero move animations: up-down

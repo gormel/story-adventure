@@ -4,12 +4,6 @@ const ecs = @import("zig-ecs");
 const easing = @import("easing.zig");
 const sp = @import("../../engine/sprite.zig");
 
-pub const SpriteResource = struct { atlas: []const u8, sprite: []const u8 };
-pub const Sprite = struct { sprite: sp.Sprite };
-
-pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
-pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
-
 pub const ColorComponent = enum {
     R,
     G,
@@ -28,6 +22,17 @@ pub const ColorComponent = enum {
     RGBA,
 };
 pub const Axis = enum { X, Y, XY };
+
+pub const SpriteResource = struct { atlas: []const u8, sprite: []const u8 };
+pub const Sprite = struct { sprite: sp.Sprite };
+
+pub const FlipbookRepeat = enum { OnceFreeze, OnceRemove, Repeat };
+
+pub const FlipbookSetup = struct { repeat: FlipbookRepeat };
+pub const FlipbookResource = struct { atlas: []const u8, flipbook: []const u8 };
+pub const Flipbook = struct { flipbook: sp.Flipbook, time: f64 };
+pub const FlipbookFrozen = struct {};
+
 pub const TweenRepeat = enum {
     OnceForward,
     OnceReverse,

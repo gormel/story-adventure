@@ -558,12 +558,24 @@ pub fn blink(reg: *ecs.Registry, dt: f32) void {
 }
 
 pub fn updateFlipbook(reg: *ecs.Registry, dt: f64) void {
-    var iter = reg.entityIterator(cmp.Flipbook);
-    while (iter.next()) |entity| {
+    var upd_view = reg.view(.{ cmp.Flipbook }, .{ cmp.FlipbookFrozen });
+    var upd_iter = upd_view.entityIterator();
+    while (upd_iter.next()) |entity| {
         const flipbook = reg.get(cmp.Flipbook, entity);
         flipbook.time -= dt;
         if (flipbook.time <= 0) {
-            flipbook.time = flipbook.flipbook.duration;
+            if (reg.tryGet(cmp.FlipbookSetup, entity)) |setup| {
+                switch (setup.repeat) {
+                    .OnceFreeze => {
+                        flipbook.time = 0;
+                        reg.add(entity, cmp.FlipbookFrozen {});
+                    },
+                    .OnceRemove => { reg.add(entity, Destroyed {}); },
+                    .Repeat => { flipbook.time = flipbook.flipbook.duration; },
+                }
+            } else {
+                flipbook.time = flipbook.flipbook.duration;
+            }
         }
     }
 }
