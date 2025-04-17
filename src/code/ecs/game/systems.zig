@@ -51,6 +51,10 @@ pub fn initButton(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "button")) {
             reg.add(entity, cmp.CreateButton {});
         }
+
+        if (utils.containsTag(init.tags, "button-text")) {
+            reg.add(entity, rcmp.SetTextColor { .color = gui_setup.ColorButtonText });
+        }
     }
 }
 
@@ -209,15 +213,15 @@ pub fn properties(reg: *ecs.Registry) void {
     }
 }
 
-fn checkNames(a: ?[]const u8, b: ?[]const u8) bool {
-    if (a != null) {
-        if (b != null) {
-            return std.mem.eql(u8, a.?, b.?);
+fn checkNames(a_n: ?[]const u8, b_n: ?[]const u8) bool {
+    if (a_n) |a| {
+        if (b_n) |b| {
+            return std.mem.eql(u8, a, b);
         } else {
             return false;
         }
     } else {
-        if (b != null) {
+        if (b_n) |_| {
             return false;
         } else {
             return true;
@@ -307,6 +311,13 @@ pub fn message(reg: *ecs.Registry, dt: f32) void {
     }
 }
 
+fn applyExitChangeProps(cfg: game.ScenePropChangeItemCfg, props: *pr.Properties) !void {
+    var change_iter = cfg.exit.map.iterator();
+    while (change_iter.next()) |change_kv| {
+        try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+    }
+}
+
 pub fn changeScene(
     reg: *ecs.Registry,
     props: *pr.Properties,
@@ -339,11 +350,12 @@ pub fn changeScene(
             if (roll) |ok_roll| {
                 reg.add(entity, ccmp.Destroyed {});
 
+                if (change.map.get(game.ALL_SCENES_PROPERTY_CHANGE_NAME)) |change_item| {
+                    try applyExitChangeProps(change_item, props);
+                }
+
                 if (change.map.get(scene_name)) |change_item| {
-                    var change_iter = change_item.exit.map.iterator();
-                    while (change_iter.next()) |change_kv| {
-                        try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
-                    }
+                    try applyExitChangeProps(change_item, props);
                 }
 
                 _ = try game.loadScene(reg, allocator, ok_roll.result_scene, .{

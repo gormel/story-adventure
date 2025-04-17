@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const easing = @import("easing.zig");
 const sp = @import("../../engine/sprite.zig");
+const rs = @import("../../engine/resources.zig");
 
 pub const ColorComponent = enum {
     R,
@@ -64,6 +65,7 @@ pub const SolidRectOffset = struct { x: f32, y: f32 };
 pub const SetSolidRectColor = struct { color: rl.Color };
 pub const SolidColorRectUpdated = struct {};
 
+pub const FontHolder = struct { resources: *rs.Resources };
 pub const Text = struct { text: [:0]const u8, color: rl.Color, size: f32, free: bool = false };
 pub const TextOffset = struct { x: f32, y: f32 };
 pub const SetTextColor = struct { color: rl.Color };

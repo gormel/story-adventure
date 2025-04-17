@@ -2,10 +2,12 @@ const std = @import("std");
 const rl = @import("raylib");
 
 pub const ColorPanel = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
-pub const ColorPanelTitle = rl.Color { .r = 255, .g = 255, .b = 255, .a = 255 };
-pub const ColorPanelInfo = rl.Color { .r = 255, .g = 255, .b = 255, .a = 255 };
+pub const ColorPanelTitle = rl.Color { .r = 255, .g = 227, .b = 197, .a = 255 };
+pub const ColorPanelInfo = rl.Color { .r = 255, .g = 227, .b = 197, .a = 255 };
+pub const ColorPanelSmallTitle = rl.Color { .r = 255, .g = 244, .b = 230, .a = 255 };
+pub const ColorPanelSmallInfo = rl.Color { .r = 255, .g = 244, .b = 230, .a = 255 };
 pub const ColorButton = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
-pub const ColorButtonText = rl.Color { .r = 80, .g = 196, .b = 237, .a = 255 };
+pub const ColorButtonText = rl.Color { .r = 99, .g = 44, .b = 14, .a = 255 };
 pub const ColorLabelBg = rl.Color { .r = 56, .g = 122, .b = 223, .a = 255 };
 pub const ColorLabelText = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 
@@ -17,6 +19,7 @@ pub const SizeButtonSmall = rl.Rectangle { .x = 0, .y = 0, .width = 20, .height 
 
 pub const SizeWindow = rl.Rectangle { .x = 0, .y = 0, .width = 200, .height = 180 };
 
+pub const FontDefault = "fonts/Kavoon-Regular.ttf";
 pub const SizeText = 10;
 pub const SizeTextBig = 15;
 

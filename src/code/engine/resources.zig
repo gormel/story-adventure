@@ -16,6 +16,7 @@ pub const Resources = struct {
         tex: rl.Texture2D,
     };
 
+    fonts: std.StringHashMap(std.AutoHashMap(i32, rl.Font)),
     atlases: std.StringHashMap(Atlas),
     assets: std.StringHashMap([]const u8),
     allocator: std.mem.Allocator,
@@ -30,11 +31,13 @@ pub const Resources = struct {
             .allocator = allocator,
             .atlases = std.StringHashMap(Atlas).init(allocator),
             .assets = assetmap,
+            .fonts = std.StringHashMap(std.AutoHashMap(i32, rl.Font)).init(allocator),
         };
     }
 
     fn getAssetData(self: *Resources, asset_path: []const u8) ![]const u8 {
         const normalized_asset_path = try self.allocator.dupe(u8, asset_path);
+        defer self.allocator.free(normalized_asset_path);
         
         if (std.fs.path.sep == '/') {
             std.mem.replaceScalar(u8, normalized_asset_path, '\\', std.fs.path.sep);
@@ -49,6 +52,31 @@ pub const Resources = struct {
         const err = std.io.getStdErr().writer();
         try err.print("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
         return Error.AssetFileNotFound;
+    }
+
+    pub fn loadFont(self: *Resources, font_path: []const u8, font_size: i32) !rl.Font {
+        if (self.fonts.get(font_path)) |size_map| {
+            if (size_map.get(font_size)) |font| {
+                return font;
+            }
+        }
+            
+        const ext = std.fs.path.extension(font_path);
+        const extz = try self.allocator.dupeZ(u8, ext);
+        defer self.allocator.free(extz);
+        
+        const font_data = try self.getAssetData(font_path);
+        const font = try rl.loadFontFromMemory(extz, font_data, font_size, null);
+
+        if (self.fonts.getPtr(font_path)) |size_map| {
+            try size_map.put(font_size, font);
+            return font;
+        }
+
+        var size_map = std.AutoHashMap(i32, rl.Font).init(self.allocator);
+        try self.fonts.put(font_path, size_map);
+        try size_map.put(font_size, font);
+        return font;
     }
 
     fn getAtlas(self: *Resources, atlas_path: []const u8) !Atlas {
@@ -94,7 +122,7 @@ pub const Resources = struct {
         }
 
         const err = std.io.getStdErr().writer();
-        try err.print("ERROR: Cannot load sprite [{s}] from atlas [{s}]\n", .{ sprite_name, atlas_path });
+        try err.print("ERROR: Cannot load sprite \"{s}\" from atlas \"{s}\"\n", .{ sprite_name, atlas_path });
         return Error.SpriteNotFound;
     }
 
@@ -128,7 +156,17 @@ pub const Resources = struct {
             kv.value_ptr.cfg.deinit();
         }
 
+        const font_it = self.fonts.iterator();
+        while (font_it.next()) |path_kv| {
+            const size_it = path_kv.value_ptr.iterator();
+            while (size_it.next()) |font_kv| {
+                rl.unloadFont(font_kv.value_ptr.*);
+            }
+            path_kv.value_ptr.deinit();
+        }
+
         self.atlases.deinit();
         self.assets.deinit();
+        self.fonts.deinit();
     }
 };

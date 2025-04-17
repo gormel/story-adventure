@@ -1,15 +1,25 @@
 const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
-const cmp = @import("components.zig");
-const Destroyed = @import("../core/components.zig").Destroyed;
-const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
+const assets = @import("assets");
+const easing = @import("easing.zig");
 const rs = @import("../../engine/resources.zig");
 const qu = @import("../../engine/queue.zig");
 const utils = @import("../../engine/utils.zig");
-const easing = @import("easing.zig");
+const gui_setup = @import("../../engine/gui_setup.zig");
+const cmp = @import("components.zig");
+const Destroyed = @import("../core/components.zig").Destroyed;
+const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
 
-const NoParentGlobalTransform = error{ NoParentGlobalTransform };
+const NoParentGlobalTransform = error { NoParentGlobalTransform };
+
+pub fn initFont(reg: *ecs.Registry, res: *rs.Resources) void {
+    const holder_ety = reg.create();
+
+    reg.add(holder_ety, cmp.FontHolder {
+        .resources = res,
+    });
+}
 
 pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var sprite_view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
@@ -776,7 +786,16 @@ fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const position = rl.Vector2 { .x = pos.x, .y = pos.y };
 
     if (text.text.len > 0) {
-        const font = try rl.getFontDefault();
+        var font = try rl.getFontDefault();
+
+        var font_iter = reg.entityIterator(cmp.FontHolder);
+        while (font_iter.next()) |font_ety| {
+            const holder = reg.get(cmp.FontHolder, font_ety);
+            const text_size = @as(i32, @intFromFloat(text.size));
+            font = try holder.resources.loadFont(gui_setup.FontDefault, text_size);
+            break;
+        }
+        
         rl.drawTextPro(font, text.text, position, origin, rot.a, text.size, 3, color);
     }
 }

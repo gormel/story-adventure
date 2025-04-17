@@ -11,6 +11,8 @@ const rcmp = @import("../render/components.zig");
 const gcmp = @import("../game/components.zig");
 const ccmp = @import("../core/components.zig");
 
+pub const ALL_SCENES_PROPERTY_CHANGE_NAME = "*";
+
 pub const ScenePropChangeItemCfg = struct {
     enter: std.json.ArrayHashMap(f64),
     exit: std.json.ArrayHashMap(f64),
@@ -25,6 +27,10 @@ pub const LoadSceneAdditionalArgs = struct {
 pub const RenderLayers = struct {
     pub const GAMEPLAY = 1;
     pub const HUD = 2;
+};
+
+pub const Error = error {
+    UnknownScene,
 };
 
 var scenes = &.{
@@ -121,7 +127,19 @@ pub fn selectNextScene(reg: *ecs.Registry) void {
     }
 }
 
-pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const u8, additional: LoadSceneAdditionalArgs) !ecs.Entity {
+fn applyEnterChangeProps(cfg: ScenePropChangeItemCfg, props: *pr.Properties) !void {
+    var change_iter = cfg.enter.map.iterator();
+    while (change_iter.next()) |change_kv| {
+        try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
+    }
+}
+
+pub fn loadScene(
+    reg: *ecs.Registry,
+    allocator: std.mem.Allocator,
+    name: []const u8,
+    additional: LoadSceneAdditionalArgs
+) !ecs.Entity {
     inline for (scenes) |scene_desc| {
         if (std.mem.eql(u8, name, scene_desc.name)) {
             const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
@@ -133,12 +151,13 @@ pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const
             reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
 
             if (additional.change) |change| {
-                if (change.map.get(name)) |change_item| {
-                    if (additional.props) |props| {
-                        var change_iter = change_item.enter.map.iterator();
-                        while (change_iter.next()) |change_kv| {
-                            try props.add(change_kv.key_ptr.*, change_kv.value_ptr.*);
-                        }
+                if (additional.props) |props| {
+                    if (change.map.get(ALL_SCENES_PROPERTY_CHANGE_NAME)) |change_item| {
+                        try applyEnterChangeProps(change_item, props);
+                    }
+
+                    if (change.map.get(name)) |change_item| {
+                        try applyEnterChangeProps(change_item, props);
                     }
                 }
             }
@@ -147,7 +166,10 @@ pub fn loadScene(reg: *ecs.Registry, allocator: std.mem.Allocator, name: []const
         }
     }
 
-    unreachable;
+    var err = std.io.getStdErr().writer();
+    try err.print("ERROR: Cannot find scene \"{s}\".\n", .{ name });
+
+    return Error.UnknownScene;
 }
 
 pub fn queryScene(reg: *ecs.Registry, obj_entity: ecs.Entity) ?ecs.Entity {
@@ -161,5 +183,6 @@ pub fn queryScene(reg: *ecs.Registry, obj_entity: ecs.Entity) ?ecs.Entity {
             caret = null;
         }
     }
+
     return caret;
 }

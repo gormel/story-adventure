@@ -20,7 +20,7 @@
             {
                 "position": { "x": 51, "y": 9 },
                 "text": { "size": 12, "text": "GO NEXT" },
-                "tags": [],
+                "tags": [ "button-text" ],
                 "children": []
             }
         ]

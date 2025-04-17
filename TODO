@@ -6,17 +6,25 @@ fea: combat location to fill free space
 fea: "new" sign in gameover statistisc for items
 fea: combat completion screen + disable travel icon in combat
 fea: game intro + scene story intro
+fea: charge device, charge artifacts, consumables
+fea: layout text (H/V/HV)
 
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
-ref: multiple fonts for each size
 ref: extract view creation from update
 ref: loot max size x/y setup; min, max tile count setup
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money
 ref: move atlas + sprite setup to loot config
+ref: combat strategy replace on cost failure
+ref: images
+* main screen
+* loot screen: 
+* combat screen: open space, floating islands on background, some trees on sides
+* trader screen
 
+fix: покупка зелий хп
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
 fix: плавающий; предмет не сохранился в коллекции
@@ -39,7 +47,7 @@ https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
 
 общий механ
 * без стамины -Х хп за сцену
-* каждый переход требует стамину??
+* каждый переход требует заряда
 
 --------------------------------------
 страна (население, еда, казна, популярность)

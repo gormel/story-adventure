@@ -44,8 +44,8 @@
                 "children": [
                     {
                         "position": { "x": 68, "y": 10 },
-                        "text": { "size": 10, "text": "Back" },
-                        "tags": [  ],
+                        "text": { "size": 12, "text": "Back" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]

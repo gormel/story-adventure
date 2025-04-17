@@ -37,9 +37,9 @@
                 "tags": [ "button", "itemcollection-continue-btn" ],
                 "children": [
                     {
-                        "position": { "x": 58, "y": 10 },
-                        "text": { "size": 10, "text": "Continue" },
-                        "tags": [  ],
+                        "position": { "x": 50, "y": 10 },
+                        "text": { "size": 12, "text": "Continue" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]

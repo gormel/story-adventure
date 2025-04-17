@@ -4,6 +4,7 @@
     "gold": 0.0,
     "attack": 10.0,
     "armor": 0.0,
+    "charge": 1.0,
     
     "scene_depth": 0.0,
     "kill_count": 0.0,

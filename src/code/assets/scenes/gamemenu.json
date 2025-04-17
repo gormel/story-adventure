@@ -22,9 +22,9 @@
                 "tags": [ "button", "gamemenu-continue-btn" ],
                 "children": [
                     {
-                        "position": { "x": 58, "y": 10 },
-                        "text": { "size": 10, "text": "Continue" },
-                        "tags": [  ],
+                        "position": { "x": 50, "y": 10 },
+                        "text": { "size": 12, "text": "Continue" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]
@@ -38,9 +38,9 @@
                 "tags": [ "button", "gamemenu-items-btn" ],
                 "children": [
                     {
-                        "position": { "x": 66, "y": 10 },
-                        "text": { "size": 10, "text": "Items" },
-                        "tags": [  ],
+                        "position": { "x": 62, "y": 10 },
+                        "text": { "size": 12, "text": "Items" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]
@@ -54,9 +54,9 @@
                 "tags": [ "button", "gamemenu-settings-btn" ],
                 "children": [
                     {
-                        "position": { "x": 60, "y": 10 },
-                        "text": { "size": 10, "text": "Settings" },
-                        "tags": [  ],
+                        "position": { "x": 53, "y": 10 },
+                        "text": { "size": 12, "text": "Settings" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]
@@ -70,9 +70,9 @@
                 "tags": [ "button", "gamemenu-exit-btn" ],
                 "children": [
                     {
-                        "position": { "x": 53, "y": 10 },
-                        "text": { "size": 10, "text": "Main Menu" },
-                        "tags": [  ],
+                        "position": { "x": 43, "y": 10 },
+                        "text": { "size": 12, "text": "Main Menu" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]

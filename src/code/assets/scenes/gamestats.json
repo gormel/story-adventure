@@ -14,8 +14,8 @@
                 "children": []
             },
             {
-                "position": { "x": 163, "y": 112 },
-                "text": { "size": 10, "text": "Items:" },
+                "position": { "x": 144, "y": 108 },
+                "text": { "size": 15, "text": "Items:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
@@ -29,26 +29,26 @@
                 "children": []
             },
             {
-                "position": { "x": 161, "y": 152 },
-                "text": { "size": 10, "text": "Depth:" },
+                "position": { "x": 144, "y": 159 },
+                "text": { "size": 15, "text": "Depth:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
             {
-                "position": { "x": 205, "y": 152 },
-                "text": { "size": 10, "text": "[DEPTH]" },
+                "position": { "x": 194, "y": 159 },
+                "text": { "size": 15, "text": "[DEPTH]" },
                 "tags": [ "gamestats-info-name-text", "gamestats-depth-text" ],
                 "children": []
             },
             {
-                "position": { "x": 167, "y": 182 },
-                "text": { "size": 10, "text": "Slain:" },
+                "position": { "x": 149, "y": 210 },
+                "text": { "size": 15, "text": "Slain:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
             },
             {
-                "position": { "x": 205, "y": 182 },
-                "text": { "size": 10, "text": "[SLAIN_COUNT]" },
+                "position": { "x": 194, "y": 210 },
+                "text": { "size": 15, "text": "[SLAIN_COUNT]" },
                 "tags": [ "gamestats-info-name-text", "gamestats-slain-text" ],
                 "children": []
             },
@@ -61,9 +61,9 @@
                 "tags": [ "button", "gamestats-button-continue" ],
                 "children": [
                     {
-                        "position": { "x": 49, "y": 12 },
-                        "text": { "size": 10, "text": "Continue" },
-                        "tags": [  ],
+                        "position": { "x": 50, "y": 12 },
+                        "text": { "size": 12, "text": "Continue" },
+                        "tags": [ "button-text" ],
                         "children": []
                     }
                 ]

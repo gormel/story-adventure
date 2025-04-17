@@ -93,6 +93,7 @@ pub fn main() !void {
     //game init systems
     try game_systems.initProperties(&reg, props_json.object, &props);
     try game_systems.initScene(&reg, arena);
+    render_systems.initFont(&reg, &res);
     //game init systems end
 
     var timer = try std.time.Timer.start();
@@ -153,4 +154,8 @@ pub fn main() !void {
         try render_systems.destroyChildren(&reg);
         core_systems.destroy(&reg);
     }
+
+    //gameplay free
+
+    //gameplay free end
 }

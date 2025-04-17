@@ -100,7 +100,7 @@ pub fn build(b: *std.Build) !void {
     ) orelse false;
     exe.root_module.strip = strip;
 
-    addAssetsOption(b, exe, target, optimize) catch |e| { std.log.err("ERROR: Cannot load asset {!}", .{ e }); };
+    addAssetsOption(b, exe, target, optimize) catch |e| { std.log.err("ERROR: Cannot load asset: {!}", .{ e }); };
     addRaylib(b, exe, target, optimize);
     addEcs(b, exe, target, optimize);
 

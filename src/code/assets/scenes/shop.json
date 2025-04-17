@@ -44,7 +44,7 @@
             {
                 "position": { "x": 52, "y": 10 },
                 "text": { "size": 12, "text": "GO NEXT" },
-                "tags": [  ],
+                "tags": [ "button-text" ],
                 "children": []
             }
         ]

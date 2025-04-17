@@ -32,10 +32,12 @@ pub fn initGui(reg: *ecs.Registry) void {
 
         if (utils.containsTag(init.tags, "iteminfo-name-text")) {
             reg.add(entity, cmp.SetNameText { .owner_scene = init.scene });
+            reg.add(entity, rcmp.SetTextColor { .color = gui_setup.ColorPanelSmallTitle });
         }
 
         if (utils.containsTag(init.tags, "iteminfo-description-text")) {
             reg.add(entity, cmp.SetDescriptionText { .owner_scene = init.scene });
+            reg.add(entity, rcmp.SetTextColor { .color = gui_setup.ColorPanelSmallInfo });
         }
 
         if (utils.containsTag(init.tags, "iteminfo-back-btn")) {
