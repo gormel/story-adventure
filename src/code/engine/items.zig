@@ -108,6 +108,11 @@ pub const Items = struct {
                 try self.props.add(kv.key_ptr.*, kv.value_ptr.*);
             }
 
+            var one_time_iter = item_cfg.one_time_parameters.map.iterator();
+            while (one_time_iter.next()) |kv| {
+                try self.props.add(kv.key_ptr.*, kv.value_ptr.*);
+            }
+
             if (item_cfg.parameters.map.count() > 0) {
                 try self.props.add(name, 1);
             }
