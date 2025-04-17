@@ -1,16 +1,25 @@
 [
     {
-        "position": { "x": 512, "y": 325 },
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "atlases/combat-bg.json",
+            "sprite": "combat-bg"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
+        "position": { "x": 512, "y": 368 },
         "tags": [ "combat-strategy-container" ],
         "children": []
     },
     {
-        "position": { "x": 265, "y": 341 },
+        "position": { "x": 265, "y": 384 },
         "tags": [ "combat-hero-root" ],
         "children": []
     },
     {
-        "position": { "x": 823, "y": 341 },
+        "position": { "x": 823, "y": 384 },
         "tags": [ "combat-enemy-root" ],
         "children": []
     },

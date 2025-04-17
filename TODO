@@ -20,11 +20,10 @@ ref: move atlas + sprite setup to loot config
 ref: combat strategy replace on cost failure
 ref: images
 * main screen
-* loot screen: 
-* combat screen: open space, floating islands on background, some trees on sides
-* trader screen
+* loot screen: cave with work square in center
+* trader screen: half-open street with shop sign, halp-inside shop with stolls
 
-fix: покупка зелий хп
+fix: иногда HUD рисуется не в том порядке
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
 fix: плавающий; предмет не сохранился в коллекции

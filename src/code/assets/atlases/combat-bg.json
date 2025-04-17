@@ -1,0 +1,13 @@
+{
+    "tex": "textures/combat-bg.png",
+    "sprites": [
+        {
+            "name": "combat-bg",
+            "x": 0,
+            "y": 0,
+            "w": 1024,
+            "h": 650
+        }
+    ],
+    "animations": []
+}
