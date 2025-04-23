@@ -162,10 +162,13 @@ fn indexOf(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
 
 fn detachParent(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const parent = reg.getConst(cmp.Parent, entity);
-    var parent_children = reg.get(cmp.Children, parent.entity);
-    while (indexOf(ecs.Entity, parent_children.children.items, entity))|at_idx| {
-        _ = parent_children.children.orderedRemove(at_idx);
+    if (reg.valid(parent.entity)) {
+        var parent_children = reg.get(cmp.Children, parent.entity);
+        while (indexOf(ecs.Entity, parent_children.children.items, entity))|at_idx| {
+            _ = parent_children.children.orderedRemove(at_idx);
+        }
     }
+    
     reg.remove(cmp.Parent, entity);
 }
 
@@ -182,11 +185,7 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         const attach = detach_view.getConst(cmp.AttachTo, entity);
         const parent = detach_view.getConst(cmp.Parent, entity);
         if (attach.target != parent.entity) {
-            if (attach.target != null and reg.valid(attach.target.?)) {
-                try detachParent(reg, entity);
-            } else {
-                reg.remove(cmp.AttachTo, entity);
-            }
+            try detachParent(reg, entity);
         } else {
             reg.remove(cmp.AttachTo, entity);
         }
@@ -691,11 +690,11 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const origin = rl.Vector2 { .x = 0, .y = 0 };
 
     var color = rl.Color.white;
-    if (reg.tryGetConst(cmp.Color, entity)) |colorComponent| {
-        color.r = colorComponent.r;
-        color.g = colorComponent.g;
-        color.b = colorComponent.b;
-        color.a = colorComponent.a;
+    if (reg.tryGetConst(cmp.Color, entity)) |color_component| {
+        color.r = color_component.r;
+        color.g = color_component.g;
+        color.b = color_component.b;
+        color.a = color_component.a;
     }
 
     const target_rect = rl.Rectangle {
@@ -871,10 +870,20 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
     }
 }
 
-pub fn render(reg: *ecs.Registry) !void {
+pub fn render(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var roots = std.ArrayList(ecs.Entity).init(allocator);
+    defer roots.deinit();
+
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        try renderObjects(reg, entity, null);
+        try roots.append(entity);
+    }
+
+    if (roots.items.len > 0) {
+        std.sort.heap(ecs.Entity, roots.items, reg, gameObjectRenderOrderLessThan);
+        for (roots.items) |entity| {
+            try renderObjects(reg, entity, null);
+        }
     }
 }

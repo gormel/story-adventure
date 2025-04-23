@@ -143,7 +143,7 @@ pub fn main() !void {
         rl.beginDrawing();
         rl.clearBackground(rl.Color.white);
 
-        try render_systems.render(&reg);
+        try render_systems.render(&reg, arena);
 
         rl.endDrawing();
 

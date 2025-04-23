@@ -4,9 +4,10 @@ const rollrate = @import("../../../engine/rollrate.zig");
 
 pub const RenderLayers = struct {
     pub const TILE = 0;
-    pub const ITEM = 1;
-    pub const FOG = 2;
-    pub const PLAYER = 3;
+    pub const FOG = 1;
+    pub const ITEM = 2;
+    pub const OPENER = 3;
+    pub const PLAYER = 4;
 };
 
 pub const Side = enum {
@@ -28,11 +29,49 @@ pub const LootCountCfg = struct {
     max: f64,
 };
 
+pub const LootStepCostCfg = struct {
+    cost: f64,
+    property: []const u8,
+};
+
+pub const LootFieldSizeCfg = struct {
+    min_x: f64,
+    max_x: f64,
+    min_y: f64,
+    max_y: f64,
+};
+
+pub const LootOpenableViewCfg = struct {
+    atlas: []const u8,
+    l: []const u8,
+    u: []const u8,
+    r: []const u8,
+    d: []const u8,
+};
+
+pub const LootHeroViewCfg = struct {
+    atlas: []const u8,
+    idle_anim: []const u8,
+    left_anim: []const u8,
+    up_anim: []const u8,
+    right_anim: []const u8,
+    down_anim: []const u8,
+};
+
+pub const LootFogViewCfg = struct {
+    atlas: []const u8,
+    sprite: []const u8,
+};
+
 pub const LootCfg = struct {
     loot: std.json.ArrayHashMap(LootCountCfg),
-    step_cost: f64,
-    cost_property: []const u8,
-    tiles: [] TileCfg
+    cost: LootStepCostCfg,
+    fog_view: LootFogViewCfg,
+    openable_view: LootOpenableViewCfg,
+    hero_view: LootHeroViewCfg,
+    field_size: LootFieldSizeCfg,
+    loot_view_distance: f64,
+    tiles: [] TileCfg,
 };
 
 pub fn revert(side: Side) Side {
@@ -118,21 +157,22 @@ fn getIdx(side: Side) usize {
 pub const TileIndex = struct {
     const Self = @This();
     const TilePtr = struct { tile: ?TileCfg = null, entity: ?ecs.Entity };
-    const Size = 10;
 
     cfg: *LootCfg,
     rnd: *std.Random,
     allocator: std.mem.Allocator,
     index: []TilePtr,
-    size_x: i32,
-    size_y: i32,
+    size_x: usize,
+    size_y: usize,
 
     fn getIndex(self: *Self, x: i32, y: i32) usize {
-        return @as(usize, @intCast(x + y * self.size_x));
+        return @as(usize, @intCast(x + y * @as(i32, @intCast(self.size_x))));
     }
 
     pub fn init(cfg: *LootCfg, rnd: *std.Random, allocator: std.mem.Allocator) !Self {
-        var index = try allocator.alloc(TilePtr, Size * Size);
+        const size_x: usize = @intFromFloat(cfg.field_size.max_x - cfg.field_size.min_x + 1);
+        const size_y: usize = @intFromFloat(cfg.field_size.max_y - cfg.field_size.min_y + 1);
+        var index = try allocator.alloc(TilePtr, size_x * size_y);
         for (0..index.len) |idx| {
             index[idx].tile = null;
             index[idx].entity = null;
@@ -142,8 +182,8 @@ pub const TileIndex = struct {
             .rnd = rnd,
             .allocator = allocator,
             .index = index,
-            .size_x = Size,
-            .size_y = Size,
+            .size_x = size_x,
+            .size_y = size_y,
         };
     }
 

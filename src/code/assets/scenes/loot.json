@@ -5,6 +5,20 @@
         "children": []
     },
     {
+        "position": { "x": 840, "y": 45 },
+        "tags": [ "loot-item-collector" ],
+        "children": []
+    },
+    {
+        "position": { "x": 0, "y": 0 },
+        "sprite": {
+            "atlas": "atlases/loot-bg.json",
+            "sprite": "loot-bg"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
         "position": { "x": 496, "y": 309 },
         "tags": [ "loot-start" ],
         "children": []

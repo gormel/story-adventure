@@ -2,19 +2,26 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
 const game = @import("../utils.zig");
-const cmp = @import("components.zig");
-const utils = @import("../../../engine/utils.zig");
-const scmp = @import("../../scene/components.zig");
-const rcmp = @import("../../render/components.zig");
-const ccmp = @import("../../core/components.zig");
-const gcmp = @import("../components.zig");
 const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
+const utils = @import("../../../engine/utils.zig");
+
+const cmp = @import("components.zig");
+const scmp = @import("../../scene/components.zig");
+const rcmp = @import("../../render/components.zig");
+const ccmp = @import("../../core/components.zig");
+const gcmp = @import("../components.zig");
 
 const loot = @import("loot.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/loot.json");
+
+const Error = error {
+    TileHasNoParent,
+    CharacterHasNoTileParent,
+    CharacterNotFound,
+};
 
 const Point = struct {
     x: i32,
@@ -26,11 +33,11 @@ const Point = struct {
 const TileSizeX = 32;
 const TileSizeY = 32;
 
-fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
+fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity, cfg: *const loot.LootCfg) ecs.Entity {
     const fog_ety = reg.create();
     reg.add(fog_ety, rcmp.SpriteResource {
-        .atlas = "atlases/gameplay.json",
-        .sprite = "hidden_loot",
+        .atlas = cfg.fog_view.atlas,
+        .sprite = cfg.fog_view.sprite,
     });
     reg.add(fog_ety, rcmp.AttachTo {
         .target = tile_ety,
@@ -42,28 +49,64 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity) ecs.Entity {
     return fog_ety;
 }
 
-fn createOpenable(reg: *ecs.Registry, tile_ety: ecs.Entity, source_tile_ety: ecs.Entity) ecs.Entity {
+fn createOpenable(
+    reg: *ecs.Registry,
+    tile_ety: ecs.Entity,
+    source_tile_ety: ecs.Entity,
+    cfg: *const loot.LootCfg,
+    side: loot.Side
+) ecs.Entity {
+    const sprite = switch (side) {
+        .LEFT => cfg.openable_view.l,
+        .UP => cfg.openable_view.u,
+        .RIGHT => cfg.openable_view.r,
+        .DOWN => cfg.openable_view.d,
+    };
     const entity = reg.create();
     reg.add(entity, rcmp.SpriteResource {
-        .atlas = "atlases/gameplay.json",
-        .sprite = "openable",
+        .atlas = cfg.openable_view.atlas,
+        .sprite = sprite,
     });
     reg.add(entity, rcmp.AttachTo {
         .target = tile_ety,
     });
-    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
-    reg.add(entity, rcmp.Order { .order = loot.RenderLayers.FOG });
+    reg.add(entity, rcmp.Position { .x = 8, .y = 8 });
+    reg.add(entity, rcmp.Order { .order = loot.RenderLayers.OPENER });
     reg.add(entity, cmp.Opener { .tile = tile_ety, .source_tile = source_tile_ety });
 
     reg.add(entity, gcmp.CreateButton { .animated = false });
 
+    const AxisSetup = struct { rcmp.Axis, f32 };
+    const setup: AxisSetup = switch (side) {
+        .LEFT => .{ rcmp.Axis.X, -1 },
+        .UP => .{ rcmp.Axis.Y, -1 },
+        .RIGHT => .{ rcmp.Axis.X, 1 },
+        .DOWN => .{ rcmp.Axis.Y, 1 },
+    };
+
+    const tween = reg.create();
+    reg.add(tween, rcmp.TweenMove { .axis = setup[0] });
+    reg.add(tween, rcmp.TweenSetup {
+        .from = 8 - 2 * setup[1],
+        .to = 8 + 2 * setup[1],
+        .repeat = .RepeatPinpong,
+        .duration = 1,
+        .entity = entity,
+    });
+
     return entity;
 }
 
-fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, anim: []const u8) ecs.Entity {
+fn createCharacterAnim(
+    reg: *ecs.Registry,
+    char_ety: ecs.Entity,
+    visible: bool,
+    anim: []const u8,
+    cfg: *const loot.LootCfg
+) ecs.Entity {
     const entity = reg.create();
     reg.add(entity, rcmp.FlipbookResource {
-        .atlas = "atlases/gameplay.json",
+        .atlas = cfg.hero_view.atlas,
         .flipbook = anim,
     });
     reg.add(entity, rcmp.AttachTo {
@@ -78,20 +121,21 @@ fn createCharacterAnim(reg: *ecs.Registry, char_ety: ecs.Entity, visible: bool, 
     return entity;
 }
 
-fn createCharacter(reg: *ecs.Registry, tile_ety: ecs.Entity) void {
+fn createCharacter(reg: *ecs.Registry, parent_ety: ecs.Entity, tile_ety: ecs.Entity, cfg: *const loot.LootCfg) void {
     const entity = reg.create();
     reg.add(entity, rcmp.AttachTo {
-        .target = tile_ety,
+        .target = parent_ety,
     });
 
     reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.PLAYER });
     reg.add(entity, cmp.Character {
-        .idle_anim = createCharacterAnim(reg, entity, true, "hero_idle"),
-        .l_anim = createCharacterAnim(reg, entity, false, "hero_left"),
-        .u_anim = createCharacterAnim(reg, entity, false, "hero_up"),
-        .r_anim = createCharacterAnim(reg, entity, false, "hero_right"),
-        .d_anim = createCharacterAnim(reg, entity, false, "hero_down"),
+        .idle_anim = createCharacterAnim(reg, entity, true, cfg.hero_view.idle_anim, cfg),
+        .l_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.left_anim, cfg),
+        .u_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.up_anim, cfg),
+        .r_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.right_anim, cfg),
+        .d_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.down_anim, cfg),
+        .tile = tile_ety,
     });
 }
 
@@ -127,7 +171,7 @@ fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
     }
 }
 
-fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axis: rcmp.Axis) void {
+fn createCharacterTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axis: rcmp.Axis) void {
     var tween_view = reg.view(.{ cmp.CharacterMoveTween }, .{ rcmp.CancelTween });
     var tween_iter = tween_view.entityIterator();
     while (tween_iter.next()) |entity| {
@@ -153,7 +197,31 @@ fn createTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to: f32, axi
     reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety, .axis = axis });
 }
 
-fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
+const XY = struct { x: i32, y: i32 };
+
+fn getLootAlpha(from: XY, to: XY, cfg: *const loot.LootCfg) ?u8 {
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const distance = @abs(dx) + @abs(dy);
+
+    if (@as(f64, @floatFromInt(distance)) > cfg.loot_view_distance) {
+        return 0;
+    } else if (distance <= 2) {
+        return 255;
+    } else {
+        const max_distance: usize = @intFromFloat(cfg.loot_view_distance);
+        return @intCast(255 - distance * 255 / (max_distance + 1));
+    }
+
+    return null;
+}
+
+fn animateCharacter(
+    reg: *ecs.Registry,
+    char_ety: ecs.Entity,
+    from_tile_ety: ecs.Entity,
+    to_tile_ety: ecs.Entity
+) void {
     const from_tile_pos = reg.get(rcmp.Position, from_tile_ety);
     const to_tile_pos = reg.get(rcmp.Position, to_tile_ety);
     const dx = from_tile_pos.x - to_tile_pos.x;
@@ -165,35 +233,101 @@ fn animateCharacter(reg: *ecs.Registry, char_ety: ecs.Entity, from_tile_ety: ecs
         
         switch (dir) {
             .LEFT => {
-                createTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
+                createCharacterTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
                 showAnimation(&anims, 1, reg);
             },
             .UP => {
-                createTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
+                createCharacterTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
                 showAnimation(&anims, 2, reg);
             },
             .RIGHT => {
-                createTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
+                createCharacterTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
                 showAnimation(&anims, 3, reg);
             },
             .DOWN => {
-                createTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
+                createCharacterTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
                 showAnimation(&anims, 4, reg);
             },
         }
     }
 }
 
-fn moveCharacter(reg: *ecs.Registry, from_tile_ety: ecs.Entity, to_tile_ety: ecs.Entity) void {
+fn moveCharacter(
+    reg: *ecs.Registry,
+    from_tile_ety: ecs.Entity,
+    to_tile_ety: ecs.Entity,
+    cfg: *const loot.LootCfg
+) void {
     var iter = reg.entityIterator(cmp.Character);
     while (iter.next()) |entity| {
         animateCharacter(reg, entity, from_tile_ety, to_tile_ety);
+
+        var char = reg.get(cmp.Character, entity);
+        char.tile = to_tile_ety;
+
+        const to_tile = reg.get(cmp.Tile, to_tile_ety);
+        var loot_view = reg.view(.{ cmp.Loot, rcmp.Color }, .{});
+        var loot_iter = loot_view.entityIterator();
+        while (loot_iter.next()) |loot_ety| {
+            const loot_cmp = reg.get(cmp.Loot, loot_ety);
+            const tile = reg.get(cmp.Tile, loot_cmp.tile);
+            const color = reg.get(rcmp.Color, loot_ety);
+            
+            const target_a = getLootAlpha(
+                .{ .x = tile.x, .y = tile.y },
+                .{ .x = to_tile.x, .y = to_tile.y },
+                cfg) orelse color.a;
+
+            var prev_tween_view = reg.view(.{ cmp.LootViewTween, rcmp.TweenSetup }, .{});
+            var prev_tween_iter = prev_tween_view.entityIterator();
+            while (prev_tween_iter.next()) |tween_ety| {
+                const setup = reg.get(rcmp.TweenSetup, tween_ety);
+                if (setup.entity == loot_ety) {
+                    reg.add(tween_ety, ccmp.Destroyed {});
+                }
+            }
+
+            const tween_ety = reg.create();
+            reg.add(tween_ety, cmp.LootViewTween {});
+            reg.add(tween_ety, rcmp.TweenColor { .component = .A });
+            reg.add(tween_ety, rcmp.TweenSetup {
+                .from = @floatFromInt(color.a),
+                .to = @floatFromInt(target_a),
+                .duration = 0.5,
+                .entity = loot_ety,
+            });
+        }
     }
 }
 
-fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: []const u8, rnd: *std.Random) ecs.Entity {
+fn rollLoot(
+    reg: *ecs.Registry,
+    tile_ety: ecs.Entity,
+    items: *itm.Items,
+    group: []const u8,
+    rnd: *std.Random
+) !ecs.Entity {
     if (items.rollGroup(group, rnd) catch null) |item_name| {
         if (items.info(item_name)) |item| {
+            const start_ety = utils.getParent(reg, tile_ety)
+                orelse return Error.TileHasNoParent;
+            const start = reg.get(cmp.LootStart, start_ety);
+
+            const tile = reg.get(cmp.Tile, tile_ety);
+
+            var char_iter = reg.entityIterator(cmp.Character);
+            const char_tile_ety = while (char_iter.next()) |char_ety| {
+                const char = reg.get(cmp.Character, char_ety);
+                break char.tile;
+            } else return Error.CharacterNotFound;
+            const char_tile = reg.get(cmp.Tile, char_tile_ety);
+
+            const a = getLootAlpha(
+                .{ .x = char_tile.x, .y = char_tile.y },
+                .{ .x = tile.x, .y = tile.y },
+                &start.cfg_json.value
+            ) orelse 0;
+
             const entity = reg.create();
             reg.add(entity, rcmp.SpriteResource {
                 .atlas = item.view.atlas,
@@ -205,6 +339,7 @@ fn rollLoot(reg: *ecs.Registry, tile_ety: ecs.Entity, items: *itm.Items, group: 
             reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
             reg.add(entity, rcmp.Order { .order = loot.RenderLayers.ITEM });
             reg.add(entity, cmp.Loot { .tile = tile_ety, .item_name = item_name });
+            reg.add(entity, rcmp.Color { .a = a });
 
             return entity;
         }
@@ -245,6 +380,10 @@ pub fn initGui(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "button-complete-loot")) {
             reg.add(entity, cmp.CompleteLootButton {});
         }
+
+        if (utils.containsTag(init.tags, "loot-item-collector")) {
+            reg.add(entity, cmp.ItemCollector {});
+        }
     }
 }
 
@@ -273,8 +412,6 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                 .cfg_json = cfg_json
             });
 
-
-
             var index = try loot.TileIndex.init(&cfg, rnd, allocator);
             defer index.deinit();
 
@@ -283,8 +420,8 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
             defer loot_roll_table.deinit();
 
             const center = Point {
-                .x = @divFloor(index.size_x, 2),
-                .y = @divFloor(index.size_y, 2),
+                .x = @intCast(@divFloor(index.size_x, 2)),
+                .y = @intCast(@divFloor(index.size_y, 2)),
                 .is_center = true,
                 .parent = null,
             };
@@ -308,14 +445,14 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                         });
                         reg.add(tile_ety, rcmp.Order { .order = loot.RenderLayers.TILE });
 
-                        reg.add(tile_ety, cmp.Tile { });
+                        reg.add(tile_ety, cmp.Tile { .x = at.x, .y = at.y });
                         reg.add(tile_ety, cmp.TileFog { 
-                            .entity = createFog(reg, tile_ety),
+                            .entity = createFog(reg, tile_ety, &cfg),
                         });
 
                         if (at.is_center) {
                             reg.add(tile_ety, cmp.Open { .free = true });
-                            createCharacter(reg, entity);
+                            createCharacter(reg, entity, tile_ety, &cfg);
                         } else {
                             try loot_roll_table.append(LootRoll { .entity = tile_ety });
                         }
@@ -389,13 +526,13 @@ pub fn character(reg: *ecs.Registry) void {
     }
 }
 
-pub fn rollItem(reg: *ecs.Registry, items: *itm.Items, rnd: *std.Random) void {
+pub fn rollItem(reg: *ecs.Registry, items: *itm.Items, rnd: *std.Random) !void {
     var view = reg.view(.{ cmp.RollItem }, .{ cmp.TileLoot });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const roll = reg.get(cmp.RollItem, entity);
         reg.add(entity, cmp.TileLoot {
-            .entity = rollLoot(reg, entity, items, roll.group, rnd),
+            .entity = try rollLoot(reg, entity, items, roll.group, rnd),
         });
 
         reg.remove(cmp.RollItem, entity);
@@ -447,7 +584,7 @@ const ConnectionIterator = struct {
         };
     }
 
-    pub fn next(self: *Self) ?ecs.Entity {
+    pub fn next(self: *Self) ?struct { entity: ecs.Entity, side: loot.Side } {
         if (self.iterations > 3) {
             return null;
         }
@@ -462,9 +599,14 @@ const ConnectionIterator = struct {
         }
 
         const curr = self.current();
+        const current_side = self.side;
         self.rotate();
         self.iterations += 1;
-        return curr;
+        if (curr) |current_ety| {
+            return .{ .entity = current_ety, .side = current_side };
+        }
+
+        return null;
     }
 };
 
@@ -484,7 +626,54 @@ fn cleanupOpener(reg: *ecs.Registry, tile_opener: *cmp.TileOpener, entity: ecs.E
     reg.remove(cmp.TileOpener, entity);
 }
 
-fn cleanupLoot(reg: *ecs.Registry, tile_loot: *cmp.TileLoot, entity: ecs.Entity) void {
+fn cleanupLoot(
+    reg: *ecs.Registry,
+    tile_loot: *cmp.TileLoot,
+    entity: ecs.Entity,
+    items: *const itm.ItemListCfg
+) void {
+    if (reg.tryGet(rcmp.GlobalPosition, tile_loot.entity)) |pos| {
+        const loot_cmp = reg.get(cmp.Loot, tile_loot.entity);
+
+        var collector_view = reg.view(.{ cmp.ItemCollector, rcmp.GlobalPosition }, .{});
+        var collector_iter = collector_view.entityIterator();
+        while (collector_iter.next()) |collector_ety| {
+            const collector_position = reg.get(rcmp.GlobalPosition, collector_ety);
+
+            if (items.map.get(loot_cmp.item_name)) |item_cfg| {
+                const effect = reg.create();
+                reg.add(effect, rcmp.SpriteResource {
+                    .atlas = item_cfg.view.atlas,
+                    .sprite = item_cfg.view.sprite,
+                });
+                reg.add(effect, rcmp.Position { .x = pos.x, .y = pos.y });
+                reg.add(effect, rcmp.AttachTo { .target = null });
+                reg.add(effect, rcmp.Order { .order = game.RenderLayers.GAMEPLLAY_EFFECT });
+
+                const tween_duration = 0.5;
+                const tween_x = reg.create();
+                reg.add(tween_x, rcmp.TweenMove { .axis = .X });
+                reg.add(tween_x, rcmp.TweenSetup {
+                    .from = pos.x,
+                    .to = collector_position.x,
+                    .entity = effect,
+                    .duration = tween_duration,
+                    .remove_source = true,
+                });
+
+                const tween_y = reg.create();
+                reg.add(tween_y, rcmp.TweenMove { .axis = .Y });
+                reg.add(tween_y, rcmp.TweenSetup {
+                    .from = pos.y,
+                    .to = collector_position.y,
+                    .entity = effect,
+                    .duration = tween_duration,
+                    .easing = .EaseIn
+                });
+            }
+        }
+    }
+    
     if (!reg.has(ccmp.Destroyed, tile_loot.entity)) {
         reg.add(tile_loot.entity, ccmp.Destroyed {});
     }
@@ -514,67 +703,65 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
         const loot_start = if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start|
             loot_start else continue;
         
-        const cost_property = loot_start.cfg_json.value.cost_property;
+        const cfg = loot_start.cfg_json.value;
+        const cost_property = cfg.cost.property;
         const stamina = props.get(cost_property);
-        const step_cost = loot_start.cfg_json.value.step_cost;
-
-        if (stamina < step_cost and !open.free) {
-            game.selectNextScene(reg);
-        } else {
-            if (reg.tryGet(cmp.TileFog, entity)) |tile_fog| {
-                cleanupFog(reg, tile_fog, entity);
+        const step_cost = cfg.cost.cost;
+        
+        if (!reg.has(cmp.Visited, entity)) {
+            if (stamina < step_cost and !open.free) {
+                game.selectNextScene(reg);
+                continue;
             }
-
-            if (reg.tryGet(cmp.TileOpener, entity)) |tile_opener| {
-                const opener = reg.getConst(cmp.Opener, tile_opener.entity);
-                cleanupOpener(reg, tile_opener, entity);
-
-                var source_connection_iter = ConnectionIterator.init(reg, opener.source_tile);
-                while (source_connection_iter.next()) |source_neighbour_ety| {
-                    if (reg.tryGet(cmp.TileOpener, source_neighbour_ety)) |source_neighbour_opener| {
-                        cleanupOpener(reg, source_neighbour_opener, source_neighbour_ety);
-
-                        if (
-                            !reg.has(cmp.TileFog, source_neighbour_ety)
-                            and !reg.has(cmp.Visited, source_neighbour_ety)
-                        ) {
-                            reg.add(source_neighbour_ety, cmp.TileFog {
-                                .entity = createFog(reg, source_neighbour_ety),
-                            });
-                        }
-                    }
-                }
-
-                moveCharacter(reg, opener.source_tile, entity);
-            }
-
-            var connection_iter = ConnectionIterator.init(reg, entity);
-            while (connection_iter.next()) |neighbour_ety| {
-                if (reg.tryGet(cmp.TileFog, neighbour_ety)) |neighbour_fog| {
-                    cleanupFog(reg, neighbour_fog, neighbour_ety);
-                }
-
-                if (!reg.has(cmp.TileOpener, neighbour_ety)) {
-                    reg.add(neighbour_ety, cmp.TileOpener {
-                        .entity = createOpenable(reg, neighbour_ety, entity),
-                    });
-                }
-            }
-
-            if (!reg.has(cmp.Visited, entity)) {
-                reg.add(entity, cmp.Visited {});
-            }
-
-            if (reg.tryGet(cmp.TileLoot, entity)) |tile_loot| {
-                const loot_on_tile = reg.get(cmp.Loot, tile_loot.entity);
-                _ = try items.add(loot_on_tile.item_name);
-
-                cleanupLoot(reg, tile_loot, entity);
-            }
+            
+            reg.add(entity, cmp.Visited {});
 
             if (!open.free) {
                 try props.add(cost_property, -step_cost);
             }
+        }
+
+        if (reg.tryGet(cmp.TileFog, entity)) |tile_fog| {
+            cleanupFog(reg, tile_fog, entity);
+        }
+
+        if (reg.tryGet(cmp.TileOpener, entity)) |tile_opener| {
+            const opener = reg.getConst(cmp.Opener, tile_opener.entity);
+            cleanupOpener(reg, tile_opener, entity);
+
+            var source_connection_iter = ConnectionIterator.init(reg, opener.source_tile);
+            while (source_connection_iter.next()) |source_neighbour_entry| {
+                if (reg.tryGet(cmp.TileOpener, source_neighbour_entry.entity)) |source_neighbour_opener| {
+                    cleanupOpener(reg, source_neighbour_opener, source_neighbour_entry.entity);
+
+                    if (
+                        !reg.has(cmp.TileFog, source_neighbour_entry.entity)
+                        and !reg.has(cmp.Visited, source_neighbour_entry.entity)
+                    ) {
+                        reg.add(source_neighbour_entry.entity, cmp.TileFog {
+                            .entity = createFog(reg, source_neighbour_entry.entity, &cfg),
+                        });
+                    }
+                }
+            }
+
+            moveCharacter(reg, opener.source_tile, entity, &cfg);
+        }
+
+        var connection_iter = ConnectionIterator.init(reg, entity);
+        while (connection_iter.next()) |neighbour_entry| {
+            if (!reg.has(cmp.TileOpener, neighbour_entry.entity)) {
+                reg.add(neighbour_entry.entity, cmp.TileOpener {
+                    .entity = createOpenable(reg, neighbour_entry.entity, entity, &cfg, neighbour_entry.side),
+                });
+            }
+        }
+
+        if (reg.tryGet(cmp.TileLoot, entity)) |tile_loot| {
+            const loot_on_tile = reg.get(cmp.Loot, tile_loot.entity);
+            _ = try items.add(loot_on_tile.item_name);
+
+            cleanupLoot(reg, tile_loot, entity, items.item_list_cfg);
         }
 
         reg.remove(cmp.Open, entity);

@@ -5,6 +5,24 @@
         "children": []
     },
     {
+        "position": { "x": -310, "y": -93 },
+        "sprite": {
+            "atlas": "atlases/gui.json",
+            "sprite": "itemcollection-grid-bg"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
+        "position": { "x": 642, "y": -133 },
+        "sprite": {
+            "atlas": "atlases/gui.json",
+            "sprite": "itemcollection-grid-bg"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
         "position": { "x": 30, "y": 30 },
         "tags": [],
         "children": [

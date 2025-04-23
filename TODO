@@ -13,17 +13,14 @@ ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
 ref: extract view creation from update
-ref: loot max size x/y setup; min, max tile count setup
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money
-ref: move atlas + sprite setup to loot config
 ref: combat strategy replace on cost failure
 ref: images
 * main screen
-* loot screen: cave with work square in center
 * trader screen: half-open street with shop sign, halp-inside shop with stolls
+ref: loot - move buttons on border unopened tiles (path find!)
 
-fix: иногда HUD рисуется не в том порядке
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
 fix: плавающий; предмет не сохранился в коллекции

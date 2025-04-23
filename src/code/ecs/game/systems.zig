@@ -414,7 +414,7 @@ pub fn updateGameplayCustoms(
     hud.syncViews(reg, props, allocator);
     try hud.gui(reg, allocator);
 
-    loot.rollItem(reg, items, rnd);
+    try loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);
     loot.character(reg);
     loot.gui(reg);

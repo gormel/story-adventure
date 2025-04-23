@@ -1,0 +1,13 @@
+{
+    "tex": "textures/loot-bg.png",
+    "sprites": [
+        {
+            "name": "loot-bg",
+            "x": 0,
+            "y": 0,
+            "w": 1024,
+            "h": 650
+        }
+    ],
+    "animations": []
+}

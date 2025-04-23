@@ -2,8 +2,36 @@
     "loot": {
         "any": { "min": 1, "max": 3 }
     },
-    "step_cost": 3,
-    "cost_property": "stamina",
+    "loot_view_distance": 3,
+    "cost": {
+        "cost": 3,
+        "property": "stamina"
+    },
+    "hero_view": {
+        "atlas": "atlases/gameplay.json",
+        "idle_anim": "hero_idle",
+        "left_anim": "hero_left",
+        "up_anim": "hero_up",
+        "right_anim": "hero_right",
+        "down_anim": "hero_down"
+    },
+    "field_size": {
+        "min_x": -4,
+        "max_x": 4,
+        "min_y": -4,
+        "max_y": 4
+    },
+    "fog_view": {
+        "atlas": "atlases/gameplay.json",
+        "sprite": "hidden_loot"
+    },
+    "openable_view": {
+        "atlas": "atlases/gameplay.json",
+        "l": "openable_l",
+        "u": "openable_u",
+        "r": "openable_r",
+        "d": "openable_d"
+    },
     "tiles": [
         {
             "weight": 1,

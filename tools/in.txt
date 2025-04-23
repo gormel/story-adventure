@@ -1,248 +1,472 @@
-/* gui */
+/* gameplay */
 
 position: relative;
-width: 1124px;
-height: 696px;
+width: 256px;
+height: 224px;
 
 
 
-/* popup_panel_bg */
-
-position: absolute;
-width: 356px;
-height: 42px;
-left: 683px;
-top: 283px;
-
-background: url(popup_panel_bg.png);
-
-
-/* button-160x32 */
-
-position: absolute;
-width: 160px;
-height: 32px;
-left: 683px;
-top: 325px;
-
-background: url(button.png);
-
-
-/* coin */
+/* tile_lurd */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 939px;
-top: 325px;
+left: 96px;
+top: 0px;
 
-background: url(coin.png);
+background: url(tile_lurd.png);
 
 
-/* heart */
+/* tile_r */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 843px;
-top: 325px;
+left: 64px;
+top: 64px;
 
-background: url(heart.png);
+background: url(tile_r.png);
 
 
-/* popup_bg */
+/* tile_rd */
 
 position: absolute;
-width: 683px;
-height: 433px;
+width: 32px;
+height: 32px;
 left: 0px;
 top: 0px;
 
-background: url(popup_bg.png);
+background: url(tile_rd.png);
 
 
-/* power */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 1039px;
-top: 283px;
-
-background: url(power.png);
-
-
-/* shield */
+/* tile_u */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 907px;
-top: 325px;
+left: 64px;
+top: 32px;
 
-background: url(shield.png);
-
-
-/* sword */
-
-position: absolute;
-width: 32px;
-height: 32px;
-left: 875px;
-top: 325px;
-
-background: url(sword.png);
+background: url(tile_u.png);
 
 
-/* defence-strategy */
-
-position: absolute;
-width: 64px;
-height: 64px;
-left: 747px;
-top: 357px;
-
-background: url(defence-strategy.png);
-
-
-/* double-attack-strategy */
-
-position: absolute;
-width: 64px;
-height: 64px;
-left: 811px;
-top: 357px;
-
-background: url(rage-attack-strategy.png);
-
-
-/* attack-strategy */
-
-position: absolute;
-width: 64px;
-height: 64px;
-left: 683px;
-top: 357px;
-
-background: url(attack-strategy.png);
-
-
-/* shread-strategy */
-
-position: absolute;
-width: 64px;
-height: 64px;
-left: 875px;
-top: 357px;
-
-background: url(shread-strategy.png);
-
-
-/* button-32x32 */
+/* tile_ud */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 1003px;
-top: 325px;
+left: 0px;
+top: 96px;
 
-background: url(button-square.png);
+background: url(tile_ud.png);
 
 
-/* burger */
+/* tile_ur */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 971px;
-top: 325px;
+left: 64px;
+top: 96px;
 
-background: url(burger.png);
+background: url(tile_ur.png);
 
 
-/* popup_bg_small */
+/* tile_urd */
 
 position: absolute;
-width: 441px;
-height: 283px;
-left: 683px;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 32px;
+
+background: url(tile_urd.png);
+
+
+/* tile_d */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 64px;
+
+background: url(tile_d.png);
+
+
+/* tile_l */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 64px;
+
+background: url(tile_l.png);
+
+
+/* tile_ld */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 64px;
+
+background: url(tile_ld.png);
+
+
+/* tile_lr */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 32px;
+
+background: url(tile_lr.png);
+
+
+/* tile_lrd */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
 top: 0px;
 
-background: url(popup_bg_small.png);
+background: url(tile_lrd.png);
 
 
-/* item-icon-bg */
-
-position: absolute;
-width: 42px;
-height: 42px;
-left: 939px;
-top: 357px;
-
-background: url(item-icon-bg.png);
-
-
-/* item-icon-highlight */
+/* tile_lu */
 
 position: absolute;
 width: 32px;
 height: 32px;
-left: 1071px;
-top: 283px;
+left: 32px;
+top: 32px;
 
-background: url(item-icon-highlight.png);
-
-
-/* itemcollection-grid-bg */
-
-position: absolute;
-width: 441px;
-height: 227px;
-left: 238px;
-top: 433px;
-
-background: url(itemcollection-grid-bg.png);
+background: url(tile_lu.png);
 
 
-/* button-42x15 */
+/* tile_lud */
 
 position: absolute;
-width: 42px;
-height: 15px;
-left: 981px;
-top: 357px;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 0px;
 
-background: url(button-42x15.png);
-
-
-/* stall-bg */
-
-position: absolute;
-width: 267px;
-height: 139px;
-left: 683px;
-top: 421px;
-
-background: url(stall-bg.png);
+background: url(tile_lud.png);
 
 
-/* stall-refresh */
+/* tile_lur */
 
 position: absolute;
-width: 19px;
-height: 19px;
-left: 1103px;
-top: 282px;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 96px;
 
-background: url(stall-refresh.png);
+background: url(tile_lur.png);
 
 
-/* shop-sign */
+/* hidden_loot */
 
 position: absolute;
-width: 238px;
-height: 263px;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 96px;
+
+background: url(image.png);
+
+
+/* anm-hero_idle-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
 left: 0px;
-top: 433px;
+top: 128px;
 
-background: url(shop-sign.png);
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_idle-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 128px;
+
+background: url(anm-hero_idle-1-1.png);
+
+
+/* anm-hero_idle-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 128px;
+
+background: url(anm-hero_idle-1-2.png);
+
+
+/* anm-hero_idle-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 128px;
+
+background: url(anm-hero_idle-1-1.png);
+
+
+/* anm-hero_left-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 160px;
+
+background: url(anm-hero_left-1-0.png);
+
+
+/* anm-hero_left-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 0px;
+top: 160px;
+
+background: url(anm-hero_left-1-1.png);
+
+
+/* anm-hero_left-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 160px;
+
+background: url(anm-hero_left-1-0.png);
+
+
+/* anm-hero_left-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 160px;
+
+background: url(anm-hero_left-1-3.png);
+
+
+/* anm-hero_right-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 96px;
+top: 192px;
+
+background: url(anm-hero_left-1-0.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 192px;
+
+background: url(anm-hero_left-1-1.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 64px;
+top: 192px;
+
+background: url(anm-hero_left-1-0.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_right-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 32px;
+top: 192px;
+
+background: url(anm-hero_left-1-3.png);
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* anm-hero_down-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 64px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_down-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 64px;
+
+background: url(anm-hero_down-1-1.png);
+
+
+/* anm-hero_down-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 192px;
+top: 64px;
+
+background: url(anm-hero_idle-1-0.png);
+
+
+/* anm-hero_down-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 224px;
+top: 64px;
+
+background: url(anm-hero_down-1-3.png);
+
+
+/* anm-hero_up-1-0 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 128px;
+top: 32px;
+
+background: url(anm-hero_up-1-0.png);
+
+
+/* anm-hero_up-1-1 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 32px;
+
+background: url(anm-hero_up-1-1.png);
+
+
+/* anm-hero_up-1-2 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 192px;
+top: 32px;
+
+background: url(anm-hero_up-1-0.png);
+
+
+/* enemy_lizard_wizard */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 160px;
+top: 0px;
+
+background: url(enemy_lizard_wizard.png);
+
+
+/* image */
+
+position: absolute;
+width: 8px;
+height: 8px;
+left: 192px;
+top: 0px;
+
+background: url(image.png);
+
+
+/* anm-hero_up-1-3 */
+
+position: absolute;
+width: 32px;
+height: 32px;
+left: 224px;
+top: 32px;
+
+background: url(anm-hero_up-1-3.png);
+
+
+/* openable_d */
+
+position: absolute;
+width: 16px;
+height: 16px;
+left: 128px;
+top: 0px;
+
+background: url(openable_d.png);
+
+
+/* openable_l */
+
+position: absolute;
+width: 16px;
+height: 16px;
+left: 144px;
+top: 0px;
+
+background: url(openable_l.png);
+
+
+/* openable_r */
+
+position: absolute;
+width: 16px;
+height: 16px;
+left: 128px;
+top: 16px;
+
+background: url(openable_r.png);
+
+
+/* openable_u */
+
+position: absolute;
+width: 16px;
+height: 16px;
+left: 144px;
+top: 16px;
+
+background: url(openable_u.png);

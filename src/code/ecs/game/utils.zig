@@ -26,7 +26,8 @@ pub const LoadSceneAdditionalArgs = struct {
 
 pub const RenderLayers = struct {
     pub const GAMEPLAY = 1;
-    pub const HUD = 2;
+    pub const GAMEPLLAY_EFFECT = 2;
+    pub const HUD = 3;
 };
 
 pub const Error = error {
