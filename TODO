@@ -12,6 +12,9 @@ fea: layout text (H/V/HV)
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
+* fish
+* snake
+* rat
 ref: extract view creation from update
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money
@@ -20,6 +23,7 @@ ref: images
 * main screen
 * trader screen: half-open street with shop sign, halp-inside shop with stolls
 ref: loot - move buttons on border unopened tiles (path find!)
+ref: attack animation redraw
 
 fix: loot hero move animations: up-down
 fix: loot hero animaion blink
