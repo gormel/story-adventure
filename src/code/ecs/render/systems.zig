@@ -713,7 +713,7 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
     const origin = rl.Vector2 { .x = 0, .y = 0 };
     const flen = @as(f64, @floatFromInt(flipbook.flipbook.frames.len));
-    var idx = @as(usize, @intFromFloat(std.math.floor(flipbook.time / flipbook.flipbook.duration * flen)));
+    var idx = @as(usize, @intFromFloat(std.math.floor((flipbook.flipbook.duration - flipbook.time) * flen / flipbook.flipbook.duration)));
     idx = @min(flipbook.flipbook.frames.len - 1, idx);
     const frame = flipbook.flipbook.frames[idx];
 

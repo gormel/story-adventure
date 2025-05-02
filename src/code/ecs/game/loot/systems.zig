@@ -163,6 +163,9 @@ fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
     for(etys, 0..) |entity, i| {
         if (i == idx) {
             reg.removeIfExists(rcmp.Hidden, entity);
+            if (reg.tryGet(rcmp.Flipbook, entity)) |flipbook| {
+                flipbook.time = flipbook.flipbook.duration;
+            }
         } else {
             if (!reg.has(rcmp.Hidden, entity)) {
                 reg.add(entity, rcmp.Hidden {});

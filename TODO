@@ -26,7 +26,6 @@ ref: loot - move buttons on border unopened tiles (path find!)
 ref: attack animation redraw
 
 fix: loot hero move animations: up-down
-fix: loot hero animaion blink
 fix: плавающий; предмет не сохранился в коллекции
 
 
