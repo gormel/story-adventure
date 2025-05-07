@@ -1,0 +1,11 @@
+item:
+* image to atlas
+* items.json - 'itm' shortcut
+* item_drop.json
+* item_progress.json
+* property_setup.json - add progress properties to save
+* shop.json - add cost
+
+monster:
+* image to atlas
+* combat.json - 'enemy' part

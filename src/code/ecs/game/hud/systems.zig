@@ -69,7 +69,7 @@ fn selectValue(props: *pr.Properties, name: []const u8, allocator: std.mem.Alloc
 fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8 {
     const value = props.get(name);
     const max = props.getInitial(name);
-    return std.fmt.allocPrintZ(allocator, "{d:.0}/{d:.0}", .{ value, max }) catch "0/0" ++ .{ 0 };
+    return std.fmt.allocPrintZ(allocator, "{d:.0} / {d:.0}", .{ value, max }) catch "0 / 0" ++ .{ 0 };
 }
 
 fn syncProperty(

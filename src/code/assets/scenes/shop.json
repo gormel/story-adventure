@@ -5,10 +5,10 @@
         "children": []
     },
     {
-        "position": { "x": 65, "y": 201 },
+        "position": { "x": 0, "y": 0 },
         "sprite": {
-            "atlas": "atlases/gui.json",
-            "sprite": "shop-sign"
+            "atlas": "atlases/shop-bg.json",
+            "sprite": "shop-bg"
         },
         "tags": [  ],
         "children": []
@@ -34,7 +34,7 @@
         "children": []
     },
     {
-        "position": { "x": 432, "y": 533 },
+        "position": { "x": 589, "y": 533 },
         "sprite": {
             "atlas": "atlases/gui.json",
             "sprite": "button-160x32"
@@ -42,7 +42,7 @@
         "tags": [ "button", "shop-next-btn" ],
         "children": [
             {
-                "position": { "x": 52, "y": 10 },
+                "position": { "x": 58, "y": 10 },
                 "text": { "size": 12, "text": "GO NEXT" },
                 "tags": [ "button-text" ],
                 "children": []

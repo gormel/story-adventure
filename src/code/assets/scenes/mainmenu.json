@@ -19,7 +19,7 @@
         "tags": [ "button", "mainmenu-startgame-btn" ],
         "children": [
             {
-                "position": { "x": 58, "y": 9 },
+                "position": { "x": 62, "y": 10 },
                 "text": { "size": 12, "text": "START" },
                 "tags": [ "button-text" ],
                 "children": []
@@ -35,7 +35,7 @@
         "tags": [ "button", "mainmenu-items-btn" ],
         "children": [
             {
-                "position": { "x": 58, "y": 9 },
+                "position": { "x": 62, "y": 10 },
                 "text": { "size": 12, "text": "ITEMS" },
                 "tags": [ "button-text" ],
                 "children": []

@@ -795,7 +795,7 @@ fn renderText(reg: *ecs.Registry, entity: ecs.Entity) !void {
             break;
         }
         
-        rl.drawTextPro(font, text.text, position, origin, rot.a, text.size, 3, color);
+        rl.drawTextPro(font, text.text, position, origin, rot.a, text.size, 1, color);
     }
 }
 

@@ -29,7 +29,7 @@ pub fn main() !void {
     const screenWidth = 1024;
     const screenHeight = 650;
 
-    rl.initWindow(screenWidth, screenHeight, "Journey");
+    rl.initWindow(screenWidth, screenHeight, "Stakan");
     defer rl.closeWindow(); // Close window and OpenGL context
 
     rl.setTargetFPS(60); // Set our game to run at 60 frames-per-second

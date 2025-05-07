@@ -92,3 +92,32 @@ pub fn getParent(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
 
     return null;
 }
+
+pub fn formatPrice(num: f64, allocator: std.mem.Allocator) ![:0]const u8 {
+    const postfixes = [_][]const u8 { "", "k", "m", "M" };
+    var postfix_idx = postfixes.len - 1;
+    while (postfix_idx > 0) {
+        const chck = num / @as(f64, @floatFromInt(try std.math.powi(i64, 1000, @intCast(postfix_idx))));
+        
+        if (chck >= 1) {
+            break;
+        }
+
+        postfix_idx -= 1;
+    }
+
+    if (postfix_idx > 0) {
+        const show_num = num / @as(f64, @floatFromInt(try std.math.powi(i64, 1000, @intCast(postfix_idx))));
+
+        if (show_num > 99) {
+            return try std.fmt.allocPrintZ(allocator, "${d:.0}{s}", .{ show_num, postfixes[postfix_idx] });
+        }
+        else if (show_num > 9) {
+            return try std.fmt.allocPrintZ(allocator, "${d:.1}{s}", .{ show_num, postfixes[postfix_idx] });
+        }
+
+        return try std.fmt.allocPrintZ(allocator, "${d:.2}{s}", .{ show_num, postfixes[postfix_idx] });
+    }
+
+    return try std.fmt.allocPrintZ(allocator, "${d}", .{ num });
+}

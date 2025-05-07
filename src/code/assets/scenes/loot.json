@@ -32,7 +32,7 @@
         "tags": [ "button", "button-complete-loot" ],
         "children": [
             {
-                "position": { "x": 51, "y": 9 },
+                "position": { "x": 58, "y": 10 },
                 "text": { "size": 12, "text": "GO NEXT" },
                 "tags": [ "button-text" ],
                 "children": []

@@ -8,7 +8,7 @@
         "tags": [  ],
         "children": [
             {
-                "position": { "x": 237, "y": 40 },
+                "position": { "x": 255, "y": 40 },
                 "text": { "size": 36, "text": "Game Menu" },
                 "tags": [ "gamemenu-title" ],
                 "children": []
@@ -22,7 +22,7 @@
                 "tags": [ "button", "gamemenu-continue-btn" ],
                 "children": [
                     {
-                        "position": { "x": 50, "y": 10 },
+                        "position": { "x": 57, "y": 10 },
                         "text": { "size": 12, "text": "Continue" },
                         "tags": [ "button-text" ],
                         "children": []
@@ -38,7 +38,7 @@
                 "tags": [ "button", "gamemenu-items-btn" ],
                 "children": [
                     {
-                        "position": { "x": 62, "y": 10 },
+                        "position": { "x": 66, "y": 10 },
                         "text": { "size": 12, "text": "Items" },
                         "tags": [ "button-text" ],
                         "children": []
@@ -54,7 +54,7 @@
                 "tags": [ "button", "gamemenu-settings-btn" ],
                 "children": [
                     {
-                        "position": { "x": 53, "y": 10 },
+                        "position": { "x": 60, "y": 10 },
                         "text": { "size": 12, "text": "Settings" },
                         "tags": [ "button-text" ],
                         "children": []
@@ -70,7 +70,7 @@
                 "tags": [ "button", "gamemenu-exit-btn" ],
                 "children": [
                     {
-                        "position": { "x": 43, "y": 10 },
+                        "position": { "x": 51, "y": 10 },
                         "text": { "size": 12, "text": "Main Menu" },
                         "tags": [ "button-text" ],
                         "children": []

@@ -21,9 +21,10 @@ ref: reroll in store for resource instead of money
 ref: combat strategy replace on cost failure
 ref: images
 * main screen
-* trader screen: half-open street with shop sign, halp-inside shop with stolls
 ref: loot - move buttons on border unopened tiles (path find!)
 ref: attack animation redraw
+ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: boolm count: int]
+ref: unify sprite and flipbook initialization
 
 fix: loot hero move animations: up-down
 fix: плавающий; предмет не сохранился в коллекции

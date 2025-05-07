@@ -23,7 +23,7 @@
         "tags": [ "button", "shop-item-buy-btn" ],
         "children": [
             {
-                "position": { "x": 11, "y": 3 },
+                "position": { "x": 13, "y": 3 },
                 "text": { "size": 10, "text": "[PRICE]" },
                 "tags": [ "shop-item-price-text", "button-text" ],
                 "children": []
@@ -39,9 +39,9 @@
         "tags": [ "shop-item-sold-panel" ],
         "children": [
             {
-                "position": { "x": 6, "y": 2 },
+                "position": { "x": 9, "y": 2 },
                 "text": { "size": 12, "text": "SOLD" },
-                "tags": [],
+                "tags": [ "button-text" ],
                 "children": []
             }
         ]

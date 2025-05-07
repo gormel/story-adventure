@@ -4,15 +4,15 @@
         "scope": "json",
         "body": [
             "\"${1:item-name}\": {",
-            "\t\"atlas\": \"atlases/items.json\",",
-            "\t\"sprite\": \"${2:item-sprite}\",",
-            "\t\"parameters\": {",
-            "\t\t$0",
+            "\t\"view\": {",
+            "\t\t\"atlas\": \"atlases/items.json\",",
+            "\t\t\"sprite\": \"${2:item-sprite}\",",
+            "\t\t\"name\": \"Item Name\",",
+            "\t\t\"description\": \"Item description (may contains \\${param})\"",
             "\t},",
-            "\t\"one_time\": ${3:true},",
-            "\t\"name\": \"Item Name\",",
-            "\t\"description\": \"Item description (may contains \\${param})\"",
-            "},",
+            "\t\"parameters\": {},",
+            "\t\"one_time_parameters\": {}",
+            "},"
         ]
     }
 }

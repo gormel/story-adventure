@@ -15,7 +15,7 @@
             {
                 "position": { "x": 83, "y": 119 },
                 "text": { "size": 15, "text": "[STALL_NAME]" },
-                "tags": [ "shop-stall-name-text" ],
+                "tags": [ "shop-stall-name-text", "button-text" ],
                 "children": []
             },
             {
@@ -30,7 +30,7 @@
             {
                 "position": { "x": 225, "y": 120 },
                 "text": { "size": 15, "text": "[REROLL_COST]" },
-                "tags": [ "shop-stall-rerollcost-text" ],
+                "tags": [ "shop-stall-rerollcost-text", "button-text" ],
                 "children": []
             }
         ]

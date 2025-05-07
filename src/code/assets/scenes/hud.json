@@ -37,7 +37,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0/0" },
+                "text": { "size": 16, "text": "0 / 0" },
                 "tags": [ "health-view" ],
                 "children": []
             }
@@ -58,7 +58,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0/0" },
+                "text": { "size": 16, "text": "0 / 0" },
                 "tags": [ "stamina-view" ],
                 "children": []
             }
@@ -79,7 +79,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0" },
+                "text": { "size": 16, "text": "0" },
                 "tags": [ "gold-view" ],
                 "children": []
             }
@@ -100,7 +100,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0" },
+                "text": { "size": 16, "text": "0" },
                 "tags": [ "armor-view" ],
                 "children": []
             }
@@ -121,7 +121,7 @@
             },
             {
                 "position": { "x": 35, "y": 8 },
-                "text": { "size": 12, "text": "0" },
+                "text": { "size": 16, "text": "0" },
                 "tags": [ "attack-view" ],
                 "children": []
             }

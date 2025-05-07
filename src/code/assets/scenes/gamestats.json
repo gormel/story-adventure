@@ -14,7 +14,7 @@
                 "children": []
             },
             {
-                "position": { "x": 144, "y": 108 },
+                "position": { "x": 149, "y": 108 },
                 "text": { "size": 15, "text": "Items:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
@@ -29,7 +29,7 @@
                 "children": []
             },
             {
-                "position": { "x": 144, "y": 159 },
+                "position": { "x": 151, "y": 159 },
                 "text": { "size": 15, "text": "Depth:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
@@ -41,7 +41,7 @@
                 "children": []
             },
             {
-                "position": { "x": 149, "y": 210 },
+                "position": { "x": 154, "y": 210 },
                 "text": { "size": 15, "text": "Slain:" },
                 "tags": [ "gamestats-info-name-text" ],
                 "children": []
@@ -61,7 +61,7 @@
                 "tags": [ "button", "gamestats-button-continue" ],
                 "children": [
                     {
-                        "position": { "x": 50, "y": 12 },
+                        "position": { "x": 57, "y": 10 },
                         "text": { "size": 12, "text": "Continue" },
                         "tags": [ "button-text" ],
                         "children": []
