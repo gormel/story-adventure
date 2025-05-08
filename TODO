@@ -10,19 +10,18 @@ fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
 
 ref: unify sprite and flipbook initialization
+ref: attack animation redraw
+ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: boolm count: int]
+ref: combat strategy replace on cost failure
+ref: itemcollection, statistics, shop: move item to itemtemplate scene
+ref: reroll in store for resource instead of money
+ref: loot - move buttons on border unopened tiles (path find!)
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy
 * fish
 * snake
 * rat
-ref: extract view creation from update
-ref: itemcollection, statistics, shop: move item to itemtemplate scene
-ref: reroll in store for resource instead of money
-ref: combat strategy replace on cost failure
-ref: loot - move buttons on border unopened tiles (path find!)
-ref: attack animation redraw
-ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: boolm count: int]
 
 fix: loot hero move animations: up-down
 fix: плавающий; предмет не сохранился в коллекции
