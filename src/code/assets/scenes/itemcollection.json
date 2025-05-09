@@ -1,9 +1,9 @@
 [
     {
         "position": { "x": 0, "y": 0 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "popup_bg"
+            "image": "popup_bg"
         },
         "tags": [  ],
         "children": [
@@ -15,9 +15,9 @@
             },
             {
                 "position": { "x": 117, "y": 103 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "itemcollection-grid-bg"
+                    "image": "itemcollection-grid-bg"
                 },
                 "tags": [ ],
                 "children": [
@@ -30,9 +30,9 @@
             },
             {
                 "position": { "x": 262, "y": 369 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "itemcollection-continue-btn" ],
                 "children": [

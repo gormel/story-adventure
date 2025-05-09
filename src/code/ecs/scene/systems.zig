@@ -16,17 +16,10 @@ fn createGameObjects(reg: *ecs.Registry, parent_ety: ecs.Entity, obj_description
         reg.add(obj_ety, cmp.InitGameObject { .tags = obj_description.tags, .scene = scene });
         reg.add(obj_ety, rcmp.Order { .order = @intCast(idx) });
 
-        if (obj_description.sprite) |obj_sprite| {
-            reg.add(obj_ety, rcmp.SpriteResource {
-                .atlas =  obj_sprite.atlas,
-                .sprite = obj_sprite.sprite,
-            });
-        }
-
-        if (obj_description.flipbook) |obj_flipbook| {
-            reg.add(obj_ety, rcmp.FlipbookResource {
-                .atlas =  obj_flipbook.atlas,
-                .flipbook = obj_flipbook.animation,
+        if (obj_description.image) |obj_image| {
+            reg.add(obj_ety, rcmp.ImageResource {
+                .atlas =  obj_image.atlas,
+                .image = obj_image.image,
             });
         }
 

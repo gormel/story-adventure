@@ -1,9 +1,9 @@
 [
     {
         "position": { "x": 0, "y": 0 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "popup_bg"
+            "image": "popup_bg"
         },
         "tags": [  ],
         "children": [
@@ -21,9 +21,9 @@
             },
             {
                 "position": { "x": 205, "y": 97 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "popup_panel_bg"
+                    "image": "popup_panel_bg"
                 },
                 "tags": [ "gamestats-item-list" ],
                 "children": []
@@ -54,9 +54,9 @@
             },
             {
                 "position": { "x": 262, "y": 369 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "gamestats-button-continue" ],
                 "children": [

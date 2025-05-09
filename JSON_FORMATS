@@ -26,9 +26,9 @@ scene:
 [
     {
         "position": { "x": 100, "y": 150 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/star.json",
-            "sprite": "star"
+            "image": "star"
         },
         "text": { "size": 15, "text": "abra-cadabra" },
         "tags": [ "user", "blink" ],
@@ -56,7 +56,7 @@ items:
 {
     "potion-hp-small": {
         "atlas": "atlases/items.json",
-        "sprite": "potion-red",
+        "image": "potion-red",
         "parameters": {
             "health": 100,
             "stamina": -20
@@ -84,7 +84,7 @@ loot_scene:
         {
             "weight": 1,
             "atlas": "tiles.json",
-            "sprite": "cross",
+            "image": "cross",
             "connections": [
                 "UP",
                 "LEFT",

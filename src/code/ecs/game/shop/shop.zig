@@ -17,7 +17,7 @@ pub const StallCfg = struct {
 
 pub const ShopHoverViewCfg = struct {
     atlas: []const u8,
-    sprite: []const u8,
+    image: []const u8,
 };
 
 pub const ShopRerollCostCfg = struct {

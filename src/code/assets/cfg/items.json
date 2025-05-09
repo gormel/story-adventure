@@ -2,7 +2,7 @@
     "potion-hp-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-red-cmn",
+            "image": "potion-red-cmn",
             "name": "HP Potion",
             "description": "hp +${health}"
         },
@@ -14,7 +14,7 @@
     "potion-hp-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-red-rare",
+            "image": "potion-red-rare",
             "name": "HP Potion",
             "description": "hp +${health}"
         },
@@ -26,7 +26,7 @@
     "potion-hp-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-red-epic",
+            "image": "potion-red-epic",
             "name": "HP Potion",
             "description": "hp +${health}"
         },
@@ -38,7 +38,7 @@
     "potion-stamina-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-yellow-cmn",
+            "image": "potion-yellow-cmn",
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
@@ -50,7 +50,7 @@
     "potion-stamina-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-yellow-rare",
+            "image": "potion-yellow-rare",
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
@@ -62,7 +62,7 @@
     "potion-stamina-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "potion-yellow-epic",
+            "image": "potion-yellow-epic",
             "name": "Stamina Potion",
             "description": "stamina +${stamina}"
         },
@@ -74,7 +74,7 @@
     "sword-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "sword-cmn",
+            "image": "sword-cmn",
             "name": "Just a sword",
             "description": "dmg +${attack}"
         },
@@ -86,7 +86,7 @@
     "sword-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "sword-rare",
+            "image": "sword-rare",
             "name": "Just a sword",
             "description": "dmg +${attack}"
         },
@@ -98,7 +98,7 @@
     "sword-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "sword-epic",
+            "image": "sword-epic",
             "name": "Just a sword",
             "description": "dmg +${attack}"
         },
@@ -110,7 +110,7 @@
     "star-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "star-cmn",
+            "image": "star-cmn",
             "name": "Morning Star",
             "description": "Allows shread attack \n\ndmg +${attack}"
         },
@@ -123,7 +123,7 @@
     "star-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "star-rare",
+            "image": "star-rare",
             "name": "Morning Star",
             "description": "Allows shread attack \n\ndmg +${attack}"
         },
@@ -136,7 +136,7 @@
     "star-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "star-epic",
+            "image": "star-epic",
             "name": "Morning Star",
             "description": "Allows shread attack \n\ndmg +${attack}"
         },
@@ -149,7 +149,7 @@
     "spear-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "spear-cmn",
+            "image": "spear-cmn",
             "name": "Spear",
             "description": "Allows double attack \n\ndmg +${attack}"
         },
@@ -162,7 +162,7 @@
     "spear-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "spear-rare",
+            "image": "spear-rare",
             "name": "Spear",
             "description": "Allows double attack \n\ndmg +${attack}"
         },
@@ -175,7 +175,7 @@
     "spear-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "spear-epic",
+            "image": "spear-epic",
             "name": "Spear",
             "description": "Allows double attack \n\ndmg +${attack}"
         },
@@ -188,7 +188,7 @@
     "heavy-spear-cmn": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "heavy-spear-cmn",
+            "image": "heavy-spear-cmn",
             "name": "Heavy Spear",
             "description": "Allows heavy attack \n\ndmg +${attack}"
         },
@@ -201,7 +201,7 @@
     "heavy-spear-rare": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "heavy-spear-rare",
+            "image": "heavy-spear-rare",
             "name": "Heavy Spear",
             "description": "Allows heavy attack \n\ndmg +${attack}"
         },
@@ -214,7 +214,7 @@
     "heavy-spear-epic": {
         "view": {
             "atlas": "atlases/items.json",
-            "sprite": "heavy-spear-epic",
+            "image": "heavy-spear-epic",
             "name": "Heavy Spear",
             "description": "Allows heavy attack \n\ndmg +${attack}"
         },

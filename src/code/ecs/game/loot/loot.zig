@@ -20,7 +20,7 @@ pub const Side = enum {
 pub const TileCfg = struct {
     weight: f64,
     atlas: []const u8,
-    sprite: []const u8,
+    image: []const u8,
     connections: [] Side,
 };
 
@@ -51,16 +51,16 @@ pub const LootOpenableViewCfg = struct {
 
 pub const LootHeroViewCfg = struct {
     atlas: []const u8,
-    idle_anim: []const u8,
-    left_anim: []const u8,
-    up_anim: []const u8,
-    right_anim: []const u8,
-    down_anim: []const u8,
+    idle_image: []const u8,
+    left_image: []const u8,
+    up_image: []const u8,
+    right_image: []const u8,
+    down_image: []const u8,
 };
 
 pub const LootFogViewCfg = struct {
     atlas: []const u8,
-    sprite: []const u8,
+    image: []const u8,
 };
 
 pub const LootCfg = struct {

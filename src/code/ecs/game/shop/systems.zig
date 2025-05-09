@@ -254,17 +254,17 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
             reg.add(icon_ety, cmp.ItemInfoBtn { .item = setup.item });
             reg.add(icon_ety, gcmp.CreateButton { .animated = false });
             reg.add(icon_ety, rcmp.AttachTo { .target = entity });
-            reg.add(icon_ety, rcmp.SpriteResource {
+            reg.add(icon_ety, rcmp.ImageResource {
                 .atlas = item_cfg.view.atlas,
-                .sprite = item_cfg.view.sprite,
+                .image = item_cfg.view.image,
             });
 
             const hover_ety = reg.create();
             reg.add(hover_ety, rcmp.AttachTo { .target = icon_ety });
             reg.add(hover_ety, rcmp.Disabled {});
-            reg.add(hover_ety, rcmp.SpriteResource {
+            reg.add(hover_ety, rcmp.ImageResource {
                 .atlas = cfg.cfg.value.hover_view.atlas,
-                .sprite = cfg.cfg.value.hover_view.sprite,
+                .image = cfg.cfg.value.hover_view.image,
             });
 
             reg.add(icon_ety, gcmp.Hover { .entity = hover_ety });

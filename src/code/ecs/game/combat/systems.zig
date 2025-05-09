@@ -42,9 +42,9 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
     if (cfg.strategy.map.get(strategy)) |strategy_cfg| {
         const icon_ety = reg.create();
         reg.add(icon_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
-        reg.add(icon_ety, rcmp.SpriteResource {
+        reg.add(icon_ety, rcmp.ImageResource {
             .atlas = strategy_cfg.view.atlas,
-            .sprite = strategy_cfg.view.icon,
+            .image = strategy_cfg.view.icon,
         });
         reg.add(icon_ety, gcmp.CreateButton {});
         reg.add(icon_ety, cmp.StrategyButton { .strategy_id = strategy });
@@ -127,9 +127,9 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
                 .x = -CHARACTER_SPRITE_SIZE / 2,
                 .y = -CHARACTER_SPRITE_SIZE / 2,
             });
-            reg.add(sprite_ety, rcmp.SpriteResource {
+            reg.add(sprite_ety, rcmp.ImageResource {
                 .atlas = cfg_json.value.hero_view.atlas,
-                .sprite = cfg_json.value.hero_view.idle,
+                .image = cfg_json.value.hero_view.idle,
             });
             reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
 
@@ -170,9 +170,9 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
                     .x = -CHARACTER_SPRITE_SIZE / 2,
                     .y = -CHARACTER_SPRITE_SIZE / 2,
                 });
-                reg.add(sprite_ety, rcmp.SpriteResource {
+                reg.add(sprite_ety, rcmp.ImageResource {
                     .atlas = enemy_cfg.view.atlas,
-                    .sprite = enemy_cfg.view.idle,
+                    .image = enemy_cfg.view.idle,
                 });
                 reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
 
@@ -213,9 +213,9 @@ fn createAttackEffect(
     const image_ety = reg.create();
     reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
     reg.add(image_ety, rcmp.AttachTo { .target = projectile_ety });
-    reg.add(image_ety, rcmp.SpriteResource {
+    reg.add(image_ety, rcmp.ImageResource {
         .atlas = attack_cfg.atlas,
-        .sprite = attack_cfg.effect,
+        .image = attack_cfg.effect,
     });
 
     const x_tween_ety = reg.create();
@@ -372,9 +372,9 @@ fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackV
     const image_ety = reg.create();
     reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
     reg.add(image_ety, rcmp.AttachTo { .target = particle_ety });
-    reg.add(image_ety, rcmp.SpriteResource {
+    reg.add(image_ety, rcmp.ImageResource {
         .atlas = attack_cfg.atlas,
-        .sprite = attack_cfg.effect,
+        .image = attack_cfg.effect,
     });
 
     const x_scale_ety = reg.create();

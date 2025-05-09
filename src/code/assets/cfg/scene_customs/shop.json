@@ -47,7 +47,7 @@
     },
     "hover_view": {
         "atlas": "atlases/gui.json",
-        "sprite": "item-icon-highlight"
+        "image": "item-icon-highlight"
     },
     "money_property": "gold",
     "reroll_cost": {

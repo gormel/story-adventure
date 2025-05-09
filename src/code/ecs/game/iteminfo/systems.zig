@@ -86,9 +86,9 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
             if (items_cfg.map.get(setup.item)) |item_cfg| {
                 const icon_ety = reg.create();
 
-                reg.add(icon_ety, rcmp.SpriteResource {
+                reg.add(icon_ety, rcmp.ImageResource {
                     .atlas = item_cfg.view.atlas,
-                    .sprite = item_cfg.view.sprite,
+                    .image = item_cfg.view.image,
                 });
                 reg.add(icon_ety, rcmp.AttachTo { .target = root_ety });
             }

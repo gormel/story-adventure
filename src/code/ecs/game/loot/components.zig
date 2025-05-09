@@ -31,11 +31,11 @@ pub const Loot = struct { tile: ecs.Entity, item_name: []const u8 };
 pub const LootViewTween = struct {};
 
 pub const Character = struct {
-    idle_anim: ecs.Entity,
-    l_anim: ecs.Entity,
-    u_anim: ecs.Entity,
-    r_anim: ecs.Entity,
-    d_anim: ecs.Entity,
+    idle_image: ecs.Entity,
+    l_image: ecs.Entity,
+    u_image: ecs.Entity,
+    r_image: ecs.Entity,
+    d_image: ecs.Entity,
     tile: ecs.Entity,
 };
 pub const CharacterMoveTween = struct { char_entity: ecs.Entity, axis: rcmp.Axis, reset_anim: bool = true };

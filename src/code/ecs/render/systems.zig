@@ -11,7 +11,10 @@ const cmp = @import("components.zig");
 const Destroyed = @import("../core/components.zig").Destroyed;
 const DestroyNextFrame = @import("../core/components.zig").DestroyNextFrame;
 
-const NoParentGlobalTransform = error { NoParentGlobalTransform };
+const Error = error {
+    NoParentGlobalTransform,
+    CannotLoadSpriteOrFlipbook,
+};
 
 pub fn initFont(reg: *ecs.Registry, res: *rs.Resources) void {
     const holder_ety = reg.create();
@@ -22,6 +25,26 @@ pub fn initFont(reg: *ecs.Registry, res: *rs.Resources) void {
 }
 
 pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
+    var image_view = reg.view(.{ cmp.ImageResource }, .{ cmp.Sprite, cmp.Flipbook });
+    var image_iter = image_view.entityIterator();
+    while (image_iter.next()) |entity| {
+        const res_c = reg.get(cmp.ImageResource, entity);
+        if (res.loadSprite(res_c.atlas, res_c.image) catch null) |sprite| {
+            reg.add(entity, cmp.Sprite {
+                .sprite = sprite,
+            });
+        } else if (res.loadFlipbook(res_c.atlas, res_c.image) catch null) |flipbook| {
+            reg.add(entity, cmp.Flipbook {
+                .time = flipbook.duration,
+                .flipbook = flipbook,
+            });
+        } else {
+            return Error.CannotLoadSpriteOrFlipbook;
+        }
+        
+        reg.remove(cmp.ImageResource, entity);
+    }
+
     var sprite_view = reg.view(.{ cmp.SpriteResource }, .{ cmp.Sprite });
     var sprite_iter = sprite_view.entityIterator();
     while (sprite_iter.next()) |entity| {
@@ -45,14 +68,14 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     }
 }
 
-fn doUpdateGlobalTransform(reg: *ecs.Registry, entity: ecs.Entity) (NoParentGlobalTransform || error {OutOfMemory})!void {
+fn doUpdateGlobalTransform(reg: *ecs.Registry, entity: ecs.Entity) (Error || error {OutOfMemory})!void {
     if (reg.tryGet(cmp.Parent, entity)) |parent| {
         if (
                !reg.has(cmp.GlobalPosition, parent.entity)
             or !reg.has(cmp.GlobalRotation, parent.entity)
             or !reg.has(cmp.GlobalScale, parent.entity)
         ) {
-            return error.NoParentGlobalTransform;
+            return Error.NoParentGlobalTransform;
         }
 
         const parent_position = reg.getConst(cmp.GlobalPosition, parent.entity);

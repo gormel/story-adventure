@@ -9,11 +9,11 @@
     },
     "hero_view": {
         "atlas": "atlases/gameplay.json",
-        "idle_anim": "hero_idle",
-        "left_anim": "hero_left",
-        "up_anim": "hero_up",
-        "right_anim": "hero_right",
-        "down_anim": "hero_down"
+        "idle_image": "hero_idle",
+        "left_image": "hero_left",
+        "up_image": "hero_up",
+        "right_image": "hero_right",
+        "down_image": "hero_down"
     },
     "field_size": {
         "min_x": -4,
@@ -23,7 +23,7 @@
     },
     "fog_view": {
         "atlas": "atlases/gameplay.json",
-        "sprite": "hidden_loot"
+        "image": "hidden_loot"
     },
     "openable_view": {
         "atlas": "atlases/gameplay.json",
@@ -36,7 +36,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lurd",
+            "image": "tile_lurd",
             "connections": [
                 "UP",
                 "LEFT",
@@ -47,7 +47,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lu",
+            "image": "tile_lu",
             "connections": [
                 "UP",
                 "LEFT"
@@ -56,7 +56,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lr",
+            "image": "tile_lr",
             "connections": [
                 "LEFT",
                 "RIGHT"
@@ -65,7 +65,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_ld",
+            "image": "tile_ld",
             "connections": [
                 "LEFT",
                 "DOWN"
@@ -74,7 +74,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_ur",
+            "image": "tile_ur",
             "connections": [
                 "UP",
                 "RIGHT"
@@ -83,7 +83,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_ud",
+            "image": "tile_ud",
             "connections": [
                 "UP",
                 "DOWN"
@@ -92,7 +92,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_rd",
+            "image": "tile_rd",
             "connections": [
                 "DOWN",
                 "RIGHT"
@@ -101,7 +101,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_urd",
+            "image": "tile_urd",
             "connections": [
                 "UP",
                 "DOWN",
@@ -111,7 +111,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lrd",
+            "image": "tile_lrd",
             "connections": [
                 "LEFT",
                 "DOWN",
@@ -121,7 +121,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lud",
+            "image": "tile_lud",
             "connections": [
                 "UP",
                 "LEFT",
@@ -131,7 +131,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_lur",
+            "image": "tile_lur",
             "connections": [
                 "UP",
                 "LEFT",
@@ -141,7 +141,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_l",
+            "image": "tile_l",
             "connections": [
                 "LEFT"
             ]
@@ -149,7 +149,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_u",
+            "image": "tile_u",
             "connections": [
                 "UP"
             ]
@@ -157,7 +157,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_r",
+            "image": "tile_r",
             "connections": [
                 "RIGHT"
             ]
@@ -165,7 +165,7 @@
         {
             "weight": 1,
             "atlas": "atlases/gameplay.json",
-            "sprite": "tile_d",
+            "image": "tile_d",
             "connections": [
                 "DOWN"
             ]

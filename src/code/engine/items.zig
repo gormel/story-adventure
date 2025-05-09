@@ -6,7 +6,7 @@ const condition = @import("../engine/condition.zig");
 
 pub const ItemViewCfg = struct {
     atlas: []const u8,
-    sprite: []const u8,
+    image: []const u8,
     name: [:0]const u8,
     description: [:0]const u8,
 };

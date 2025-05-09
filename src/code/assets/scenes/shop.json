@@ -6,9 +6,9 @@
     },
     {
         "position": { "x": 0, "y": 0 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/shop-bg.json",
-            "sprite": "shop-bg"
+            "image": "shop-bg"
         },
         "tags": [  ],
         "children": []
@@ -35,9 +35,9 @@
     },
     {
         "position": { "x": 589, "y": 533 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "button-160x32"
+            "image": "button-160x32"
         },
         "tags": [ "button", "shop-next-btn" ],
         "children": [

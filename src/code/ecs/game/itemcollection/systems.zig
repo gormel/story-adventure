@@ -98,9 +98,9 @@ pub fn gui(
 
                     const item_ety = reg.create();
                     reg.add(item_ety, rcmp.AttachTo { .target = row_ety });
-                    reg.add(item_ety, rcmp.SpriteResource {
+                    reg.add(item_ety, rcmp.ImageResource {
                         .atlas = item_kv.value_ptr.view.atlas,
-                        .sprite = item_kv.value_ptr.view.sprite,
+                        .image = item_kv.value_ptr.view.image,
                     });
                     reg.add(item_ety, gcmp.CreateButton { .animated = false });
                     reg.add(item_ety, cmp.ItemBtn { .item = item_kv.key_ptr.* });
@@ -108,9 +108,9 @@ pub fn gui(
                     const hover_ety = reg.create();
                     reg.add(hover_ety, rcmp.Disabled {});
                     reg.add(hover_ety, rcmp.AttachTo { .target = item_ety });
-                    reg.add(hover_ety, rcmp.SpriteResource {
+                    reg.add(hover_ety, rcmp.ImageResource {
                         .atlas = cfg_json.value.item_hover_view.atlas,
-                        .sprite = cfg_json.value.item_hover_view.sprite,
+                        .image = cfg_json.value.item_hover_view.image,
                     });
                     reg.add(item_ety, gcmp.Hover { .entity = hover_ety });
                 }

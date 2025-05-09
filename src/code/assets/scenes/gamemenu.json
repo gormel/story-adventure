@@ -1,9 +1,9 @@
 [
     {
         "position": { "x": 0, "y": 0 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "popup_bg"
+            "image": "popup_bg"
         },
         "tags": [  ],
         "children": [
@@ -15,9 +15,9 @@
             },
             {
                 "position": { "x": 261, "y": 131 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-continue-btn" ],
                 "children": [
@@ -31,9 +31,9 @@
             },
             {
                 "position": { "x": 261, "y": 177 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-items-btn" ],
                 "children": [
@@ -47,9 +47,9 @@
             },
             {
                 "position": { "x": 261, "y": 223 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-settings-btn" ],
                 "children": [
@@ -63,9 +63,9 @@
             },
             {
                 "position": { "x": 261, "y": 269 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-160x32"
+                    "image": "button-160x32"
                 },
                 "tags": [ "button", "gamemenu-exit-btn" ],
                 "children": [

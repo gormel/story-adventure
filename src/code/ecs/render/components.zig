@@ -24,6 +24,8 @@ pub const ColorComponent = enum {
 };
 pub const Axis = enum { X, Y, XY };
 
+pub const ImageResource = struct { atlas: []const u8, image: []const u8 };
+
 pub const SpriteResource = struct { atlas: []const u8, sprite: []const u8 };
 pub const Sprite = struct { sprite: sp.Sprite };
 

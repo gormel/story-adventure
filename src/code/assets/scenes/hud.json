@@ -6,18 +6,18 @@
     },
     {
         "position": { "x": -310, "y": -93 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "itemcollection-grid-bg"
+            "image": "itemcollection-grid-bg"
         },
         "tags": [  ],
         "children": []
     },
     {
         "position": { "x": 642, "y": -133 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "itemcollection-grid-bg"
+            "image": "itemcollection-grid-bg"
         },
         "tags": [  ],
         "children": []
@@ -28,9 +28,9 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "heart"
+                    "image": "heart"
                 },
                 "tags": [],
                 "children": []
@@ -49,9 +49,9 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "power"
+                    "image": "power"
                 },
                 "tags": [],
                 "children": []
@@ -70,9 +70,9 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "coin"
+                    "image": "coin"
                 },
                 "tags": [],
                 "children": []
@@ -91,9 +91,9 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "shield"
+                    "image": "shield"
                 },
                 "tags": [],
                 "children": []
@@ -112,9 +112,9 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "sword"
+                    "image": "sword"
                 },
                 "tags": [],
                 "children": []
@@ -133,18 +133,18 @@
         "children": [
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "button-32x32"
+                    "image": "button-32x32"
                 },
                 "tags": [ "button", "hud-gamemenu-btn" ],
                 "children": []
             },
             {
                 "position": { "x": 0, "y": 0 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "burger"
+                    "image": "burger"
                 },
                 "tags": [  ],
                 "children": []

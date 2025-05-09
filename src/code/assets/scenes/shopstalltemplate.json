@@ -1,9 +1,9 @@
 [
     {
         "position": { "x": 0, "y": 0 },
-        "sprite": {
+        "image": {
             "atlas": "atlases/gui.json",
-            "sprite": "stall-bg"
+            "image": "stall-bg"
         },
         "tags": [  ],
         "children": [
@@ -20,9 +20,9 @@
             },
             {
                 "position": { "x": 200, "y": 116 },
-                "sprite": {
+                "image": {
                     "atlas": "atlases/gui.json",
-                    "sprite": "stall-refresh"
+                    "image": "stall-refresh"
                 },
                 "tags": [ "button", "shop-stall-refresh-btn" ],
                 "children": []

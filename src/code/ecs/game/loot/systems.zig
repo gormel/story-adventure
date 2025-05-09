@@ -35,9 +35,9 @@ const TileSizeY = 32;
 
 fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity, cfg: *const loot.LootCfg) ecs.Entity {
     const fog_ety = reg.create();
-    reg.add(fog_ety, rcmp.SpriteResource {
+    reg.add(fog_ety, rcmp.ImageResource {
         .atlas = cfg.fog_view.atlas,
-        .sprite = cfg.fog_view.sprite,
+        .image = cfg.fog_view.image,
     });
     reg.add(fog_ety, rcmp.AttachTo {
         .target = tile_ety,
@@ -56,16 +56,16 @@ fn createOpenable(
     cfg: *const loot.LootCfg,
     side: loot.Side
 ) ecs.Entity {
-    const sprite = switch (side) {
+    const image = switch (side) {
         .LEFT => cfg.openable_view.l,
         .UP => cfg.openable_view.u,
         .RIGHT => cfg.openable_view.r,
         .DOWN => cfg.openable_view.d,
     };
     const entity = reg.create();
-    reg.add(entity, rcmp.SpriteResource {
+    reg.add(entity, rcmp.ImageResource {
         .atlas = cfg.openable_view.atlas,
-        .sprite = sprite,
+        .image = image,
     });
     reg.add(entity, rcmp.AttachTo {
         .target = tile_ety,
@@ -101,13 +101,13 @@ fn createCharacterAnim(
     reg: *ecs.Registry,
     char_ety: ecs.Entity,
     visible: bool,
-    anim: []const u8,
+    image: []const u8,
     cfg: *const loot.LootCfg
 ) ecs.Entity {
     const entity = reg.create();
-    reg.add(entity, rcmp.FlipbookResource {
+    reg.add(entity, rcmp.ImageResource {
         .atlas = cfg.hero_view.atlas,
-        .flipbook = anim,
+        .image = image,
     });
     reg.add(entity, rcmp.AttachTo {
         .target = char_ety,
@@ -130,11 +130,11 @@ fn createCharacter(reg: *ecs.Registry, parent_ety: ecs.Entity, tile_ety: ecs.Ent
     reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.PLAYER });
     reg.add(entity, cmp.Character {
-        .idle_anim = createCharacterAnim(reg, entity, true, cfg.hero_view.idle_anim, cfg),
-        .l_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.left_anim, cfg),
-        .u_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.up_anim, cfg),
-        .r_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.right_anim, cfg),
-        .d_anim = createCharacterAnim(reg, entity, false, cfg.hero_view.down_anim, cfg),
+        .idle_image = createCharacterAnim(reg, entity, true, cfg.hero_view.idle_image, cfg),
+        .l_image = createCharacterAnim(reg, entity, false, cfg.hero_view.left_image, cfg),
+        .u_image = createCharacterAnim(reg, entity, false, cfg.hero_view.up_image, cfg),
+        .r_image = createCharacterAnim(reg, entity, false, cfg.hero_view.right_image, cfg),
+        .d_image = createCharacterAnim(reg, entity, false, cfg.hero_view.down_image, cfg),
         .tile = tile_ety,
     });
 }
@@ -232,24 +232,24 @@ fn animateCharacter(
 
     if (toDirection(dx, dy)) |dir| {
         const char = reg.get(cmp.Character, char_ety);
-        var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
+        var imgs = [_]ecs.Entity { char.idle_image, char.l_image, char.u_image, char.r_image, char.d_image };
         
         switch (dir) {
             .LEFT => {
                 createCharacterTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
-                showAnimation(&anims, 1, reg);
+                showAnimation(&imgs, 1, reg);
             },
             .UP => {
                 createCharacterTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
-                showAnimation(&anims, 2, reg);
+                showAnimation(&imgs, 2, reg);
             },
             .RIGHT => {
                 createCharacterTween(reg, char_ety, from_tile_pos.x, to_tile_pos.x, rcmp.Axis.X);
-                showAnimation(&anims, 3, reg);
+                showAnimation(&imgs, 3, reg);
             },
             .DOWN => {
                 createCharacterTween(reg, char_ety, from_tile_pos.y, to_tile_pos.y, rcmp.Axis.Y);
-                showAnimation(&anims, 4, reg);
+                showAnimation(&imgs, 4, reg);
             },
         }
     }
@@ -332,9 +332,9 @@ fn rollLoot(
             ) orelse 0;
 
             const entity = reg.create();
-            reg.add(entity, rcmp.SpriteResource {
+            reg.add(entity, rcmp.ImageResource {
                 .atlas = item.view.atlas,
-                .sprite = item.view.sprite,
+                .image = item.view.image,
             });
             reg.add(entity, rcmp.AttachTo {
                 .target = tile_ety,
@@ -435,9 +435,9 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                 if (try index.rollTile(at.x, at.y)) |tile_cfg| {
                     if (index.add(at.x, at.y, tile_cfg)) {
                         const tile_ety = reg.create();
-                        reg.add(tile_ety, rcmp.SpriteResource {
+                        reg.add(tile_ety, rcmp.ImageResource {
                             .atlas = tile_cfg.atlas,
-                            .sprite = tile_cfg.sprite,
+                            .image = tile_cfg.image,
                         });
                         reg.add(tile_ety, rcmp.Position {
                             .x = @as(f32, @floatFromInt((at.x - center.x) * TileSizeX)),
@@ -523,8 +523,8 @@ pub fn character(reg: *ecs.Registry) void {
         const tween = reg.get(cmp.CharacterMoveTween, entity);
         if (tween.reset_anim) {
             const char = reg.get(cmp.Character, tween.char_entity);
-            var anims = [_]ecs.Entity { char.idle_anim, char.l_anim, char.u_anim, char.r_anim, char.d_anim };
-            showAnimation(&anims, 0, reg);
+            var imgs = [_]ecs.Entity { char.idle_image, char.l_image, char.u_image, char.r_image, char.d_image };
+            showAnimation(&imgs, 0, reg);
         }
     }
 }
@@ -645,9 +645,9 @@ fn cleanupLoot(
 
             if (items.map.get(loot_cmp.item_name)) |item_cfg| {
                 const effect = reg.create();
-                reg.add(effect, rcmp.SpriteResource {
+                reg.add(effect, rcmp.ImageResource {
                     .atlas = item_cfg.view.atlas,
-                    .sprite = item_cfg.view.sprite,
+                    .image = item_cfg.view.image,
                 });
                 reg.add(effect, rcmp.Position { .x = pos.x, .y = pos.y });
                 reg.add(effect, rcmp.AttachTo { .target = null });

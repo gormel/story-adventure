@@ -9,7 +9,6 @@ fea: game intro + scene story intro
 fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
 
-ref: unify sprite and flipbook initialization
 ref: attack animation redraw
 ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: boolm count: int]
 ref: combat strategy replace on cost failure

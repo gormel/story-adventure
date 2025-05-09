@@ -97,18 +97,18 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
             const item_count = props.get(kv.key_ptr.*);
             if (item_count > 0) {
                 const item_ety = reg.create();
-                reg.add(item_ety, rcmp.SpriteResource {
+                reg.add(item_ety, rcmp.ImageResource {
                     .atlas = kv.value_ptr.view.atlas,
-                    .sprite = kv.value_ptr.view.sprite,
+                    .image = kv.value_ptr.view.image,
                 });
                 reg.add(item_ety, rcmp.AttachTo { .target = root_ety });
                 reg.add(item_ety, gcmp.CreateButton { .animated = false });
                 reg.add(item_ety, cmp.ItemBtn { .item = kv.key_ptr.* });
                 
                 const hover_ety = reg.create();
-                reg.add(hover_ety, rcmp.SpriteResource {
+                reg.add(hover_ety, rcmp.ImageResource {
                     .atlas = cfg_json.value.item_hover_view.atlas,
-                    .sprite = cfg_json.value.item_hover_view.sprite,
+                    .image = cfg_json.value.item_hover_view.image,
                 });
                 reg.add(hover_ety, rcmp.AttachTo { .target = item_ety });
                 reg.add(hover_ety, rcmp.Disabled {});
