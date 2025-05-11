@@ -42,7 +42,6 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity, cfg: *const loot.LootCfg)
     reg.add(fog_ety, rcmp.AttachTo {
         .target = tile_ety,
     });
-    reg.add(fog_ety, rcmp.Position { .x = 0, .y = 0 });
     reg.add(fog_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(fog_ety, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(fog_ety, cmp.Fog { .tile = tile_ety });
@@ -71,7 +70,6 @@ fn createOpenable(
     reg.add(entity, rcmp.AttachTo {
         .target = tile_ety,
     });
-    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
     reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.OPENER });
     reg.add(entity, cmp.Opener { .tile = tile_ety, .source_tile = source_tile_ety });
@@ -114,7 +112,6 @@ fn createCharacterAnim(
     reg.add(entity, rcmp.AttachTo {
         .target = char_ety,
     });
-    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
     reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
 
     if (!visible) {
@@ -130,7 +127,6 @@ fn createCharacter(reg: *ecs.Registry, parent_ety: ecs.Entity, tile_ety: ecs.Ent
         .target = parent_ety,
     });
 
-    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.PLAYER });
     reg.add(entity, cmp.Character {
         .idle_image = createCharacterAnim(reg, entity, true, cfg.hero_view.idle_image, cfg),
@@ -340,7 +336,6 @@ fn rollLoot(
             reg.add(entity, rcmp.AttachTo {
                 .target = tile_ety,
             });
-            reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
             reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
             reg.add(entity, rcmp.Order { .order = loot.RenderLayers.ITEM });
             reg.add(entity, cmp.Loot { .tile = tile_ety, .item_name = item_name });

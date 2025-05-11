@@ -144,7 +144,6 @@ pub fn loadScene(
             
             const new_scene_entity = reg.create();
             reg.add(new_scene_entity, scmp.SceneResource { .scene = parsed_scene.value });
-            reg.add(new_scene_entity, rcmp.Position { .x = 0, .y = 0 });
             reg.add(new_scene_entity, rcmp.AttachTo { .target = null });
             reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
 

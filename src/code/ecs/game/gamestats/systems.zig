@@ -63,7 +63,6 @@ pub fn initGui(reg: *ecs.Registry) void {
 }
 
 pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCfg, allocator: std.mem.Allocator) !void {
-
     var title_iter = reg.entityIterator(cmp.SetTitleText);
     while (title_iter.next()) |title_ety| {
         const title = reg.get(cmp.SetTitleText, title_ety);

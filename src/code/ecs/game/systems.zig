@@ -388,6 +388,7 @@ pub fn initGameplayCustoms(
     try combat.initStrategy(reg, props, allocator);
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
+    combat.initCharMsgRoot(reg);
     combat.initState(reg);
 
     try shop.initShop(reg, allocator);
@@ -424,6 +425,7 @@ pub fn updateGameplayCustoms(
     combat.attackEffect(reg, dt);
     try combat.attackEffectComplete(reg, allocator);
     combat.deathEffectComplete(reg);
+    combat.charMessageRoot(reg);
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, rnd, allocator);
 

@@ -21,8 +21,6 @@ const cfg_text = @embedFile("../../../assets/cfg/scene_customs/combat.json");
 const STRATEGY_ICON_SIZE = 64;
 const STRATEGY_ICON_PADDING = 5;
 
-const CHARACTER_SPRITE_SIZE = 32;
-const ATTACK_EFFECT_SIZE = 8;
 const ATTACK_EFFECT_DURATION = 1;
 const ATTACK_EFFECT_HEIGHT = 40;
 const ATTACK_PARTICLE_DELAY = 0.01;
@@ -123,10 +121,7 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
 
             const sprite_ety = reg.create();
-            reg.add(sprite_ety, rcmp.Position {
-                .x = -CHARACTER_SPRITE_SIZE / 2,
-                .y = -CHARACTER_SPRITE_SIZE / 2,
-            });
+            reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
             reg.add(sprite_ety, rcmp.ImageResource {
                 .atlas = cfg_json.value.hero_view.atlas,
                 .image = cfg_json.value.hero_view.idle,
@@ -136,6 +131,27 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
             reg.add(entity, cmp.Hero {});
             reg.add(entity, cmp.Character { .props = props.*, .view = sprite_ety });
         }
+    }
+}
+
+pub fn initCharMsgRoot(reg: *ecs.Registry) void {
+    var init_iter = reg.entityIterator(scmp.InitGameObject);
+    while (init_iter.next()) |entity| {
+        const init = reg.get(scmp.InitGameObject, entity);
+        if (utils.containsTag(init.tags, "combat-charmessage-root")) {
+            reg.add(entity, cmp.CreateCharMsgRoot {});
+        }
+    }
+}
+
+pub fn charMessageRoot(reg: *ecs.Registry) void {
+    var create_view = reg.view(.{ cmp.CreateCharMsgRoot, rcmp.Parent }, .{});
+    var create_iter = create_view.entityIterator();
+    while (create_iter.next()) |entity| {
+        const parent = reg.get(rcmp.Parent, entity);
+
+        reg.addOrReplace(parent.entity, cmp.CharMsgRoot { .root = entity });
+        reg.remove(cmp.CreateCharMsgRoot, entity);
     }
 }
 
@@ -166,10 +182,7 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
                 }
 
                 const sprite_ety = reg.create();
-                reg.add(sprite_ety, rcmp.Position {
-                    .x = -CHARACTER_SPRITE_SIZE / 2,
-                    .y = -CHARACTER_SPRITE_SIZE / 2,
-                });
+                reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
                 reg.add(sprite_ety, rcmp.ImageResource {
                     .atlas = enemy_cfg.view.atlas,
                     .image = enemy_cfg.view.idle,
@@ -211,7 +224,7 @@ fn createAttackEffect(
     });
 
     const image_ety = reg.create();
-    reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
+    reg.add(image_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(image_ety, rcmp.AttachTo { .target = projectile_ety });
     reg.add(image_ety, rcmp.ImageResource {
         .atlas = attack_cfg.atlas,
@@ -331,14 +344,16 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 try target_char.props.add(HP_PROP_NAME, -dmg);
                 reg.addOrReplace(attk.target, cmp.CheckDeath {});
 
-                const message = reg.create();
-                reg.add(message, gcmp.CreateMessage {
-                    .parent = entity,
-                    .x = -CHARACTER_SPRITE_SIZE / 2,
-                    .y = -CHARACTER_SPRITE_SIZE / 2,
-                    .text = strategy_cfg.view.name,
-                    .free = false,
-                });
+                if (reg.tryGet(cmp.CharMsgRoot, entity)) |root| {
+                    const message = reg.create();
+                    reg.add(message, gcmp.CreateMessage {
+                        .parent = root.root,
+                        .x = 0,
+                        .y = 0,
+                        .text = strategy_cfg.view.name,
+                        .free = false,
+                    });
+                }
 
                 createAttackEffect(reg, entity, attk.target, cfg.cfg_json.value.attack_view, dmg); 
             } else {
@@ -347,14 +362,16 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                     reg.addOrReplace(state_entity, cmp.CombatStateAttackFailedRequest {});
                 }
 
-                const message = reg.create();
-                reg.add(message, gcmp.CreateMessage {
-                    .parent = entity,
-                    .x = -CHARACTER_SPRITE_SIZE / 2,
-                    .y = -CHARACTER_SPRITE_SIZE / 2,
-                    .text = "Cannot pay attack cost!",
-                    .free = false,
-                });
+                if (reg.tryGet(cmp.CharMsgRoot, entity)) |root| {
+                    const message = reg.create();
+                    reg.add(message, gcmp.CreateMessage {
+                        .parent = root.root,
+                        .x = 0,
+                        .y = 0,
+                        .text = "Cannot pay attack cost!",
+                        .free = false,
+                    });
+                }
             }
         }
 
@@ -368,7 +385,7 @@ fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackV
     reg.add(particle_ety, rcmp.Position { .x = x, .y = y });
 
     const image_ety = reg.create();
-    reg.add(image_ety, rcmp.Position { .x = -ATTACK_EFFECT_SIZE / 2, .y = -ATTACK_EFFECT_SIZE / 2 });
+    reg.add(image_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(image_ety, rcmp.AttachTo { .target = particle_ety });
     reg.add(image_ety, rcmp.ImageResource {
         .atlas = attack_cfg.atlas,
@@ -444,15 +461,18 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !v
             });
 
         } else {
-            const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
-            const message = reg.create();
-            reg.add(message, gcmp.CreateMessage {
-                .parent = tween.target_char,
-                .x = -CHARACTER_SPRITE_SIZE / 2,
-                .y = -CHARACTER_SPRITE_SIZE / 2,
-                .text = dmg_text,
-                .free = true,
-            });
+
+            if (reg.tryGet(cmp.CharMsgRoot, tween.target_char)) |root| {
+                const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
+                const message = reg.create();
+                reg.add(message, gcmp.CreateMessage {
+                    .parent = root.root,
+                    .x = 0,
+                    .y = 0,
+                    .text = dmg_text,
+                    .free = true,
+                });
+            }
 
             const scale_ety = reg.create();
             reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });

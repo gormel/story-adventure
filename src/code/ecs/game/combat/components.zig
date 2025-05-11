@@ -11,6 +11,8 @@ pub const StrategyButton = struct { strategy_id: []const u8 };
 pub const Character = struct { props: pr.Properties, view: ecs.Entity };
 pub const Hero = struct {};
 pub const Enemy = struct { cfg: combat.EnemyCfg };
+pub const CreateCharMsgRoot = struct {};
+pub const CharMsgRoot = struct { root: ecs.Entity };
 
 pub const CharacterModifyList = struct { entities: std.ArrayList(ecs.Entity) };
 pub const CharacterModify = struct { props: std.json.ArrayHashMap(f64), source_character: ecs.Entity };
