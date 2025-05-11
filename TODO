@@ -10,7 +10,7 @@ fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
 
 ref: attack animation redraw
-ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: boolm count: int]
+ref: attack effect animation to attack + animation setup [move: bool, tail: bool, rotate: bool, count: int, delay: float]
 ref: combat strategy replace on cost failure
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money

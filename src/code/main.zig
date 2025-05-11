@@ -117,7 +117,7 @@ pub fn main() !void {
         try render_systems.attachTo(&reg, arena);
         try render_systems.updateGlobalTransform(&reg);
 
-        game_systems.layoutChildren(&reg);
+        try game_systems.layoutChildren(&reg, arena);
         //init obj systems
         try game_systems.inputCapture(&reg, &input_stack);
         game_systems.initButton(&reg);

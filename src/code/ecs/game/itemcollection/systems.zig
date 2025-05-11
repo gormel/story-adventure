@@ -21,6 +21,8 @@ const iicmp = @import("../iteminfo/components.zig");
 
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/itemcollection.json");
 
+const ROW_SIZE = 11;
+
 pub fn initGui(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
@@ -69,9 +71,11 @@ pub fn gui(
 
         //12 cols
         //7 rows
-        var col: u32 = 0;
+        var col: usize = 0;
+        var row: usize = 0;
         var row_ety = reg.create();
         reg.add(row_ety, rcmp.AttachTo { .target = entity });
+        reg.add(row_ety, gcmp.LayoutPosition { .position = row });
         reg.add(row_ety, gcmp.LayoutChildren {
             .distance = 37,
             .axis = .Horizontal,
@@ -82,11 +86,13 @@ pub fn gui(
         while (item_it.next()) |item_kv| {
             if (itemprogress_cfg.map.get(item_kv.key_ptr.*)) |progress_prop| {
                 if (props.get(progress_prop) > 0) {
-                    if (col > 11) {
+                    if (col > ROW_SIZE) {
                         col = 0;
+                        row += 1;
 
                         row_ety = reg.create();
                         reg.add(row_ety, rcmp.AttachTo { .target = entity });
+                        reg.add(row_ety, gcmp.LayoutPosition { .position = row });
                         reg.add(row_ety, gcmp.LayoutChildren {
                             .distance = 37,
                             .axis = .Horizontal,

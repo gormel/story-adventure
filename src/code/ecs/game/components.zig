@@ -27,3 +27,4 @@ pub const GameStateGameplay = struct { hud_scene: ecs.Entity };
 pub const LayoutAxis = enum { Horizontal, Vertical };
 pub const LayoutPivot = enum { Begin, Center, End };
 pub const LayoutChildren = struct { axis: LayoutAxis, pivot: LayoutPivot, distance: f32 };
+pub const LayoutPosition = struct { position: usize };

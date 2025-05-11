@@ -445,7 +445,14 @@ pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
     itemcollection.free(reg);
 }
 
-pub fn layoutChildren(reg: *ecs.Registry) void {
+fn lessThanLayoutChild(reg: *ecs.Registry, a: ecs.Entity, b: ecs.Entity) bool {
+    const a_pos = if (reg.tryGet(cmp.LayoutPosition, a)) |pos| pos.position else std.math.maxInt(usize);
+    const b_pos = if (reg.tryGet(cmp.LayoutPosition, b)) |pos| pos.position else std.math.maxInt(usize);
+
+    return a_pos < b_pos;
+}
+
+pub fn layoutChildren(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var view = reg.view(.{ cmp.LayoutChildren, rcmp.Children }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
@@ -476,7 +483,11 @@ pub fn layoutChildren(reg: *ecs.Registry) void {
             },
         }
 
-        for (children.children.items, 0..) |child_entity, i| {
+        const sorted_children = try allocator.alloc(ecs.Entity, children.children.items.len);
+        std.mem.copyForwards(ecs.Entity, sorted_children, children.children.items);
+        std.sort.heap(ecs.Entity, sorted_children, reg, lessThanLayoutChild);
+
+        for (sorted_children, 0..) |child_entity, i| {
             var position = reg.getOrAdd(rcmp.Position, child_entity);
             position.x = origin_x + dx * @as(f32, @floatFromInt(i));
             position.y = origin_y + dy * @as(f32, @floatFromInt(i));
