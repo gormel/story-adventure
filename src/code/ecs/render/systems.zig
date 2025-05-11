@@ -693,8 +693,6 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const rot = reg.getConst(cmp.GlobalRotation, entity);
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
-    const origin = rl.Vector2 { .x = 0, .y = 0 };
-
     var color = rl.Color.white;
     if (reg.tryGetConst(cmp.Color, entity)) |color_component| {
         color.r = color_component.r;
@@ -708,6 +706,13 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .width = sprite.sprite.rect.width * scale.x,
         .height = sprite.sprite.rect.height * scale.y
     };
+
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    if (reg.tryGet(cmp.ImagePivot, entity)) |pivot| {
+        origin.x = target_rect.width * pivot.x;
+        origin.y = target_rect.height * pivot.y;
+    }
+
     rl.drawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, color);
 }
 
@@ -717,7 +722,6 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const rot = reg.getConst(cmp.GlobalRotation, entity);
     const scale = reg.getConst(cmp.GlobalScale, entity);
 
-    const origin = rl.Vector2 { .x = 0, .y = 0 };
     const flen = @as(f64, @floatFromInt(flipbook.flipbook.frames.len));
     var idx = @as(usize, @intFromFloat(std.math.floor((flipbook.flipbook.duration - flipbook.time) * flen / flipbook.flipbook.duration)));
     idx = @min(flipbook.flipbook.frames.len - 1, idx);
@@ -736,6 +740,13 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
         .width = frame.width * scale.x,
         .height = frame.height * scale.y
     };
+    
+    var origin = rl.Vector2 { .x = 0, .y = 0 };
+    if (reg.tryGet(cmp.ImagePivot, entity)) |pivot| {
+        origin.x = target_rect.width * pivot.x;
+        origin.y = target_rect.height * pivot.y;
+    }
+
     rl.drawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, color);
 }
 
