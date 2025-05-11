@@ -66,9 +66,7 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
         }
     }
 
-    var target_rect = tracker.rect;
-    target_rect.x = 0;
-    target_rect.y = 0;
+    const target_rect = tracker.rect;
     return rl.checkCollisionPointRec(rl.Vector2.init(x, y), target_rect);
 }
 

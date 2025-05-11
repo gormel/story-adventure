@@ -67,8 +67,16 @@ pub fn button(reg: *ecs.Registry, dt: f32) void {
         reg.add(entity, cmp.Button {});
         const sprite = create_view.getConst(rcmp.Sprite, entity);
         
+        var rect = sprite.sprite.rect;
+        rect.x = 0;
+        rect.y = 0;
+        if (reg.tryGet(rcmp.ImagePivot, entity)) |pivot| {
+            rect.x = -rect.width * pivot.x;
+            rect.y = -rect.height * pivot.y;
+        }
+
         reg.add(entity, icmp.MousePositionTracker { });
-        reg.add(entity, icmp.MouseOverTracker { .rect = sprite.sprite.rect });
+        reg.add(entity, icmp.MouseOverTracker { .rect = rect });
         reg.add(entity, icmp.MouseButtonTracker { .button = rl.MouseButton.left });
 
         if (create.animated) {

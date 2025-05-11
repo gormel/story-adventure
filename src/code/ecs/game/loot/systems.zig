@@ -43,6 +43,7 @@ fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity, cfg: *const loot.LootCfg)
         .target = tile_ety,
     });
     reg.add(fog_ety, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(fog_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(fog_ety, rcmp.Order { .order = loot.RenderLayers.FOG });
     reg.add(fog_ety, cmp.Fog { .tile = tile_ety });
 
@@ -70,7 +71,8 @@ fn createOpenable(
     reg.add(entity, rcmp.AttachTo {
         .target = tile_ety,
     });
-    reg.add(entity, rcmp.Position { .x = 8, .y = 8 });
+    reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
     reg.add(entity, rcmp.Order { .order = loot.RenderLayers.OPENER });
     reg.add(entity, cmp.Opener { .tile = tile_ety, .source_tile = source_tile_ety });
 
@@ -87,8 +89,8 @@ fn createOpenable(
     const tween = reg.create();
     reg.add(tween, rcmp.TweenMove { .axis = setup[0] });
     reg.add(tween, rcmp.TweenSetup {
-        .from = 8 - 2 * setup[1],
-        .to = 8 + 2 * setup[1],
+        .from = -2 * setup[1],
+        .to = 2 * setup[1],
         .repeat = .RepeatPinpong,
         .duration = 1,
         .entity = entity,
@@ -113,6 +115,7 @@ fn createCharacterAnim(
         .target = char_ety,
     });
     reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+    reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
 
     if (!visible) {
         reg.add(entity, rcmp.Hidden {});
@@ -338,6 +341,7 @@ fn rollLoot(
                 .target = tile_ety,
             });
             reg.add(entity, rcmp.Position { .x = 0, .y = 0 });
+            reg.add(entity, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
             reg.add(entity, rcmp.Order { .order = loot.RenderLayers.ITEM });
             reg.add(entity, cmp.Loot { .tile = tile_ety, .item_name = item_name });
             reg.add(entity, rcmp.Color { .a = a });
@@ -445,6 +449,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                             .target = entity,
                         });
                         reg.add(tile_ety, rcmp.Order { .order = loot.RenderLayers.TILE });
+                        reg.add(tile_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
 
                         reg.add(tile_ety, cmp.Tile { .x = at.x, .y = at.y });
                         reg.add(tile_ety, cmp.TileFog { 
