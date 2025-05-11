@@ -34,16 +34,12 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocat
     var continue_view = reg.view(.{ gscmp.Continue, cmp.GameStatsScene }, .{});
     var continue_iter = continue_view.entityIterator();
     while (continue_iter.next()) |entity| {
-        const gamestats_setup = reg.get(cmp.GameStatsScene, entity);
+        const setup = reg.get(cmp.GameStatsScene, entity);
         
-        if (!reg.has(ccmp.Destroyed, gamestats_setup.gameover_scene)) {
-            reg.add(gamestats_setup.gameover_scene, ccmp.Destroyed {});
-        }
-
+        reg.addOrReplace(setup.gameover_scene, ccmp.Destroyed {});
         reg.remove(gscmp.Continue, entity);
 
         try props.save();
-
         try mainmenu.loadScene(reg, allocator);
     }
 

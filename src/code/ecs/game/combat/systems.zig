@@ -329,9 +329,7 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 const dmg = @max(raw_dmg - armor, 1);
 
                 try target_char.props.add(HP_PROP_NAME, -dmg);
-                if (!reg.has(cmp.CheckDeath, attk.target)) {
-                    reg.add(attk.target, cmp.CheckDeath {});
-                }
+                reg.addOrReplace(attk.target, cmp.CheckDeath {});
 
                 const message = reg.create();
                 reg.add(message, gcmp.CreateMessage {
@@ -538,9 +536,7 @@ fn setHidden(comptime Component: type, reg: *ecs.Registry, hidden: bool) void {
     var iter = reg.entityIterator(Component);
     while (iter.next()) |entity| {
         if (hidden) {
-            if (!reg.has(rcmp.Disabled, entity)) {
-                reg.add(entity, rcmp.Disabled {});
-            }
+            reg.addOrReplace(entity, rcmp.Disabled {});
         } else {
             reg.removeIfExists(rcmp.Disabled, entity);
         }

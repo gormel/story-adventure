@@ -85,8 +85,6 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
     while (itemsclose_iter.next()) |entity| {
         reg.remove(iccmp.Continue, entity);
 
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 }

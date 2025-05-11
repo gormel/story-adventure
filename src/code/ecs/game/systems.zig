@@ -146,9 +146,7 @@ pub fn hover(reg: *ecs.Registry) void {
     while (show_iter.next()) |entity| {
         const hover_ety = reg.get(cmp.Hover, entity);
 
-        if (reg.has(rcmp.Disabled, hover_ety.entity)) {
-            reg.remove(rcmp.Disabled, hover_ety.entity);
-        }
+        reg.removeIfExists(rcmp.Disabled, hover_ety.entity);
 
         reg.add(entity, cmp.Hovered {});
     }
@@ -158,10 +156,7 @@ pub fn hover(reg: *ecs.Registry) void {
     while (hide_iter.next()) |entity| {
         const hover_ety = reg.get(cmp.Hover, entity);
 
-        if (!reg.has(rcmp.Disabled, hover_ety.entity)) {
-            reg.add(hover_ety.entity, rcmp.Disabled {});
-        }
-
+        reg.addOrReplace(hover_ety.entity, rcmp.Disabled {});
         reg.remove(cmp.Hovered, entity);
     }
 }
@@ -171,9 +166,7 @@ pub fn inputCapture(reg: *ecs.Registry, input_stack: *is.InputStack) !void {
     while (set_iter.next()) |entity| {
         reg.remove(cmp.SetInputCaptureScene, entity);
 
-        if (!reg.has(cmp.InputCaptureScene, entity)) {
-            reg.add(entity, cmp.InputCaptureScene {});
-        }
+        reg.addOrReplace(entity, cmp.InputCaptureScene {});
         try input_stack.push(entity);
     }
 }
@@ -492,10 +485,7 @@ pub fn layoutChildren(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
             position.x = origin_x + dx * @as(f32, @floatFromInt(i));
             position.y = origin_y + dy * @as(f32, @floatFromInt(i));
 
-            
-            if (!reg.has(rcmp.UpdateGlobalTransform, child_entity)) {
-                reg.add(child_entity, rcmp.UpdateGlobalTransform {});
-            }
+            reg.addOrReplace(child_entity, rcmp.UpdateGlobalTransform {});
         }
     }
 }

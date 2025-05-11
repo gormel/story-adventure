@@ -101,8 +101,7 @@ pub fn gui(reg: *ecs.Registry, items_cfg: *itm.ItemListCfg, allocator: std.mem.A
     var close_iter = close_view.entityIterator();
     while (close_iter.next()) |entity| {
         const btn = reg.get(cmp.CloseBtn, entity);
-        if (!reg.has(cmp.Close, btn.owner_scene)) {
-            reg.add(btn.owner_scene, cmp.Close {});
-        }
+        
+        reg.addOrReplace(btn.owner_scene, cmp.Close {});
     }
 }

@@ -149,8 +149,6 @@ pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var close_gamemenu_view = reg.view(.{ cmp.CloseGameMenu, cmp.GameMenuScene }, .{});
     var close_gamemenu_iter = close_gamemenu_view.entityIterator();
     while (close_gamemenu_iter.next()) |entity| {
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 }

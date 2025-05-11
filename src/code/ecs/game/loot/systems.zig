@@ -167,9 +167,7 @@ fn showAnimation(etys: []ecs.Entity, idx: usize, reg: *ecs.Registry) void {
                 flipbook.time = flipbook.flipbook.duration;
             }
         } else {
-            if (!reg.has(rcmp.Hidden, entity)) {
-                reg.add(entity, rcmp.Hidden {});
-            }
+            reg.addOrReplace(entity, rcmp.Hidden {});
         }
     }
 }
@@ -614,17 +612,13 @@ const ConnectionIterator = struct {
 };
 
 fn cleanupFog(reg: *ecs.Registry, tile_fog: *cmp.TileFog, entity: ecs.Entity) void {
-    if (!reg.has(ccmp.Destroyed, tile_fog.entity)) {
-        reg.add(tile_fog.entity, ccmp.Destroyed {});
-    }
+    reg.addOrReplace(tile_fog.entity, ccmp.Destroyed {});
 
     reg.remove(cmp.TileFog, entity);
 }
 
 fn cleanupOpener(reg: *ecs.Registry, tile_opener: *cmp.TileOpener, entity: ecs.Entity) void {
-    if (!reg.has(ccmp.Destroyed, tile_opener.entity)) {
-        reg.add(tile_opener.entity, ccmp.Destroyed {});
-    }
+    reg.addOrReplace(tile_opener.entity, ccmp.Destroyed {});
 
     reg.remove(cmp.TileOpener, entity);
 }
@@ -677,9 +671,7 @@ fn cleanupLoot(
         }
     }
     
-    if (!reg.has(ccmp.Destroyed, tile_loot.entity)) {
-        reg.add(tile_loot.entity, ccmp.Destroyed {});
-    }
+    reg.addOrReplace(tile_loot.entity, ccmp.Destroyed {});
 
     reg.remove(cmp.TileLoot, entity);
 }
@@ -693,9 +685,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
         }
 
         const opener = reg.getConst(cmp.Opener, entity);
-        if (!reg.has(cmp.Open, opener.tile)) {
-            reg.add(opener.tile, cmp.Open {});
-        }
+        reg.addOrReplace(opener.tile, cmp.Open {});
     }
 
     var view = reg.view(.{ cmp.Open, cmp.Tile, rcmp.Parent }, .{});

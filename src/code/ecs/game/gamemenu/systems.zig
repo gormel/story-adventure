@@ -56,9 +56,7 @@ pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     while (continue_iter.next()) |entity| {
         const btn = reg.get(cmp.ContinueBtn, entity);
 
-        if (!reg.has(hcmp.CloseGameMenu, btn.owner_scene)) {
-            reg.add(btn.owner_scene, hcmp.CloseGameMenu {});
-        }
+        reg.addOrReplace(btn.owner_scene, hcmp.CloseGameMenu {});
     }
 
     var mainmenu_view = reg.view(.{ gcmp.ButtonClicked, cmp.ExitBtn }, .{});

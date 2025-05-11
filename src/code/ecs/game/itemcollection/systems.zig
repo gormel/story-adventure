@@ -142,9 +142,7 @@ pub fn gui(
     while (closeinfo_iter.next()) |entity| {
         reg.remove(iicmp.Close, entity);
 
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 
     var continue_view = reg.view(.{ cmp.ContinueBtn, gcmp.ButtonClicked }, .{});
@@ -152,9 +150,7 @@ pub fn gui(
     while (continue_iter.next()) |entity| {
         const btn = reg.get(cmp.ContinueBtn, entity);
 
-        if (!reg.has(cmp.Continue, btn.owner_scene)) {
-            reg.add(btn.owner_scene, cmp.Continue {});
-        }
+        reg.addOrReplace(btn.owner_scene, cmp.Continue {});
     }
 }
 

@@ -328,9 +328,7 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
     var iteminfocontinue_view = reg.view(.{ iicmp.Close, cmp.ItemPopup }, .{});
     var iteminfocontinue_iter = iteminfocontinue_view.entityIterator();
     while (iteminfocontinue_iter.next()) |entity| {
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
 
         reg.remove(iicmp.Close, entity);
     }

@@ -162,9 +162,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
     while (continue_iter.next()) |entity| {
         const btn = reg.get(cmp.ContinueBtn, entity);
 
-        if (!reg.has(cmp.Continue, btn.owner_scene)) {
-            reg.add(btn.owner_scene, cmp.Continue {});
-        }
+        reg.addOrReplace(btn.owner_scene, cmp.Continue {});
     }
 
     var itembtn_view = reg.view(.{ gcmp.ButtonClicked, cmp.ItemBtn }, .{});
@@ -185,9 +183,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
     while (iteminfoclose_iter.next()) |entity| {
         reg.remove(iicmp.Close, entity);
 
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 }
 

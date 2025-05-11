@@ -145,9 +145,7 @@ fn doUpdateGlobalTransform(reg: *ecs.Registry, entity: ecs.Entity) (Error || err
         }
     }
 
-    if (!reg.has(cmp.GlobalTransformUpdated, entity)) {
-        reg.add(entity, cmp.GlobalTransformUpdated {});
-    }
+    reg.addOrReplace(entity, cmp.GlobalTransformUpdated {});
 
     if (reg.tryGet(cmp.Children, entity)) |children| {
         for (children.children.items) |child| {
@@ -350,9 +348,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         reg.removeIfExists(cmp.TweenInProgress, entity);
         reg.removeIfExists(cmp.TweenComplete, entity);
 
-        if (!reg.has(Destroyed, entity)) {
-            reg.add(entity, Destroyed {});
-        }
+        reg.addOrReplace(entity, Destroyed {});
     }
 
     var complete_view = reg.view(.{ cmp.TweenComplete, cmp.TweenSetup }, .{ Destroyed });
@@ -376,9 +372,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         if (!reg.valid(setup.entity)) {
             reg.remove(cmp.TweenSetup, entity);
 
-            if (!reg.has(Destroyed, entity)) {
-                reg.add(entity, Destroyed {});
-            }
+            reg.addOrReplace(entity, Destroyed {});
             continue;
         }
 
@@ -395,9 +389,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             reg.remove(cmp.TweenSetup, entity);
             reg.remove(cmp.TweenInProgress, entity);
 
-            if (!reg.has(Destroyed, entity)) {
-                reg.add(entity, Destroyed {});
-            }
+            reg.addOrReplace(entity, Destroyed {});
             continue;
         }
 
@@ -420,9 +412,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             .XY => { pos.x = value; pos.y = value; },
         }
 
-        if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
-            reg.add(setup.entity, cmp.UpdateGlobalTransform {});
-        }
+        reg.addOrReplace(setup.entity, cmp.UpdateGlobalTransform {});
     }
 
     var scale_view = reg.view(.{ cmp.TweenSetup, cmp.TweenScale, cmp.TweenInProgress }, .{});
@@ -440,9 +430,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             .XY => { scaleValue.x = value; scaleValue.y = value; },
         }
 
-        if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
-            reg.add(setup.entity, cmp.UpdateGlobalTransform {});
-        }
+        reg.addOrReplace(setup.entity, cmp.UpdateGlobalTransform {});
     }
 
     var rotate_view = reg.view(.{ cmp.TweenSetup, cmp.TweenRotate, cmp.TweenInProgress }, .{});
@@ -453,10 +441,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         const value = tweenValue(reg, entity);
 
         reg.addOrReplace(setup.entity, cmp.Rotation { .a = value });
-
-        if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
-            reg.add(setup.entity, cmp.UpdateGlobalTransform {});
-        }
+        reg.addOrReplace(setup.entity, cmp.UpdateGlobalTransform {});
     }
 
     var color_view = reg.view(.{ cmp.TweenSetup, cmp.TweenColor, cmp.TweenInProgress }, .{});
@@ -525,9 +510,7 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             },
         }
 
-        if (!reg.has(cmp.UpdateGlobalTransform, setup.entity)) {
-            reg.add(setup.entity, cmp.UpdateGlobalTransform {});
-        }
+        reg.addOrReplace(setup.entity, cmp.UpdateGlobalTransform {});
     }
 
     

@@ -96,9 +96,7 @@ var scenes = &.{
 pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {
     var iter = reg.entityIterator(Component);
     while (iter.next()) |entity| {
-        if (!reg.has(ccmp.Destroyed, entity)) {
-            reg.add(entity, ccmp.Destroyed {});
-        }
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 }
 
@@ -107,10 +105,9 @@ pub fn gameOver(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var state_iter = state_view.entityIterator();
     while (state_iter.next()) |entity| {
         const gameplay = reg.get(gcmp.GameStateGameplay, entity);
-        if (!reg.has(ccmp.Destroyed, gameplay.hud_scene)) {
-            reg.add(gameplay.hud_scene, ccmp.Destroyed {});
-        }
 
+        reg.addOrReplace(gameplay.hud_scene, ccmp.Destroyed {});
+        
         destroyAll(gcmp.GameplayScene, reg);
 
         const gameover_scene = try gameover.loadScene(reg, allocator);
