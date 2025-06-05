@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const std = @import("std");
 const is = @import("inputstack.zig");
 const utils = @import("../../engine/utils.zig");
+const rutils = @import("../render/utils.zig");
 const game = @import("../game/utils.zig");
 const cmp = @import("components.zig");
 const rcmp = @import("../render/components.zig");
@@ -19,22 +20,6 @@ fn getScissor(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
     return null;
 }
 
-fn reverseTransformXY(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32) void {
-    if (reg.tryGetConst(rcmp.GlobalPosition, entity)) |g_position| {
-        x.* -= g_position.x;
-        y.* -= g_position.y;
-    }
-
-    if (reg.tryGetConst(rcmp.GlobalScale, entity)) |g_scale| {
-        x.* /= g_scale.x;
-        y.* /= g_scale.y;
-    }
-
-    if (reg.tryGetConst(rcmp.GlobalRotation, entity)) |g_rotation| {
-        utils.rotate(x, y, -g_rotation.a);
-    }
-}
-
 fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     const position = reg.getConst(cmp.MousePositionInput, entity);
     const tracker = reg.getConst(cmp.MouseOverTracker, entity);
@@ -43,7 +28,7 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
     const py = @as(f32, @floatFromInt(position.y));
     var x = px;
     var y = py;
-    reverseTransformXY(reg, entity, &x, &y);
+    rutils.worldToLocalXY(reg, entity, &x, &y);
 
     if (getScissor(reg, entity)) |scissor_ety| {
         const scissor = reg.getConst(rcmp.Scissor, scissor_ety);

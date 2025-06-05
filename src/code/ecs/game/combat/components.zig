@@ -18,10 +18,16 @@ pub const CharacterModifyList = struct { entities: std.ArrayList(ecs.Entity) };
 pub const CharacterModify = struct { props: std.json.ArrayHashMap(f64), source_character: ecs.Entity };
 
 pub const Attack = struct { target: ecs.Entity, strategy: []const u8 };
+pub const AttackSatate = struct {
+    begin: ?ecs.Entity = null,
+    target: ecs.Entity,
+    time: f64,
+    dmg: f64,
+    strategy: []const u8,
+};
 pub const CheckDeath = struct {};
 
-pub const AttackEffect = struct { cfg: combat.AttackViewCfg, delay: f32, target: ecs.Entity, dmg: f64 };
-pub const AttackEffectTween = struct { source_char: ecs.Entity, target_char: ecs.Entity, dmg: f64 };
+pub const AttackEffect = struct { };
 
 pub const CombatState = struct {};
 pub const CombatStatePlayerIdle = struct {};

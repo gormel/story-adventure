@@ -5,15 +5,17 @@ const game = @import("../utils.zig");
 const gui_setup = @import("../../../engine/gui_setup.zig");
 const condition = @import("../../../engine/condition.zig");
 const easing = @import("../../render/easing.zig");
-const cmp = @import("components.zig");
 const utils = @import("../../../engine/utils.zig");
+const rutils = @import("../../render/utils.zig");
+const pr = @import("../../../engine/properties.zig");
+const itm = @import("../../../engine/items.zig");
+const rr = @import("../../../engine/rollrate.zig");
+
+const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
 const rcmp = @import("../../render/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
-const pr = @import("../../../engine/properties.zig");
-const itm = @import("../../../engine/items.zig");
-const rr = @import("../../../engine/rollrate.zig");
 
 const combat = @import("combat.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/combat.json");
@@ -29,10 +31,6 @@ const ATTACK_PARTICLE_LIFETIME = 0.3;
 const HIT_EFFECT_DURATION = 0.2;
 const DEATH_EFFECT_DURATION = 0.2;
 
-const HP_PROP_NAME = "health";
-const ATTACK_PROP_NAME = "attack";
-const ARMOR_PROP_NAME = "armor";
-
 fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.CombatCfg, strategy: []const u8) ecs.Entity {
     const root_ety = reg.create();
     reg.add(root_ety, rcmp.AttachTo { .target = parent });
@@ -41,8 +39,8 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
         const icon_ety = reg.create();
         reg.add(icon_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
         reg.add(icon_ety, rcmp.ImageResource {
-            .atlas = strategy_cfg.view.atlas,
-            .image = strategy_cfg.view.icon,
+            .atlas = strategy_cfg.view.icon.atlas,
+            .image = strategy_cfg.view.icon.image,
         });
         reg.add(icon_ety, gcmp.CreateButton {});
         reg.add(icon_ety, cmp.StrategyButton { .strategy_id = strategy });
@@ -67,9 +65,10 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
     while (init_iter.next()) |entity| {
         const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-strategy-container")) {
-            var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+            var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
+                .{ .ignore_unknown_fields = true });
+            
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
-
             reg.add(entity, cmp.StrategyRoot {});
 
             var strategy_iter = cfg_json.value.strategy.map.iterator();
@@ -117,7 +116,8 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
     while (init_iter.next()) |entity| {
         const init = reg.get(scmp.InitGameObject, entity);
         if (utils.containsTag(init.tags, "combat-hero-root")) {
-            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
+                .{ .ignore_unknown_fields = true });
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
 
             const sprite_ety = reg.create();
@@ -163,6 +163,8 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
         if (utils.containsTag(init.tags, "combat-enemy-root")) {
             const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
+            reg.addOrReplace(entity, rcmp.Scale { .x = -1, .y = 1 });
+            reg.addOrReplace(entity, rcmp.UpdateGlobalTransform {});
 
             var to_select_size: usize = 0;
             var to_select = try allocator.alloc(combat.EnemyCfg, cfg_json.value.enemy.len);
@@ -206,56 +208,79 @@ fn applyCost(props: *pr.Properties, cost: std.json.ArrayHashMap(f64)) !void {
 fn createAttackEffect(
     reg: *ecs.Registry,
     source: ecs.Entity,
-    target: ecs.Entity,
     attack_cfg: combat.AttackViewCfg,
-    dmg: f64
 ) void {
-    const char_pos = reg.get(rcmp.GlobalPosition, source);
-    const target_pos = reg.get(rcmp.GlobalPosition, target);
+    var state = reg.get(cmp.AttackSatate, source);
 
-    const projectile_ety = reg.create();
-    reg.add(projectile_ety, rcmp.AttachTo { .target = target });
-    reg.add(projectile_ety, rcmp.Position { .x = char_pos.x - target_pos.x, .y = char_pos.y - target_pos.y });
-    reg.add(projectile_ety, cmp.AttackEffect {
-        .cfg = attack_cfg,
-        .delay = ATTACK_PARTICLE_DELAY,
-        .target = target,
-        .dmg = dmg,
-    });
+    if (attack_cfg.begin) |begin_view| {
+        const ety = reg.create();
+        reg.add(ety, rcmp.AttachTo { .target = source });
+        reg.add(ety, rcmp.FlipbookSetup { .repeat = .OnceRemove });
+        reg.add(ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
+        reg.add(ety, rcmp.ImageResource {
+            .atlas = begin_view.atlas,
+            .image = begin_view.image,
+        });
 
-    const image_ety = reg.create();
-    reg.add(image_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
-    reg.add(image_ety, rcmp.AttachTo { .target = projectile_ety });
-    reg.add(image_ety, rcmp.ImageResource {
-        .atlas = attack_cfg.atlas,
-        .image = attack_cfg.effect,
-    });
+        state.begin = ety;
+    }
 
-    const x_tween_ety = reg.create();
-    reg.add(x_tween_ety, rcmp.TweenMove { .axis = rcmp.Axis.X });
-    reg.add(x_tween_ety, rcmp.TweenSetup {
-        .entity = projectile_ety,
-        .from = char_pos.x - target_pos.x,
-        .to = 0,
-        .duration = ATTACK_EFFECT_DURATION,
-        .remove_source = true,
-    });
-    reg.add(x_tween_ety, cmp.AttackEffectTween {
-        .target_char = target,
-        .source_char = source,
-        .dmg = dmg,
-    });
+    if (attack_cfg.particles) |projectiles| {
+        const target_pos = reg.get(rcmp.GlobalPosition, state.target);
 
-    const y_tween_ety = reg.create();
-    reg.add(y_tween_ety, rcmp.TweenMove { .axis = rcmp.Axis.Y });
-    reg.add(y_tween_ety, rcmp.TweenSetup {
-        .entity = projectile_ety,
-        .from = 0,
-        .to = -ATTACK_EFFECT_HEIGHT,
-        .duration = ATTACK_EFFECT_DURATION,
-        .easing = easing.Easing.EaseOutQuad,
-        .repeat = rcmp.TweenRepeat.OncePinpong,
-    });
+        for (projectiles) |proj_view| {
+            const ety = reg.create();
+            reg.add(ety, rcmp.AttachTo { .target = source });
+            reg.add(ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
+            reg.add(ety, rcmp.ImageResource {
+                .atlas = proj_view.view.atlas,
+                .image = proj_view.view.image,
+            });
+
+            if (proj_view.scale) |scale| {
+                reg.add(ety, rcmp.Scale { .x = @floatCast(scale), .y = @floatCast(scale) });
+            }
+
+            if (proj_view.color) |color| {
+                reg.add(ety, rcmp.Color {
+                    .r = @intFromFloat(color.r),
+                    .g = @intFromFloat(color.g),
+                    .b = @intFromFloat(color.b),
+                    .a = @intFromFloat(color.a orelse 255),
+                });
+            }
+
+            if (proj_view.offset) |offset| {
+                reg.add(ety, rcmp.HideUntilTimer { .time = @floatCast(offset) });
+            }
+
+            var local_x = target_pos.x;
+            var local_y = target_pos.y;
+            rutils.worldToLocalXY(reg, source, &local_x, &local_y);
+
+            const tween_x = reg.create();
+            reg.add(tween_x, rcmp.TweenMove { .axis = .X });
+            reg.add(tween_x, rcmp.TweenSetup {
+                .from = 0,
+                .to = local_x,
+                .entity = ety,
+                .duration = @floatCast(proj_view.time orelse attack_cfg.delay),
+                .offset = @floatCast(proj_view.offset orelse 0),
+                .remove_source = true,
+            });
+
+            const tween_y = reg.create();
+            reg.add(tween_y, rcmp.TweenMove { .axis = .Y });
+            reg.add(tween_y, rcmp.TweenSetup {
+                .from = 0,
+                .to = local_y,
+                .entity = ety,
+                .duration = @floatCast(proj_view.time orelse attack_cfg.delay),
+                .offset = @floatCast(proj_view.offset orelse 0),
+            });
+        }
+
+    }
 }
 
 fn resetModify(reg: *ecs.Registry, owner: ecs.Entity, source: ecs.Entity) void {
@@ -322,12 +347,14 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
     var attack_view = reg.view(.{ cmp.Character, cmp.Attack, cmp.CfgOwner }, .{ cmp.Dead });
     var attack_iter = attack_view.entityIterator();
     while (attack_iter.next()) |entity| {
-        var cfg = reg.get(cmp.CfgOwner, entity);
+        const cfg = reg.get(cmp.CfgOwner, entity);
         var char = reg.get(cmp.Character, entity);
         const attk = reg.get(cmp.Attack, entity);
         var target_char = reg.get(cmp.Character, attk.target);
+
+        const cfg_json = cfg.cfg_json.value;
         
-        if (cfg.cfg_json.value.strategy.map.get(attk.strategy)) |strategy_cfg| {
+        if (cfg_json.strategy.map.get(attk.strategy)) |strategy_cfg| {
             if (condition.check(strategy_cfg.cost, &char.props)) {
                 try applyCost(&char.props, strategy_cfg.cost);
 
@@ -337,11 +364,11 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 try addModify(reg, entity, entity, strategy_cfg.modify, allocator);
                 try addModify(reg, attk.target, entity, strategy_cfg.modify_opp, allocator);
 
-                const armor = getPropValue(reg, ARMOR_PROP_NAME, attk.target);
-                const raw_dmg = getPropValue(reg, ATTACK_PROP_NAME, entity);
+                const armor = getPropValue(reg, cfg_json.armor_prop, attk.target);
+                const raw_dmg = getPropValue(reg, cfg_json.attack_prop, entity);
                 const dmg = @max(raw_dmg - armor, 1);
 
-                try target_char.props.add(HP_PROP_NAME, -dmg);
+                try target_char.props.add(cfg_json.hp_prop, -dmg);
                 reg.addOrReplace(attk.target, cmp.CheckDeath {});
 
                 if (reg.tryGet(cmp.CharMsgRoot, entity)) |root| {
@@ -355,7 +382,14 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                     });
                 }
 
-                createAttackEffect(reg, entity, attk.target, cfg.cfg_json.value.attack_view, dmg); 
+                reg.addOrReplace(entity, cmp.AttackSatate {
+                    .dmg = dmg,
+                    .time = strategy_cfg.view.attack.delay,
+                    .target = attk.target,
+                    .strategy = attk.strategy,
+                });
+
+                createAttackEffect(reg, entity, strategy_cfg.view.attack); 
             } else {
                 var state_iter = reg.entityIterator(cmp.CombatState);
                 while (state_iter.next()) |state_entity| {
@@ -379,127 +413,120 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
     }
 }
 
-fn createParticle(reg: *ecs.Registry, x: f32, y: f32, attack_cfg: combat.AttackViewCfg) void {
-    const particle_ety = reg.create();
-    reg.add(particle_ety, rcmp.AttachTo { .target = null });
-    reg.add(particle_ety, rcmp.Position { .x = x, .y = y });
-
-    const image_ety = reg.create();
-    reg.add(image_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
-    reg.add(image_ety, rcmp.AttachTo { .target = particle_ety });
-    reg.add(image_ety, rcmp.ImageResource {
-        .atlas = attack_cfg.atlas,
-        .image = attack_cfg.effect,
-    });
-
-    const x_scale_ety = reg.create();
-    reg.add(x_scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
-    reg.add(x_scale_ety, rcmp.TweenSetup {
-        .entity = particle_ety,
+fn createDeathEffect(reg: *ecs.Registry, char: ecs.Entity) void {
+    const scale_ety = reg.create();
+    reg.add(scale_ety, cmp.DeathTween { .character = char });
+    reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
+    reg.add(scale_ety, rcmp.TweenSetup {
+        .entity = char,
         .from = 1,
         .to = 0,
-        .duration = ATTACK_PARTICLE_LIFETIME,
-        .remove_source = true,
+        .duration = DEATH_EFFECT_DURATION,
+        .easing = easing.Easing.EaseIn,
+        .repeat = rcmp.TweenRepeat.OnceForward,
     });
 
     const rotate_ety = reg.create();
     reg.add(rotate_ety, rcmp.TweenRotate {});
     reg.add(rotate_ety, rcmp.TweenSetup {
-        .entity = particle_ety,
+        .entity = char,
         .from = 0,
         .to = 360,
-        .duration = ATTACK_PARTICLE_LIFETIME / 4.0,
+        .duration = DEATH_EFFECT_DURATION / 2.0,
+        .easing = easing.Easing.EaseIn,
         .repeat = rcmp.TweenRepeat.RepeatForward,
     });
 }
 
-pub fn attackEffect(reg: *ecs.Registry, dt: f32) void {
-    var effect_view = reg.view(.{ cmp.AttackEffect, rcmp.GlobalPosition }, .{});
-    var effect_iter = effect_view.entityIterator();
-    while (effect_iter.next()) |entity| {
-        var effect = reg.get(cmp.AttackEffect, entity);
-        effect.delay -= dt;
-        if (effect.delay <= 0) {
-            effect.delay = ATTACK_PARTICLE_DELAY;
+fn createDamageEffect(reg: *ecs.Registry, char_ety: ecs.Entity, dmg: f64, allocator: std.mem.Allocator) !void {
+    const char = reg.get(cmp.Character, char_ety);
+    const scale = reg.get(rcmp.GlobalScale, char_ety);
 
-            const pos = reg.get(rcmp.GlobalPosition, entity);
-
-            createParticle(reg, pos.x, pos.y, effect.cfg);
-        }
+    if (reg.tryGet(cmp.CharMsgRoot, char_ety)) |root| {
+        const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ dmg });
+        const message = reg.create();
+        reg.add(message, gcmp.CreateMessage {
+            .parent = root.root,
+            .x = 0,
+            .y = 0,
+            .text = dmg_text,
+            .free = true,
+        });
     }
+
+    const scale_x_ety = reg.create();
+    reg.add(scale_x_ety, rcmp.TweenScale { .axis = rcmp.Axis.X });
+    reg.add(scale_x_ety, rcmp.TweenSetup {
+        .entity = char_ety,
+        .from = scale.x,
+        .to = scale.x * 1.2,
+        .duration = HIT_EFFECT_DURATION,
+        .easing = easing.Easing.EaseOut,
+        .repeat = rcmp.TweenRepeat.OncePinpong,
+    });
+
+    const scale_y_ety = reg.create();
+    reg.add(scale_y_ety, rcmp.TweenScale { .axis = rcmp.Axis.Y });
+    reg.add(scale_y_ety, rcmp.TweenSetup {
+        .entity = char_ety,
+        .from = scale.y,
+        .to = scale.y * 1.2,
+        .duration = HIT_EFFECT_DURATION,
+        .easing = easing.Easing.EaseOut,
+        .repeat = rcmp.TweenRepeat.OncePinpong,
+    });
+
+    const gb_color_ety = reg.create();
+    reg.add(gb_color_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.GB });
+    reg.add(gb_color_ety, rcmp.TweenSetup {
+        .entity = char.view,
+        .from = 255,
+        .to = 0,
+        .duration = HIT_EFFECT_DURATION,
+        .easing = easing.Easing.EaseOut,
+        .repeat = rcmp.TweenRepeat.OncePinpong,
+    });
 }
 
-pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
-    var hit_view = reg.view(.{ cmp.AttackEffectTween, rcmp.TweenComplete }, .{});
-    var hit_iter = hit_view.entityIterator();
-    while (hit_iter.next()) |entity| {
-        const tween = reg.get(cmp.AttackEffectTween, entity);
-        const char = reg.get(cmp.Character, tween.target_char);
+pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator, dt: f32) !void {
+    var attk_view = reg.view(.{ cmp.AttackSatate, cmp.CfgOwner }, .{});
+    var attk_iter = attk_view.entityIterator();
+    while (attk_iter.next()) |entity| {
+        var state = reg.get(cmp.AttackSatate, entity);
+        state.time -= dt;
+        if (state.time <= 0) {
+            const cfg = reg.get(cmp.CfgOwner, entity);
+            if (cfg.cfg_json.value.strategy.map.get(state.strategy)) |strategy_cfg| {
+                if (strategy_cfg.view.attack.end) |end| {
+                    const ety = reg.create();
+                    reg.add(ety, rcmp.ImageResource {
+                        .atlas = end.atlas,
+                        .image = end.image,
+                    });
+                    reg.add(ety, rcmp.FlipbookSetup { .repeat = .OnceRemove });
+                }
+            }
+            
+            if (state.begin) |begin| {
+                if (reg.valid(begin)) {
+                    reg.addOrReplace(begin, ccmp.Destroyed {});
+                }
+            }
 
-        if (reg.has(cmp.Dead, tween.target_char)) {
-            const scale_ety = reg.create();
-            reg.add(scale_ety, cmp.DeathTween { .character = tween.target_char });
-            reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
-            reg.add(scale_ety, rcmp.TweenSetup {
-                .entity = tween.target_char,
-                .from = 1,
-                .to = 0,
-                .duration = DEATH_EFFECT_DURATION,
-                .easing = easing.Easing.EaseIn,
-                .repeat = rcmp.TweenRepeat.OnceForward,
-            });
+            if (reg.has(cmp.Dead, state.target)) {
+                createDeathEffect(reg, state.target);
+            } else {
+                try createDamageEffect(reg, state.target, state.dmg, allocator);
+            }
 
-            const rotate_ety = reg.create();
-            reg.add(rotate_ety, rcmp.TweenRotate {});
-            reg.add(rotate_ety, rcmp.TweenSetup {
-                .entity = tween.target_char,
-                .from = 0,
-                .to = 360,
-                .duration = DEATH_EFFECT_DURATION / 2.0,
-                .easing = easing.Easing.EaseIn,
-                .repeat = rcmp.TweenRepeat.RepeatForward,
-            });
-
-        } else {
-
-            if (reg.tryGet(cmp.CharMsgRoot, tween.target_char)) |root| {
-                const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ tween.dmg });
-                const message = reg.create();
-                reg.add(message, gcmp.CreateMessage {
-                    .parent = root.root,
-                    .x = 0,
-                    .y = 0,
-                    .text = dmg_text,
-                    .free = true,
+            var state_iter = reg.entityIterator(cmp.CombatState);
+            while (state_iter.next()) |state_entity| {
+                reg.addOrReplace(state_entity, cmp.CombatStateAttackCompleteRequest {
+                    .source_char = entity
                 });
             }
 
-            const scale_ety = reg.create();
-            reg.add(scale_ety, rcmp.TweenScale { .axis = rcmp.Axis.XY });
-            reg.add(scale_ety, rcmp.TweenSetup {
-                .entity = tween.target_char,
-                .from = 1,
-                .to = 1.2,
-                .duration = HIT_EFFECT_DURATION,
-                .easing = easing.Easing.EaseOut,
-                .repeat = rcmp.TweenRepeat.OncePinpong,
-            });
-
-            const gb_color_ety = reg.create();
-            reg.add(gb_color_ety, rcmp.TweenColor { .component = rcmp.ColorComponent.GB });
-            reg.add(gb_color_ety, rcmp.TweenSetup {
-                .entity = char.view,
-                .from = 255,
-                .to = 0,
-                .duration = HIT_EFFECT_DURATION,
-                .easing = easing.Easing.EaseOut,
-                .repeat = rcmp.TweenRepeat.OncePinpong,
-            });
-        }
-
-        var state_iter = reg.entityIterator(cmp.CombatState);
-        while (state_iter.next()) |state_entity| {
-            reg.addOrReplace(state_entity, cmp.CombatStateAttackCompleteRequest { .source_char = tween.source_char });
+            reg.remove(cmp.AttackSatate, entity);
         }
     }
 }
@@ -517,12 +544,13 @@ pub fn deathEffectComplete(reg: *ecs.Registry) void {
 }
 
 pub fn checkDeath(reg: *ecs.Registry) !void {
-    var view = reg.view(.{ cmp.Character, cmp.CheckDeath }, .{});
+    var view = reg.view(.{ cmp.Character, cmp.CheckDeath, cmp.CfgOwner }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         var char = reg.get(cmp.Character, entity);
+        const cfg = reg.get(cmp.CfgOwner, entity);
 
-        const hp = char.props.get(HP_PROP_NAME);
+        const hp = char.props.get(cfg.cfg_json.value.hp_prop);
         if (hp <= 0) {
             reg.add(entity, cmp.Dead {});
         }

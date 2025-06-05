@@ -54,6 +54,7 @@ pub const TweenSetup = struct {
     from: f32,
     to: f32,
     duration: f32,
+    offset: f32 = 0,
     easing: easing.Easing = easing.Easing.Linear,
     repeat: TweenRepeat = TweenRepeat.OnceForward,
     entity: ecs.Entity,
@@ -61,6 +62,7 @@ pub const TweenSetup = struct {
 };
 pub const TweenComplete = struct {};
 pub const TweenInProgress = struct { duration: f32 };
+pub const TweenDelay = struct { duration: f32 };
 pub const CancelTween = struct {};
 
 pub const SolidRect = struct { rect: rl.Rectangle, color: rl.Color };
@@ -94,6 +96,7 @@ pub const GlobalPosition = struct { x: f32, y: f32 };
 pub const GlobalScale = struct { x: f32, y: f32 };
 pub const GlobalRotation = struct { a: f32 };
 
+pub const HideUntilTimer = struct { time: f32 };
 pub const Hidden = struct {};
 pub const Disabled = struct {};
 pub const Scissor = struct { width: f32, height: f32 };

@@ -172,20 +172,11 @@ fn topoSort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs
     }
 }
 
-fn indexOf(comptime T: type, slice: std.ArrayList(T).Slice, value: T) ?usize {
-    return
-        for(slice, 0..) |now_value, index| {
-            if (now_value == value) {
-                break index;
-            }
-        } else null;
-}
-
 fn detachParent(reg: *ecs.Registry, entity: ecs.Entity) !void {
     const parent = reg.getConst(cmp.Parent, entity);
     if (reg.valid(parent.entity)) {
         var parent_children = reg.get(cmp.Children, parent.entity);
-        while (indexOf(ecs.Entity, parent_children.children.items, entity))|at_idx| {
+        while (std.mem.indexOfScalar(ecs.Entity, parent_children.children.items, entity))|at_idx| {
             _ = parent_children.children.orderedRemove(at_idx);
         }
     }
@@ -320,10 +311,6 @@ fn repeatSetup(repeat: cmp.TweenRepeat) struct { once: bool, dir: TweenRepeatDir
     };
 }
 
-fn abs(x: f32) f32 {
-    return if (x < 0) -x else x;
-}
-
 fn tweenValue(reg: *ecs.Registry, entity: ecs.Entity) f32 {
     const setup = reg.getConst(cmp.TweenSetup, entity);
     const progress = reg.getConst(cmp.TweenInProgress, entity);
@@ -333,7 +320,7 @@ fn tweenValue(reg: *ecs.Registry, entity: ecs.Entity) f32 {
     switch (repeat.dir) {
         .Forward => {},
         .Reverse => { t = 1 - t; },
-        .Pinpong => { t = 1 - abs((t - 0.5) * 2); },
+        .Pinpong => { t = 1 - @abs((t - 0.5) * 2); },
     }
     return lerp(setup.from, setup.to, easing.getFunc(setup.easing)(t));
 }
@@ -365,9 +352,9 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
         reg.add(entity, Destroyed {});
     }
 
-    var start_view = reg.view(.{ cmp.TweenSetup }, .{ cmp.TweenInProgress, cmp.TweenComplete });
-    var start_iter = start_view.entityIterator();
-    while (start_iter.next()) |entity| {
+    var delay_view = reg.view(.{ cmp.TweenSetup }, .{ cmp.TweenDelay, cmp.TweenInProgress, cmp.TweenComplete });
+    var delay_iter = delay_view.entityIterator();
+    while (delay_iter.next()) |entity| {
         const setup = reg.get(cmp.TweenSetup, entity);
         if (!reg.valid(setup.entity)) {
             reg.remove(cmp.TweenSetup, entity);
@@ -376,9 +363,31 @@ pub fn tween(reg: *ecs.Registry, dt: f32) void {
             continue;
         }
 
-        reg.add(entity, cmp.TweenInProgress {
-            .duration = setup.duration,
+        reg.add(entity, cmp.TweenDelay {
+            .duration = setup.offset,
         });
+    }
+
+    var start_view = reg.view(.{ cmp.TweenSetup, cmp.TweenDelay }, .{ cmp.TweenInProgress, cmp.TweenComplete });
+    var start_iter = start_view.entityIterator();
+    while (start_iter.next()) |entity| {
+        const delay = reg.get(cmp.TweenDelay, entity);
+        delay.duration -= dt;
+        if (delay.duration <= 0) {
+            const setup = reg.get(cmp.TweenSetup, entity);
+            if (!reg.valid(setup.entity)) {
+                reg.remove(cmp.TweenSetup, entity);
+                reg.remove(cmp.TweenInProgress, entity);
+
+                reg.addOrReplace(entity, Destroyed {});
+                continue;
+            }
+
+            reg.add(entity, cmp.TweenInProgress {
+                .duration = setup.duration,
+            });
+            reg.remove(cmp.TweenDelay, entity);
+        }
     }
 
     var view = reg.view(.{ cmp.TweenSetup, cmp.TweenInProgress }, .{ cmp.TweenComplete });
@@ -701,6 +710,10 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
         color.a = color_component.a;
     }
 
+    var source_rect = sprite.sprite.rect;
+    source_rect.width *= std.math.sign(scale.x);
+    source_rect.height *= std.math.sign(scale.y);
+
     const target_rect = rl.Rectangle {
         .x = pos.x, .y = pos.y,
         .width = sprite.sprite.rect.width * scale.x,
@@ -709,11 +722,11 @@ fn renderSprite(reg: *ecs.Registry, entity: ecs.Entity) !void {
 
     var origin = rl.Vector2 { .x = 0, .y = 0 };
     if (reg.tryGet(cmp.ImagePivot, entity)) |pivot| {
-        origin.x = target_rect.width * pivot.x;
-        origin.y = target_rect.height * pivot.y;
+        origin.x = target_rect.width * pivot.x * std.math.sign(scale.x);
+        origin.y = target_rect.height * pivot.y * std.math.sign(scale.y);
     }
 
-    rl.drawTexturePro(sprite.sprite.tex, sprite.sprite.rect, target_rect, origin, rot.a, color);
+    rl.drawTexturePro(sprite.sprite.tex, source_rect, target_rect, origin, rot.a, color);
 }
 
 fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -735,6 +748,10 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
         color.a = colorComponent.a;
     }
 
+    var source_rect = frame;
+    source_rect.width *= std.math.sign(scale.x);
+    source_rect.height *= std.math.sign(scale.y);
+
     const target_rect = rl.Rectangle {
         .x = pos.x, .y = pos.y,
         .width = frame.width * scale.x,
@@ -743,11 +760,11 @@ fn renderFlipbook(reg: *ecs.Registry, entity: ecs.Entity) !void {
     
     var origin = rl.Vector2 { .x = 0, .y = 0 };
     if (reg.tryGet(cmp.ImagePivot, entity)) |pivot| {
-        origin.x = target_rect.width * pivot.x;
-        origin.y = target_rect.height * pivot.y;
+        origin.x = target_rect.width * pivot.x * std.math.sign(scale.x);
+        origin.y = target_rect.height * pivot.y * std.math.sign(scale.y);
     }
 
-    rl.drawTexturePro(flipbook.flipbook.tex, frame, target_rect, origin, rot.a, color);
+    rl.drawTexturePro(flipbook.flipbook.tex, source_rect, target_rect, origin, rot.a, color);
 }
 
 fn renderSolidRect(reg: *ecs.Registry, entity: ecs.Entity) !void {
@@ -901,6 +918,26 @@ pub fn render(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         std.sort.heap(ecs.Entity, roots.items, reg, gameObjectRenderOrderLessThan);
         for (roots.items) |entity| {
             try renderObjects(reg, entity, null);
+        }
+    }
+}
+
+pub fn hidden(reg: *ecs.Registry, dt: f32) void {
+    var addtime_view = reg.view(.{ cmp.HideUntilTimer }, .{ cmp.Hidden });
+    var addtime_iter = addtime_view.entityIterator();
+    while (addtime_iter.next()) |entity| {
+        reg.add(entity, cmp.Hidden {});
+    }
+
+    var time_view = reg.view(.{ cmp.HideUntilTimer, cmp.Hidden }, .{});
+    var time_iter = time_view.entityIterator();
+    while (time_iter.next()) |entity| {
+        var time = reg.get(cmp.HideUntilTimer, entity);
+        time.time -= dt;
+
+        if (time.time <= 0) {
+            reg.remove(cmp.Hidden, entity);
+            reg.remove(cmp.HideUntilTimer, entity);
         }
     }
 }

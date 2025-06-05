@@ -1,8 +1,5 @@
 const std = @import("std");
 const rl = @import("raylib");
-const ecs = @import("zig-ecs");
-
-const rcmp = @import("../ecs/render/components.zig");
 
 pub const ParseError = error {
     ExpectedCloseBracket,
@@ -81,16 +78,6 @@ pub fn matchParams(allocator: std.mem.Allocator, template: []const u8, params: *
     }
 
     return result;
-}
-
-pub fn getParent(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
-    if (reg.tryGet(rcmp.Parent, entity)) |parent| {
-        return parent.entity;
-    } else if (reg.tryGet(rcmp.AttachTo, entity)) |attach| {
-        return attach.target;
-    }
-
-    return null;
 }
 
 pub fn formatPrice(num: f64, allocator: std.mem.Allocator) ![:0]const u8 {

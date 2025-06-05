@@ -7,9 +7,28 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "attack-strategy",
-                "name": "Attack"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "attack-strategy"
+                },
+                "name": "Attack",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 1
+                        }
+                    ],
+                    "delay": 1.4
+                }
             },
             "condition": {}
         },
@@ -22,9 +41,29 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "double-attack-strategy",
-                "name": "Rage Attack"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "double-attack-strategy"
+                },
+                "name": "Rage Attack",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 1,
+                            "color": { "r": 255, "g": 0, "b": 0 }
+                        }
+                    ],
+                    "delay": 1.4
+                }
             },
             "condition": {
                 "rage_attack": 1
@@ -37,9 +76,36 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "double-attack-strategy",
-                "name": "Double Attack"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "double-attack-strategy"
+                },
+                "name": "Double Attack",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 0.9
+                        },
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.5,
+                            "time": 0.9
+                        }
+                    ],
+                    "delay": 1.4
+                }
             },
             "condition": {
                 "double_attack": 1
@@ -52,9 +118,28 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "defence-strategy",
-                "name": "Defence"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "defence-strategy"
+                },
+                "name": "Defence",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 1
+                        }
+                    ],
+                    "delay": 1.4
+                }
             },
             "condition": {
                 "defence_attack": 1
@@ -67,9 +152,28 @@
                 "armor": 0.5
             },
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "shread-strategy",
-                "name": "Shread"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "shread-strategy"
+                },
+                "name": "Shread",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 1
+                        }
+                    ],
+                    "delay": 1.4
+                }
             },
             "condition": {
                 "shread_attack": 1
@@ -84,9 +188,29 @@
             },
             "modify_opp": {},
             "view": {
-                "atlas": "atlases/gui.json",
-                "icon": "attack-strategy",
-                "name": "Heavy"
+                "icon": {
+                    "atlas": "atlases/gui.json",
+                    "image": "attack-strategy"
+                },
+                "name": "Heavy",
+                "attack": {
+                    "begin": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_init"
+                    },
+                    "particles": [
+                        {
+                            "view": {
+                                "atlas": "atlases/gameplay.json",
+                                "image": "slash_proj"
+                            },
+                            "offset": 0.4,
+                            "time": 2,
+                            "scale": 2
+                        }
+                    ],
+                    "delay": 2.4
+                }
             },
             "condition": {
                 "heavy_attack": 1
@@ -119,10 +243,9 @@
     ],
     "hero_view": {
         "atlas": "atlases/gameplay.json",
-        "idle": "anm-hero_right-1-2"
+        "idle": "anm;hero_right;1;2"
     },
-    "attack_view": {
-        "atlas": "atlases/gameplay.json",
-        "effect": "attack_effect"
-    }
+    "attack_prop": "attack",
+    "armor_prop": "armor",
+    "hp_prop": "health"
 }

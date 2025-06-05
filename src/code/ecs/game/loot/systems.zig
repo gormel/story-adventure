@@ -6,6 +6,7 @@ const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const easing = @import("../../render/easing.zig");
+const rutils = @import("../../render/utils.zig");
 const utils = @import("../../../engine/utils.zig");
 
 const cmp = @import("components.zig");
@@ -309,7 +310,7 @@ fn rollLoot(
 ) !ecs.Entity {
     if (items.rollGroup(group, rnd) catch null) |item_name| {
         if (items.info(item_name)) |item| {
-            const start_ety = utils.getParent(reg, tile_ety)
+            const start_ety = rutils.getParent(reg, tile_ety)
                 orelse return Error.TileHasNoParent;
             const start = reg.get(cmp.LootStart, start_ety);
 

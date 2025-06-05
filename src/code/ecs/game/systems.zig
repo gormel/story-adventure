@@ -422,8 +422,7 @@ pub fn updateGameplayCustoms(
     loot.gui(reg);
 
     try combat.attack(reg, allocator);
-    combat.attackEffect(reg, dt);
-    try combat.attackEffectComplete(reg, allocator);
+    try combat.attackEffectComplete(reg, allocator, dt);
     combat.deathEffectComplete(reg);
     combat.charMessageRoot(reg);
     try combat.checkDeath(reg);

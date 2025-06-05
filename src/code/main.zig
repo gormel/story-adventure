@@ -139,6 +139,7 @@ pub fn main() !void {
         render_systems.blink(&reg, dt);
         render_systems.updateFlipbook(&reg, dt);
         render_systems.tween(&reg, dt);
+        render_systems.hidden(&reg, dt);
 
         rl.beginDrawing();
         rl.clearBackground(rl.Color.white);

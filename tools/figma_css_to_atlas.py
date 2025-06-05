@@ -110,7 +110,7 @@ with io.open('in.txt') as fp:
             sprite["h"] = to_px(obj["props"]["height"])
             atlas["sprites"].append(sprite)
 
-            match = re.match("^anm-([a-zA-Z_]+)-([0-9]+(\.[0-9]+)?)-([0-9]+)", sprite["name"])
+            match = re.match("^anm;([a-zA-Z_]+);([0-9]+(\.[0-9]+)?);([0-9]+)", sprite["name"])
             if (match != None):
                 anim_name = match.group(1)
                 frame_idx = int(match.group(4))
