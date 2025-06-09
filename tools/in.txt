@@ -2,7 +2,7 @@
 
 position: relative;
 width: 384px;
-height: 224px;
+height: 352px;
 
 
 
@@ -520,7 +520,7 @@ height: 32px;
 left: 256px;
 top: 64px;
 
-background: url(anm;slash_proj;0.6;0.png);
+background: url(anm;slash_propj;0.6;0.png);
 
 
 /* anm;slash_proj;0.6;1 */
@@ -531,7 +531,7 @@ height: 32px;
 left: 288px;
 top: 64px;
 
-background: url(anm;slash_proj;0.6;1.png);
+background: url(anm;slash_propj;0.6;1.png);
 
 
 /* anm;slash_proj;0.6;2 */
@@ -542,7 +542,7 @@ height: 32px;
 left: 320px;
 top: 64px;
 
-background: url(anm;slash_proj;0.6;2.png);
+background: url(anm;slash_propj;0.6;2.png);
 
 
 /* anm;slash_proj;0.6;3 */
@@ -553,4 +553,136 @@ height: 32px;
 left: 352px;
 top: 64px;
 
-background: url(anm;slash_proj;0.6;3.png);
+background: url(anm;slash_propj;0.6;3.png);
+
+
+/* anm;def_slash_init;0.6;0 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 128px;
+top: 160px;
+
+background: url(anm;def_slash__init;0.6;0.png);
+
+
+/* anm;def_slash_init;0.6;1 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 192px;
+top: 160px;
+
+background: url(anm;def_slash_init;0.6;1.png);
+
+
+/* anm;def_slash_init;0.6;2 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 256px;
+top: 160px;
+
+background: url(anm;def_slash_init;0.6;2.png);
+
+
+/* anm;def_slash_init;0.6;3 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 320px;
+top: 160px;
+
+background: url(anm;def_slash_init;0.6;3.png);
+
+
+/* anm;slash_hit;0.6;0 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 128px;
+top: 224px;
+
+background: url(anm;slash_hit;0.6;0.png);
+
+
+/* anm;slash_hit;0.6;1 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 192px;
+top: 224px;
+
+background: url(anm;slash_hit;0.6;1.png);
+
+
+/* anm;slash_hit;0.6;2 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 256px;
+top: 224px;
+
+background: url(anm;slash_hit;0.6;2.png);
+
+
+/* anm;slash_hit;0.6;3 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 320px;
+top: 224px;
+
+background: url(anm;slash_hit;0.6;3.png);
+
+
+/* anm;def_slash_hit;0.6;0 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 128px;
+top: 288px;
+
+background: url(anm;def_slash_hit;0.6;0.png);
+
+
+/* anm;def_slash_hit;0.6;1 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 192px;
+top: 288px;
+
+background: url(anm;def_slash_hit;0.6;1.png);
+
+
+/* anm;def_slash_hit;0.6;2 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 256px;
+top: 288px;
+
+background: url(anm;def_slash_hit;0.6;2.png);
+
+
+/* anm;def_slash_hit;0.6;3 */
+
+position: absolute;
+width: 64px;
+height: 64px;
+left: 320px;
+top: 288px;
+
+background: url(anm;def_slash_hit;0.6;3.png);

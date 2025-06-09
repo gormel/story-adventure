@@ -350,6 +350,90 @@
             "y": 64,
             "w": 32,
             "h": 32
+        },
+        {
+            "name": "anm;def_slash_init;0.6;0",
+            "x": 128,
+            "y": 160,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_init;0.6;1",
+            "x": 192,
+            "y": 160,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_init;0.6;2",
+            "x": 256,
+            "y": 160,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_init;0.6;3",
+            "x": 320,
+            "y": 160,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;slash_hit;0.6;0",
+            "x": 128,
+            "y": 224,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;slash_hit;0.6;1",
+            "x": 192,
+            "y": 224,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;slash_hit;0.6;2",
+            "x": 256,
+            "y": 224,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;slash_hit;0.6;3",
+            "x": 320,
+            "y": 224,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_hit;0.6;0",
+            "x": 128,
+            "y": 288,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_hit;0.6;1",
+            "x": 192,
+            "y": 288,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_hit;0.6;2",
+            "x": 256,
+            "y": 288,
+            "w": 64,
+            "h": 64
+        },
+        {
+            "name": "anm;def_slash_hit;0.6;3",
+            "x": 320,
+            "y": 288,
+            "w": 64,
+            "h": 64
         }
     ],
     "animations": [
@@ -421,6 +505,36 @@
                 "anm;slash_proj;0.6;1",
                 "anm;slash_proj;0.6;2",
                 "anm;slash_proj;0.6;3"
+            ]
+        },
+        {
+            "name": "def_slash_init",
+            "duration": 0.6,
+            "frames": [
+                "anm;def_slash_init;0.6;0",
+                "anm;def_slash_init;0.6;1",
+                "anm;def_slash_init;0.6;2",
+                "anm;def_slash_init;0.6;3"
+            ]
+        },
+        {
+            "name": "slash_hit",
+            "duration": 0.6,
+            "frames": [
+                "anm;slash_hit;0.6;0",
+                "anm;slash_hit;0.6;1",
+                "anm;slash_hit;0.6;2",
+                "anm;slash_hit;0.6;3"
+            ]
+        },
+        {
+            "name": "def_slash_hit",
+            "duration": 0.6,
+            "frames": [
+                "anm;def_slash_hit;0.6;0",
+                "anm;def_slash_hit;0.6;1",
+                "anm;def_slash_hit;0.6;2",
+                "anm;def_slash_hit;0.6;3"
             ]
         }
     ]

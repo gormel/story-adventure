@@ -17,6 +17,10 @@
                         "atlas": "atlases/gameplay.json",
                         "image": "slash_init"
                     },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_hit"
+                    },
                     "particles": [
                         {
                             "view": {
@@ -50,6 +54,10 @@
                     "begin": {
                         "atlas": "atlases/gameplay.json",
                         "image": "slash_init"
+                    },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_hit"
                     },
                     "particles": [
                         {
@@ -85,6 +93,10 @@
                     "begin": {
                         "atlas": "atlases/gameplay.json",
                         "image": "slash_init"
+                    },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_hit"
                     },
                     "particles": [
                         {
@@ -126,7 +138,11 @@
                 "attack": {
                     "begin": {
                         "atlas": "atlases/gameplay.json",
-                        "image": "slash_init"
+                        "image": "def_slash_init"
+                    },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_hit"
                     },
                     "particles": [
                         {
@@ -161,6 +177,10 @@
                     "begin": {
                         "atlas": "atlases/gameplay.json",
                         "image": "slash_init"
+                    },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "def_slash_hit"
                     },
                     "particles": [
                         {
@@ -197,6 +217,10 @@
                     "begin": {
                         "atlas": "atlases/gameplay.json",
                         "image": "slash_init"
+                    },
+                    "end": {
+                        "atlas": "atlases/gameplay.json",
+                        "image": "slash_hit"
                     },
                     "particles": [
                         {

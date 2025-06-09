@@ -23,13 +23,10 @@ const cfg_text = @embedFile("../../../assets/cfg/scene_customs/combat.json");
 const STRATEGY_ICON_SIZE = 64;
 const STRATEGY_ICON_PADDING = 5;
 
-const ATTACK_EFFECT_DURATION = 1;
-const ATTACK_EFFECT_HEIGHT = 40;
-const ATTACK_PARTICLE_DELAY = 0.01;
-const ATTACK_PARTICLE_LIFETIME = 0.3;
-
 const HIT_EFFECT_DURATION = 0.2;
 const DEATH_EFFECT_DURATION = 0.2;
+
+const DEBUG_ALL_STRATEGYS = false;
 
 fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.CombatCfg, strategy: []const u8) ecs.Entity {
     const root_ety = reg.create();
@@ -73,7 +70,7 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
 
             var strategy_iter = cfg_json.value.strategy.map.iterator();
             while (strategy_iter.next()) |kv| {
-                if (condition.check(kv.value_ptr.condition, props)) {
+                if (condition.check(kv.value_ptr.condition, props) or DEBUG_ALL_STRATEGYS) {
                     _ = createStrategyBtn(reg, entity, &cfg_json.value, kv.key_ptr.*);
                 }
             }
@@ -489,7 +486,7 @@ fn createDamageEffect(reg: *ecs.Registry, char_ety: ecs.Entity, dmg: f64, alloca
 }
 
 pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator, dt: f32) !void {
-    var attk_view = reg.view(.{ cmp.AttackSatate, cmp.CfgOwner }, .{});
+    var attk_view = reg.view(.{ cmp.AttackSatate, cmp.CfgOwner, cmp.Character }, .{});
     var attk_iter = attk_view.entityIterator();
     while (attk_iter.next()) |entity| {
         var state = reg.get(cmp.AttackSatate, entity);
@@ -504,6 +501,8 @@ pub fn attackEffectComplete(reg: *ecs.Registry, allocator: std.mem.Allocator, dt
                         .image = end.image,
                     });
                     reg.add(ety, rcmp.FlipbookSetup { .repeat = .OnceRemove });
+                    reg.add(ety, rcmp.AttachTo { .target = state.target });
+                    reg.add(ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
                 }
             }
             
