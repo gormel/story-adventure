@@ -293,6 +293,10 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
         const buy = reg.get(cmp.BuyItemBtn, entity);
         const setup = reg.get(cmp.ItemSceneSetup, buy.item_scene);
         const cfg = reg.get(cmp.CfgHolder, setup.shop_scene);
+
+        if (reg.has(cmp.ItemSold, buy.item_scene)) {
+            continue;
+        }
         
         if (cfg.cfg.value.prices.map.get(setup.item)) |price| {
             const money = props.get(cfg.cfg.value.money_property);
