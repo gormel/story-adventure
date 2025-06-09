@@ -5,8 +5,10 @@ const combat = @import("combat.zig");
 
 pub const CfgOwner = struct { cfg_json: std.json.Parsed(combat.CombatCfg) };
 
-pub const StrategyRoot = struct {};
+pub const StrategyList = struct {};
+pub const StrategyRoot = struct { locked: ecs.Entity, strategy_id: []const u8, list: ecs.Entity };
 pub const StrategyButton = struct { strategy_id: []const u8 };
+pub const UpdateStrategyLocked = struct {};
 
 pub const Character = struct { props: pr.Properties, view: ecs.Entity };
 pub const Hero = struct {};

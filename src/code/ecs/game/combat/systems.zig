@@ -33,15 +33,32 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
     reg.add(root_ety, rcmp.AttachTo { .target = parent });
 
     if (cfg.strategy.map.get(strategy)) |strategy_cfg| {
-        const icon_ety = reg.create();
-        reg.add(icon_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
-        reg.add(icon_ety, rcmp.ImageResource {
+        const btn_ety = reg.create();
+        reg.add(btn_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
+        reg.add(btn_ety, rcmp.ImageResource {
             .atlas = strategy_cfg.view.icon.atlas,
             .image = strategy_cfg.view.icon.image,
         });
-        reg.add(icon_ety, gcmp.CreateButton {});
-        reg.add(icon_ety, cmp.StrategyButton { .strategy_id = strategy });
-        reg.add(icon_ety, rcmp.AttachTo { .target = root_ety });
+        reg.add(btn_ety, gcmp.CreateButton {});
+        reg.add(btn_ety, cmp.StrategyButton { .strategy_id = strategy });
+        reg.add(btn_ety, rcmp.AttachTo { .target = root_ety });
+        reg.add(btn_ety, rcmp.Order { .order = 0 });
+
+        const locked_ety = reg.create();
+        reg.add(locked_ety, rcmp.Position { .x = -STRATEGY_ICON_SIZE, .y = -STRATEGY_ICON_SIZE / 2 });
+        reg.add(locked_ety, rcmp.ImageResource {
+            .atlas = cfg.strategy_locked_icon.atlas,
+            .image = cfg.strategy_locked_icon.image,
+        });
+        reg.add(locked_ety, rcmp.AttachTo { .target = root_ety });
+        reg.add(locked_ety, rcmp.Order { .order = 1 });
+
+        reg.add(root_ety, cmp.StrategyRoot {
+            .locked = locked_ety,
+            .strategy_id = strategy,
+            .list = parent,
+        });
+        reg.add(root_ety, cmp.UpdateStrategyLocked {});
 
         const text_ety = reg.create();
         reg.add(text_ety, rcmp.Position { .x = STRATEGY_ICON_PADDING, .y = -gui_setup.SizeText / 2 });
@@ -66,7 +83,7 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
                 .{ .ignore_unknown_fields = true });
             
             reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
-            reg.add(entity, cmp.StrategyRoot {});
+            reg.add(entity, cmp.StrategyList {});
 
             var strategy_iter = cfg_json.value.strategy.map.iterator();
             while (strategy_iter.next()) |kv| {
@@ -80,6 +97,28 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
                 .pivot = gcmp.LayoutPivot.Center,
                 .distance = STRATEGY_ICON_SIZE + STRATEGY_ICON_PADDING,
             });
+        }
+    }
+}
+
+pub fn updateStrategy(reg: *ecs.Registry, props: *pr.Properties) void {
+    var updatelocked_view = reg.view(.{ cmp.UpdateStrategyLocked, cmp.StrategyRoot }, .{});
+    var updatelocked_iter = updatelocked_view.entityIterator();
+    while (updatelocked_iter.next()) |entity| {
+        reg.remove(cmp.UpdateStrategyLocked, entity);
+
+        var locked = false;
+        const root = reg.get(cmp.StrategyRoot, entity);
+        if (reg.tryGet(cmp.CfgOwner, root.list)) |cfg| {
+            if (cfg.cfg_json.value.strategy.map.get(root.strategy_id)) |strategy_cfg| {
+                locked = condition.check(strategy_cfg.cost, props);
+            }
+        }
+
+        if (!locked) {
+            reg.removeIfExists(rcmp.Hidden, root.locked);
+        } else {
+            reg.addOrReplace(root.locked, rcmp.Hidden {});
         }
     }
 }
@@ -386,7 +425,12 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                     .strategy = attk.strategy,
                 });
 
-                createAttackEffect(reg, entity, strategy_cfg.view.attack); 
+                createAttackEffect(reg, entity, strategy_cfg.view.attack);
+
+                var strategy_iter = reg.entityIterator(cmp.StrategyRoot);
+                while (strategy_iter.next()) |strategy_ety| {
+                    reg.addOrReplace(strategy_ety, cmp.UpdateStrategyLocked {});
+                }
             } else {
                 var state_iter = reg.entityIterator(cmp.CombatState);
                 while (state_iter.next()) |state_entity| {
@@ -612,7 +656,7 @@ pub fn combatState(
                 .strategy = btn.strategy_id,
             });
 
-            setHidden(cmp.StrategyRoot, reg, true);
+            setHidden(cmp.StrategyList, reg, true);
 
             reg.remove(cmp.CombatStatePlayerIdle, entity);
             reg.add(entity, cmp.CombatStatePlayerAttack {});
@@ -677,7 +721,7 @@ pub fn combatState(
             continue;
         }
 
-        setHidden(cmp.StrategyRoot, reg, false);
+        setHidden(cmp.StrategyList, reg, false);
 
         reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
         reg.remove(cmp.CombatStateEnemyAttack, entity);
@@ -711,7 +755,7 @@ pub fn combatState(
     var enemyattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackFailedRequest }, .{});
     var enemyattackfailed_iter = enemyattackfailed_view.entityIterator();
     while (enemyattackfailed_iter.next()) |entity| {
-        setHidden(cmp.StrategyRoot, reg, false);
+        setHidden(cmp.StrategyList, reg, false);
 
         reg.remove(cmp.CombatStateAttackFailedRequest, entity);
         reg.remove(cmp.CombatStateEnemyAttack, entity);
@@ -721,7 +765,7 @@ pub fn combatState(
     var playerattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStatePlayerAttack, cmp.CombatStateAttackFailedRequest }, .{});
     var playerattackfailed_iter = playerattackfailed_view.entityIterator();
     while (playerattackfailed_iter.next()) |entity| {
-        setHidden(cmp.StrategyRoot, reg, false);
+        setHidden(cmp.StrategyList, reg, false);
 
         reg.remove(cmp.CombatStateAttackFailedRequest, entity);
         reg.remove(cmp.CombatStatePlayerAttack, entity);

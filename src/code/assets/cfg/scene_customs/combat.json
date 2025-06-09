@@ -271,5 +271,9 @@
     },
     "attack_prop": "attack",
     "armor_prop": "armor",
-    "hp_prop": "health"
+    "hp_prop": "health",
+    "strategy_locked_icon": {
+        "atlas": "atlases/gui.json",
+        "image": "strategy-locked"
+    }
 }

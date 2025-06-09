@@ -9,7 +9,6 @@ fea: game intro + scene story intro
 fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
 
-ref: combat strategy replace on cost failure
 ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money
 ref: loot - move buttons on border unopened tiles (path find!)
