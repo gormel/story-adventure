@@ -22,7 +22,7 @@ const iicmp = @import("../iteminfo/components.zig");
 
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/itemcollection.json");
 
-const ROW_SIZE = 11;
+const ROW_SIZE = 10;
 
 pub fn initGui(reg: *ecs.Registry) void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
@@ -70,8 +70,6 @@ pub fn gui(
             .pivot = .Begin,
         });
 
-        //12 cols
-        //7 rows
         var col: usize = 0;
         var row: usize = 0;
         var row_ety = reg.create();

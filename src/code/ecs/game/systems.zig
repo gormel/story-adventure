@@ -415,7 +415,7 @@ pub fn updateGameplayCustoms(
     dt: f32
 ) !void {
     try mainmenu.gui(reg, props, change, allocator);
-    gameplaystart.doSwitch(reg);
+    try gameplaystart.doSwitch(reg, items, allocator);
     hud.syncViews(reg, props, allocator);
     try hud.gui(reg, allocator);
 

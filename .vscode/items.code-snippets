@@ -6,7 +6,7 @@
             "\"${1:item-name}\": {",
             "\t\"view\": {",
             "\t\t\"atlas\": \"atlases/items.json\",",
-            "\t\t\"sprite\": \"${2:item-sprite}\",",
+            "\t\t\"image\": \"${2:item-image}\",",
             "\t\t\"name\": \"Item Name\",",
             "\t\t\"description\": \"Item description (may contains \\${param})\"",
             "\t},",

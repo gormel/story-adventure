@@ -223,5 +223,41 @@
             "heavy_attack": 1
         },
         "one_time_parameters": {}
+    },
+    "store-reroll-shard": {
+        "view": {
+            "atlas": "atlases/items.json",
+            "image": "store-reroll-shard",
+            "name": "Store Shard",
+            "description": "Allows reroll store items"
+        },
+        "parameters": {},
+        "one_time_parameters": {
+            "store-reroll": 1
+        }
+    },
+    "store-reroll-shard-3": {
+        "view": {
+            "atlas": "atlases/items.json",
+            "image": "store-reroll-shard-3",
+            "name": "Store Shard",
+            "description": "Allows reroll store items\n\nAdds 3 rerolls"
+        },
+        "parameters": {},
+        "one_time_parameters": {
+            "store-reroll": 3
+        }
+    },
+    "store-reroll-shard-5": {
+        "view": {
+            "atlas": "atlases/items.json",
+            "image": "store-reroll-shard-5",
+            "name": "Store Shard",
+            "description": "Allows reroll store items\n\nAdds 5 rerolls"
+        },
+        "parameters": {},
+        "one_time_parameters": {
+            "store-reroll": 5
+        }
     }
 }

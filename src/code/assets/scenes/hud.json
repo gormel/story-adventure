@@ -5,7 +5,7 @@
         "children": []
     },
     {
-        "position": { "x": -310, "y": -93 },
+        "position": { "x": -325, "y": -121 },
         "image": {
             "atlas": "atlases/gui.json",
             "image": "itemcollection-grid-bg"
@@ -14,7 +14,7 @@
         "children": []
     },
     {
-        "position": { "x": 642, "y": -133 },
+        "position": { "x": 642, "y": -176 },
         "image": {
             "atlas": "atlases/gui.json",
             "image": "itemcollection-grid-bg"
@@ -23,7 +23,7 @@
         "children": []
     },
     {
-        "position": { "x": 30, "y": 30 },
+        "position": { "x": 12, "y": 15 },
         "tags": [],
         "children": [
             {
@@ -44,7 +44,7 @@
         ]
     },
     {
-        "position": { "x": 30, "y": 80 },
+        "position": { "x": 12, "y": 65 },
         "tags": [],
         "children": [
             {
@@ -65,7 +65,7 @@
         ]
     },
     {
-        "position": { "x": 867, "y": 30 },
+        "position": { "x": 889, "y": 11 },
         "tags": [],
         "children": [
             {
@@ -86,7 +86,28 @@
         ]
     },
     {
-        "position": { "x": 768, "y": 30 },
+        "position": { "x": 654, "y": 11 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "store-reroll-shard"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 16, "text": "0" },
+                "tags": [ "store-reroll-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 808, "y": 11 },
         "tags": [],
         "children": [
             {
@@ -107,7 +128,7 @@
         ]
     },
     {
-        "position": { "x": 671, "y": 30 },
+        "position": { "x": 730, "y": 11 },
         "tags": [],
         "children": [
             {
@@ -128,7 +149,7 @@
         ]
     },
     {
-        "position": { "x": 958, "y": 30 },
+        "position": { "x": 980, "y": 11 },
         "tags": [  ],
         "children": [
             {

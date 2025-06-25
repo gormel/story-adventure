@@ -19,7 +19,7 @@
                 "children": []
             },
             {
-                "position": { "x": 200, "y": 116 },
+                "position": { "x": 196, "y": 116 },
                 "image": {
                     "atlas": "atlases/gui.json",
                     "image": "stall-refresh"
@@ -28,7 +28,16 @@
                 "children": []
             },
             {
-                "position": { "x": 225, "y": 120 },
+                "position": { "x": 209, "y": 110 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "store-reroll-shard"
+                },
+                "tags": [  ],
+                "children": []
+            },
+            {
+                "position": { "x": 233, "y": 120 },
                 "text": { "size": 15, "text": "[REROLL_COST]" },
                 "tags": [ "shop-stall-rerollcost-text", "button-text" ],
                 "children": []

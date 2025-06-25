@@ -16,5 +16,8 @@
     "spear-epic": "save-spear-epic",
     "heavy-spear-cmn": "save-heavy-spear-cmn",
     "heavy-spear-rare": "save-heavy-spear-rare",
-    "heavy-spear-epic": "save-heavy-spear-epic"
+    "heavy-spear-epic": "save-heavy-spear-epic",
+    "store-reroll-shard": "save-store-reroll-shard",
+    "store-reroll-shard-3": "save-store-reroll-shard-3",
+    "store-reroll-shard-5": "save-store-reroll-shard-5"
 }

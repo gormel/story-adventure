@@ -33,6 +33,11 @@ pub fn initViews(reg: *ecs.Registry) void {
             reg.add(entity, cmp.SyncView {});
         }
 
+        if (utils.containsTag(init.tags, "store-reroll-view")) {
+            reg.add(entity, cmp.StoreRerollView {});
+            reg.add(entity, cmp.SyncView {});
+        }
+
         if (utils.containsTag(init.tags, "armor-view")) {
             reg.add(entity, cmp.ArmorView {});
             reg.add(entity, cmp.SyncView {});
@@ -121,6 +126,10 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
             addSync(cmp.GoldView, reg);
         }
         
+        if (std.mem.eql(u8, changed.name, "store-reroll")) {
+            addSync(cmp.StoreRerollView, reg);
+        }
+        
         if (std.mem.eql(u8, changed.name, "attack")) {
             addSync(cmp.AttackView, reg);
         }
@@ -133,6 +142,7 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
     syncProperty(cmp.HealthView, "health", reg, props, allocator, selectValueOfMax);
     syncProperty(cmp.StaminaView, "stamina", reg, props, allocator, selectValueOfMax);
     syncProperty(cmp.GoldView, "gold", reg, props, allocator, selectValue);
+    syncProperty(cmp.StoreRerollView, "store-reroll", reg, props, allocator, selectValue);
     syncProperty(cmp.AttackView, "attack", reg, props, allocator, selectValue);
     syncProperty(cmp.ArmorView, "armor", reg, props, allocator, selectValue);
 }

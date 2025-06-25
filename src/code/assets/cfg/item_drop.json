@@ -118,5 +118,23 @@
         "weight": 0.02,
         "groups": [ "any", "weapon", "attack", "epic" ],
         "condition": {}
+    },
+    {
+        "item": "store-reroll-shard",
+        "weight": 1,
+        "groups": [ "any", "consumable", "common" ],
+        "condition": {}
+    },
+    {
+        "item": "store-reroll-shard-3",
+        "weight": 0.5,
+        "groups": [ "any", "consumable", "rare" ],
+        "condition": {}
+    },
+    {
+        "item": "store-reroll-shard-5",
+        "weight": 0.2,
+        "groups": [ "any", "consumable", "epic" ],
+        "condition": {}
     }
 ]

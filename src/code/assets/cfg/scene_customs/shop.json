@@ -51,8 +51,8 @@
     },
     "money_property": "gold",
     "reroll_cost": {
-        "property": "gold",
-        "base_value": 100,
-        "multiplyer": 10
+        "property": "store-reroll",
+        "base_value": 1,
+        "multiplyer": 1
     }
 }
