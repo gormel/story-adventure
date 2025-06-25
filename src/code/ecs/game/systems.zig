@@ -28,6 +28,7 @@ const gamemenu = @import("gamemenu/systems.zig");
 const iteminfo = @import("iteminfo/systems.zig");
 const itemcollection = @import("itemcollection/systems.zig");
 const shop = @import("shop/systems.zig");
+const itemtemplate = @import("itemtemplate/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -382,6 +383,8 @@ pub fn initGameplayCustoms(
 
     hud.initViews(reg);
 
+    itemtemplate.initGui(reg);
+
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
 
@@ -415,6 +418,8 @@ pub fn updateGameplayCustoms(
     gameplaystart.doSwitch(reg);
     hud.syncViews(reg, props, allocator);
     try hud.gui(reg, allocator);
+
+    try itemtemplate.updateGui(reg, items, allocator);
 
     try loot.rollItem(reg, items, rnd);
     try loot.openTile(reg, props, items);

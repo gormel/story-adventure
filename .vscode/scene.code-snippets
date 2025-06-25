@@ -16,7 +16,7 @@
         "body": [
             "{",
             "\t\"position\": { \"x\": 0, \"y\": 0 },",
-            "\t\"sprite\": {",
+            "\t\"image\": {",
             "\t\t\"atlas\": \"atlases/ATLAS_FILE.json\",",
             "\t\t\"image\": \"IMAGE_NAME\"",
             "\t},",

@@ -8,8 +8,8 @@ fea: combat completion screen + disable travel icon in combat
 fea: game intro + scene story intro
 fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
+fea: game  completion background
 
-ref: itemcollection, statistics, shop: move item to itemtemplate scene
 ref: reroll in store for resource instead of money
 ref: loot - move buttons on border unopened tiles (path find!)
 ref: x5 items, x5 monsters (x3 grades for each)

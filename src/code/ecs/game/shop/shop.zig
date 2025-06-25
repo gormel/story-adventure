@@ -2,8 +2,9 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const pr = @import("../../../engine/properties.zig");
 const game = @import("../utils.zig");
-const gcmp = @import("../components.zig");
+
 const cmp = @import("components.zig");
+const gcmp = @import("../components.zig");
 
 pub const STALL_SCENE_NAME = "shopstalltemplate";
 pub const ITEM_SCENE_NAME = "shopitemtemplate";
@@ -42,6 +43,7 @@ pub fn loadStallScene(
 ) !ecs.Entity {
     const ety = try game.loadScene(reg, allocator, STALL_SCENE_NAME, .{});
     reg.add(ety, cmp.StallSceneSetup { .position = position, .shop_scene = cfg_holder });
+    reg.add(ety, gcmp.TemplateInstanceScene {});
     return ety;
 }
 
@@ -53,5 +55,6 @@ pub fn loadItemScene(
 ) !ecs.Entity {
     const ety = try game.loadScene(reg, allocator, ITEM_SCENE_NAME, .{});
     reg.add(ety, cmp.ItemSceneSetup { .item = item, .shop_scene = shop_scene });
+    reg.add(ety, gcmp.TemplateInstanceScene {});
     return ety;
 }

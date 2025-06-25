@@ -5,8 +5,6 @@ const gamestats = @import("gamestats.zig");
 
 pub const ContinueBtn = struct { owner_scene: ecs.Entity };
 pub const SetTitleText = struct { owner_scene: ecs.Entity };
-pub const ItemBtn = struct { item: []const u8 };
-pub const ItemInfoScene = struct {};
 
 pub const ItemInfoRoot = struct {};
 

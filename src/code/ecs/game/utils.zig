@@ -91,6 +91,10 @@ var scenes = &.{
         .name = "shopstalltemplate",
         .text = @embedFile("../../assets/scenes/shopstalltemplate.json"),
     },
+    .{
+        .name = "itemtemplate",
+        .text = @embedFile("../../assets/scenes/itemtemplate.json"),
+    },
 };
 
 pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {
@@ -143,7 +147,7 @@ pub fn loadScene(
             const parsed_scene = try std.json.parseFromSlice(sc.Scene, allocator, scene_desc.text, .{ .ignore_unknown_fields = true });
             
             const new_scene_entity = reg.create();
-            reg.add(new_scene_entity, scmp.SceneResource { .scene = parsed_scene.value });
+            reg.add(new_scene_entity, scmp.SceneResource { .scene = parsed_scene.value, .name = name });
             reg.add(new_scene_entity, rcmp.AttachTo { .target = null });
             reg.add(new_scene_entity, cmp.GameplayScene { .name = name });
 

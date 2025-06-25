@@ -40,8 +40,8 @@ pub fn loadScene(reg: *ecs.Registry) !void {
     var view = reg.view(.{ cmp.SceneResource }, .{ cmp.Scene });
     var it = view.entityIterator();
     while (it.next()) |entity| {
-        reg.add(entity, cmp.Scene {});
         const resource = view.getConst(cmp.SceneResource, entity);
+        reg.add(entity, cmp.Scene { .name = resource.name });
 
         createGameObjects(reg, entity, resource.scene, entity);
 

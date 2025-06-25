@@ -17,6 +17,7 @@ pub const TriggerPlayerPropertyChanged = struct { name: []const u8 };
 pub const GameplayScene = struct { name: []const u8 };
 pub const NextGameplayScene = struct {};
 pub const GameoverScene = struct {};
+pub const TemplateInstanceScene = struct {};
 pub const SetInputCaptureScene = struct {};
 pub const InputCaptureScene = struct {};
 

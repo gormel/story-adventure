@@ -11,6 +11,7 @@ const easing = @import("../../render/easing.zig");
 const sp = @import("../../../engine/sprite.zig");
 const iteminfo = @import("../iteminfo/iteminfo.zig");
 const itemcollection = @import("itemcollection.zig");
+const itemtemplate = @import("../itemtemplate/itemtemplate.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -101,48 +102,14 @@ pub fn gui(
                     }
 
                     col += 1;
-
-                    const item_ety = reg.create();
-                    reg.add(item_ety, rcmp.AttachTo { .target = row_ety });
-                    reg.add(item_ety, rcmp.ImageResource {
-                        .atlas = item_kv.value_ptr.view.atlas,
-                        .image = item_kv.value_ptr.view.image,
-                    });
-                    reg.add(item_ety, gcmp.CreateButton { .animated = false });
-                    reg.add(item_ety, cmp.ItemBtn { .item = item_kv.key_ptr.* });
-
-                    const hover_ety = reg.create();
-                    reg.add(hover_ety, rcmp.Disabled {});
-                    reg.add(hover_ety, rcmp.AttachTo { .target = item_ety });
-                    reg.add(hover_ety, rcmp.ImageResource {
-                        .atlas = cfg_json.value.item_hover_view.atlas,
-                        .image = cfg_json.value.item_hover_view.image,
-                    });
-                    reg.add(item_ety, gcmp.Hover { .entity = hover_ety });
+                    
+                    var root_iter = reg.entityIterator(cmp.SmallPopupRoot);
+                    const item_ety = try itemtemplate.loadScene(
+                        reg, allocator, item_kv.key_ptr.*, root_iter.next());
+                    reg.addOrReplace(item_ety, rcmp.AttachTo { .target = row_ety });
                 }
             }
         }
-    }
-
-    var info_view = reg.view(.{ gcmp.ButtonClicked, cmp.ItemBtn }, .{});
-    var info_iter = info_view.entityIterator();
-    while (info_iter.next()) |entity| {
-        const btn = reg.get(cmp.ItemBtn, entity);
-
-        var root_iter = reg.entityIterator(cmp.SmallPopupRoot);
-        while (root_iter.next()) |root_ety| {
-            const scene = try iteminfo.loadScene(reg, allocator, btn.item);
-            reg.add(scene, cmp.ItemInfoScene {});
-            reg.addOrReplace(scene, rcmp.AttachTo { .target = root_ety });
-        }
-    }
-
-    var closeinfo_view = reg.view(.{ iicmp.Close, cmp.ItemInfoScene }, .{});
-    var closeinfo_iter = closeinfo_view.entityIterator();
-    while (closeinfo_iter.next()) |entity| {
-        reg.remove(iicmp.Close, entity);
-
-        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 
     var continue_view = reg.view(.{ cmp.ContinueBtn, gcmp.ButtonClicked }, .{});

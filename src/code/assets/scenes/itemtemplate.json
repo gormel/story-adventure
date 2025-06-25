@@ -1,0 +1,17 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "tags": [ "itemtemplate-itemicon-root" ],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "item-icon-highlight"
+                },
+                "tags": [ "itemtemplate-highlight" ],
+                "children": []
+            }
+        ]
+    }
+]

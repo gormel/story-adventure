@@ -32,17 +32,17 @@ pub fn worldToLocalXY(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32) 
 }
 
 pub fn localToWorldXY(reg: *ecs.Registry, entity: ecs.Entity, x: *f32, y: *f32) void {
-    if (reg.tryGetConst(cmp.GlobalPosition, entity)) |g_position| {
-        x.* += g_position.x;
-        y.* += g_position.y;
+    if (reg.tryGetConst(cmp.GlobalRotation, entity)) |g_rotation| {
+        utils.rotate(x, y, g_rotation.a);
     }
 
     if (reg.tryGetConst(cmp.GlobalScale, entity)) |g_scale| {
         x.* *= g_scale.x;
         y.* *= g_scale.y;
     }
-
-    if (reg.tryGetConst(cmp.GlobalRotation, entity)) |g_rotation| {
-        utils.rotate(x, y, g_rotation.a);
+    
+    if (reg.tryGetConst(cmp.GlobalPosition, entity)) |g_position| {
+        x.* += g_position.x;
+        y.* += g_position.y;
     }
 }

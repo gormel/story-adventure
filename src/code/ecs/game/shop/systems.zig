@@ -12,6 +12,7 @@ const sp = @import("../../../engine/sprite.zig");
 const main_menu = @import("../mainmenu/mainmenu.zig");
 const iteminfo = @import("../iteminfo/iteminfo.zig");
 const shop = @import("shop.zig");
+const itemtemplate = @import("../itemtemplate/itemtemplate.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -247,28 +248,11 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
     while (icon_iter.next()) |entity| {
         const attach = reg.get(cmp.AttachItemIcon, entity);
         const setup = reg.get(cmp.ItemSceneSetup, attach.item_scene);
-        const cfg = reg.get(cmp.CfgHolder, setup.shop_scene);
-        
-        if (items.item_list_cfg.map.get(setup.item)) |item_cfg| {
-            const icon_ety = reg.create();
-            reg.add(icon_ety, cmp.ItemInfoBtn { .item = setup.item });
-            reg.add(icon_ety, gcmp.CreateButton { .animated = false });
-            reg.add(icon_ety, rcmp.AttachTo { .target = entity });
-            reg.add(icon_ety, rcmp.ImageResource {
-                .atlas = item_cfg.view.atlas,
-                .image = item_cfg.view.image,
-            });
 
-            const hover_ety = reg.create();
-            reg.add(hover_ety, rcmp.AttachTo { .target = icon_ety });
-            reg.add(hover_ety, rcmp.Disabled {});
-            reg.add(hover_ety, rcmp.ImageResource {
-                .atlas = cfg.cfg.value.hover_view.atlas,
-                .image = cfg.cfg.value.hover_view.image,
-            });
-
-            reg.add(icon_ety, gcmp.Hover { .entity = hover_ety });
-        }
+        var root_iter = reg.entityIterator(cmp.ItemPopupRoot);
+        const icon_ety = try itemtemplate.loadScene(
+            reg, allocator, setup.item, root_iter.next());
+        reg.addOrReplace(icon_ety, rcmp.AttachTo { .target = entity });
 
         reg.remove(cmp.AttachItemIcon, entity);
     }
@@ -314,27 +298,6 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
                 }
             }
         }
-    }
-
-    var iteminfo_view = reg.view(.{ gcmp.ButtonClicked, cmp.ItemInfoBtn }, .{});
-    var iteminfo_iter = iteminfo_view.entityIterator();
-    while (iteminfo_iter.next()) |entity| {
-        const btn = reg.get(cmp.ItemInfoBtn, entity);
-
-        var root_iter = reg.entityIterator(cmp.ItemPopupRoot);
-        while (root_iter.next()) |root_ety| {
-            const scene_ety = try iteminfo.loadScene(reg, allocator, btn.item);
-            reg.add(scene_ety, cmp.ItemPopup {});
-            reg.addOrReplace(scene_ety, rcmp.AttachTo { .target = root_ety });
-        }
-    }
-
-    var iteminfocontinue_view = reg.view(.{ iicmp.Close, cmp.ItemPopup }, .{});
-    var iteminfocontinue_iter = iteminfocontinue_view.entityIterator();
-    while (iteminfocontinue_iter.next()) |entity| {
-        reg.addOrReplace(entity, ccmp.Destroyed {});
-
-        reg.remove(iicmp.Close, entity);
     }
 }
 

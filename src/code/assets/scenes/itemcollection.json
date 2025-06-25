@@ -22,7 +22,7 @@
                 "tags": [ ],
                 "children": [
                     {
-                        "position": { "x": 5, "y": 5 },
+                        "position": { "x": 10, "y": 10 },
                         "tags": [ "itemcollection-grid-root" ],
                         "children": []
                     }

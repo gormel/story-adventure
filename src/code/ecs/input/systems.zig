@@ -5,8 +5,11 @@ const is = @import("inputstack.zig");
 const utils = @import("../../engine/utils.zig");
 const rutils = @import("../render/utils.zig");
 const game = @import("../game/utils.zig");
+
 const cmp = @import("components.zig");
 const rcmp = @import("../render/components.zig");
+const gcmp = @import("../game/components.zig");
+const scmp = @import("../scene/components.zig");
 
 fn getScissor(reg: *ecs.Registry, entity: ecs.Entity) ?ecs.Entity {
     if (reg.has(rcmp.Scissor, entity)) {
@@ -56,7 +59,18 @@ fn mouseOver(reg: *ecs.Registry, entity: ecs.Entity) bool {
 }
 
 fn isInputAllowed(reg: *ecs.Registry, entity: ecs.Entity, input_stack: is.InputStack) bool {
-    if (game.queryScene(reg, entity)) |scene_ety| {
+    var caret = game.queryScene(reg, entity);
+    while (caret != null and reg.has(gcmp.TemplateInstanceScene, caret.?)) {
+        if (caret) |scene_ety| {
+            if (reg.tryGet(rcmp.Parent, scene_ety)) |scene_parent| {
+                caret = game.queryScene(reg, scene_parent.entity);
+            } else {
+                caret = null;
+            }
+        }
+    }
+
+    if (caret) |scene_ety| {
         return input_stack.isAccessible(scene_ety);
     }
 
