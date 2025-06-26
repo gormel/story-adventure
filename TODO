@@ -1,13 +1,16 @@
+fea: game intro + scene story intro
+fea: charge device, charge artifacts, consumables
+
 fea: trap scene
+
 fea: unique monster attack
 fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 fea: combat location to fill free space
 fea: combat completion screen + disable travel icon in combat
 fea: combat concede
+
 fea: "new" sign in gameover statistisc for items
-fea: game intro + scene story intro
-fea: charge device, charge artifacts, consumables
 fea: layout text (H/V/HV)
 fea: game completion background
 

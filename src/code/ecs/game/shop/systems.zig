@@ -233,7 +233,7 @@ pub fn stall(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items
         const state = reg.get(cmp.StallSceneRerollState, set.stall_scene);
         const cost = reg.get(cmp.StallSceneRerollCost, set.stall_scene);
 
-        const cost_txt = try utils.formatPrice(state.price, allocator);
+        const cost_txt = try utils.formatPrice(state.price, allocator, .{});
         reg.addOrReplace(cost.text, rcmp.SetTextValue {
             .text = cost_txt,
             .free = true,
@@ -264,7 +264,7 @@ pub fn item(reg: *ecs.Registry, allocator: std.mem.Allocator, items: *itm.Items,
         const cfg = reg.get(cmp.CfgHolder, setup.shop_scene);
 
         if (cfg.cfg.value.prices.map.get(setup.item)) |price| {
-            const price_txt = try utils.formatPrice(price, allocator);
+            const price_txt = try utils.formatPrice(price, allocator, .{ .prefix = "$" });
             reg.add(entity, rcmp.SetTextValue { .text = price_txt, .free = true });
         }
 

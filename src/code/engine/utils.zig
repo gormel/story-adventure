@@ -80,9 +80,13 @@ pub fn matchParams(allocator: std.mem.Allocator, template: []const u8, params: *
     return result;
 }
 
-pub fn formatPrice(num: f64, allocator: std.mem.Allocator) ![:0]const u8 {
+pub const PriceFormatOptions = struct {
+    prefix: []const u8 = "",
+};
+
+pub fn formatPrice(num: f64, allocator: std.mem.Allocator, options: PriceFormatOptions) ![:0]const u8 {
     const postfixes = [_][]const u8 { "", "k", "m", "M" };
-    const price_prefix = "";
+    const price_prefix = options.prefix;
     var postfix_idx = postfixes.len - 1;
     while (postfix_idx > 0) {
         const chck = num / @as(f64, @floatFromInt(try std.math.powi(i64, 1000, @intCast(postfix_idx))));
