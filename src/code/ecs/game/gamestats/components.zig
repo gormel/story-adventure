@@ -8,7 +8,7 @@ pub const SetTitleText = struct { owner_scene: ecs.Entity };
 
 pub const ItemInfoRoot = struct {};
 
-pub const ItemList = struct { cfg_json: std.json.Parsed(gamestats.GamestatsCfg) };
+pub const ItemList = struct {};
 
 pub const CreateItemList = struct {};
 pub const SetDepthText = struct {};

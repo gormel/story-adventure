@@ -7,15 +7,6 @@ const cmp = @import("components.zig");
 
 pub const SCENE_NAME = "gamestats";
 
-pub const ItemHoverViewCfg = struct {
-    atlas: []const u8,
-    image: []const u8,
-};
-
-pub const GamestatsCfg = struct {
-    item_hover_view: ItemHoverViewCfg,
-};
-
 pub fn loadScene(
         reg: *ecs.Registry,
         allocator: std.mem.Allocator,

@@ -449,8 +449,6 @@ pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
     loot.freeLootStart(reg);
     combat.freeCombat(reg);
     shop.free(reg);
-    gamestats.free(reg);
-    itemcollection.free(reg);
 }
 
 fn lessThanLayoutChild(reg: *ecs.Registry, a: ecs.Entity, b: ecs.Entity) bool {

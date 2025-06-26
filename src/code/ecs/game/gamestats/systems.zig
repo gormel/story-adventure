@@ -20,8 +20,6 @@ const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
 const iicmp = @import("../iteminfo/components.zig");
 
-const cfg_text = @embedFile("../../../assets/cfg/scene_customs/gamestats.json");
-
 pub fn initGui(reg: *ecs.Registry) void {
     var iter = reg.entityIterator(scmp.InitGameObject);
     while (iter.next()) |entity| {
@@ -79,9 +77,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
 
     var item_list_iter = reg.entityIterator(cmp.CreateItemList);
     while (item_list_iter.next()) |entity| {
-        
-        const cfg_json = try std.json.parseFromSlice(gamestats.GamestatsCfg, allocator, cfg_text, .{});
-        reg.add(entity, cmp.ItemList { .cfg_json = cfg_json });
+        reg.add(entity, cmp.ItemList {});
 
         const root_ety = reg.create();
         reg.add(root_ety, rcmp.Position { .x = 5, .y = 5 });
@@ -149,15 +145,5 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
         const btn = reg.get(cmp.ContinueBtn, entity);
 
         reg.addOrReplace(btn.owner_scene, cmp.Continue {});
-    }
-}
-
-pub fn free(reg: *ecs.Registry) void {
-    var itemlist_view = reg.view(.{ cmp.ItemList, ccmp.Destroyed }, .{});
-    var itemlist_iter = itemlist_view.entityIterator();
-    while (itemlist_iter.next()) |entity| {
-        const list = reg.get(cmp.ItemList, entity);
-
-        list.cfg_json.deinit();
     }
 }

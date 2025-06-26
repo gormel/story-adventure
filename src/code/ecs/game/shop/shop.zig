@@ -16,11 +16,6 @@ pub const StallCfg = struct {
     position: usize,
 };
 
-pub const ShopHoverViewCfg = struct {
-    atlas: []const u8,
-    image: []const u8,
-};
-
 pub const ShopRerollCostCfg = struct {
     property: []const u8,
     base_value: f64,
@@ -30,7 +25,6 @@ pub const ShopRerollCostCfg = struct {
 pub const ShopCfg = struct {
     stalls: []StallCfg,
     prices: std.json.ArrayHashMap(f64),
-    hover_view: ShopHoverViewCfg,
     money_property: []const u8,
     reroll_cost: ShopRerollCostCfg,
 };

@@ -20,8 +20,6 @@ const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
 const iicmp = @import("../iteminfo/components.zig");
 
-const cfg_text = @embedFile("../../../assets/cfg/scene_customs/itemcollection.json");
-
 const ROW_SIZE = 10;
 
 pub fn initGui(reg: *ecs.Registry) void {
@@ -61,9 +59,7 @@ pub fn gui(
     while (grid_iter.next()) |entity| {
         reg.remove(cmp.CreateItemGrid, entity);
 
-        const cfg_json = try std.json.parseFromSlice(itemcollection.ItemCollectionCfg, allocator, cfg_text, .{});
-
-        reg.add(entity, cmp.ItemGrid { .cfg_json = cfg_json });
+        reg.add(entity, cmp.ItemGrid {});
         reg.add(entity, gcmp.LayoutChildren {
             .axis = .Vertical,
             .distance = 37,
@@ -116,15 +112,5 @@ pub fn gui(
         const btn = reg.get(cmp.ContinueBtn, entity);
 
         reg.addOrReplace(btn.owner_scene, cmp.Continue {});
-    }
-}
-
-pub fn free(reg: *ecs.Registry) void {
-    var grid_view = reg.view(.{ cmp.ItemGrid, ccmp.Destroyed }, .{});
-    var grid_iter = grid_view.entityIterator();
-    while (grid_iter.next()) |entity| {
-        const grid = reg.get(cmp.ItemGrid, entity);
-
-        grid.cfg_json.deinit();
     }
 }

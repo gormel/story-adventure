@@ -45,10 +45,6 @@
         "heavy-spear-rare": 300,
         "heavy-spear-epic": 3000
     },
-    "hover_view": {
-        "atlas": "atlases/gui.json",
-        "image": "item-icon-highlight"
-    },
     "money_property": "gold",
     "reroll_cost": {
         "property": "store-reroll",
