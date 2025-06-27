@@ -1,5 +1,6 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
+const astar = @import("zig-astar");
 const loot = @import("loot.zig");
 const rcmp = @import("../../render/components.zig");
 
@@ -39,5 +40,8 @@ pub const Character = struct {
     tile: ecs.Entity,
 };
 pub const CharacterMoveTween = struct { char_entity: ecs.Entity, axis: rcmp.Axis, reset_anim: bool = true };
+pub const MoveCharacterTo = struct { tile: ecs.Entity };
+pub const CharacterMovePath = struct { current_pos: usize, path: astar.Path(loot.TileInfo) };
+pub const StepCharacterMove = struct {};
 
 pub const CompleteLootButton = struct {};

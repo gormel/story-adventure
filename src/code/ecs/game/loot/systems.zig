@@ -1,6 +1,7 @@
 const std = @import("std");
 const ecs = @import("zig-ecs");
 const rl = @import("raylib");
+const astar = @import("zig-astar");
 const game = @import("../utils.zig");
 const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
@@ -18,10 +19,15 @@ const gcmp = @import("../components.zig");
 const loot = @import("loot.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/loot.json");
 
+const TileSizeX = 32;
+const TileSizeY = 32;
+
 const Error = error {
     TileHasNoParent,
     CharacterHasNoTileParent,
     CharacterNotFound,
+    WrongPathfinderState,
+    CannotFindPath,
 };
 
 const Point = struct {
@@ -31,8 +37,69 @@ const Point = struct {
     is_center: bool = false,
 };
 
-const TileSizeX = 32;
-const TileSizeY = 32;
+const XY = struct { x: i32, y: i32 };
+
+const ConnectionIterator = struct {
+    const Self = @This();
+
+    reg: *ecs.Registry,
+    tile_ety: ecs.Entity,
+    side: loot.Side,
+    iterations: usize,
+
+    pub fn init(reg: *ecs.Registry, tile_ety: ecs.Entity) Self {
+        return .{
+            .reg = reg,
+            .tile_ety = tile_ety,
+            .side = loot.Side.LEFT,
+            .iterations = 0,
+        };
+    }
+
+    fn current(self: *Self) ?ecs.Entity {
+        const tile = self.reg.get(cmp.Tile, self.tile_ety);
+        return switch (self.side) {
+            .LEFT => tile.l,
+            .UP => tile.u,
+            .RIGHT => tile.r,
+            .DOWN => tile.d,
+        };
+    }
+
+    fn rotate(self: *Self) void {
+        self.side = switch (self.side) {
+            .LEFT => loot.Side.UP,
+            .UP => loot.Side.RIGHT,
+            .RIGHT => loot.Side.DOWN,
+            .DOWN => loot.Side.LEFT,
+        };
+    }
+
+    pub fn next(self: *Self) ?struct { entity: ecs.Entity, side: loot.Side } {
+        if (self.iterations > 3) {
+            return null;
+        }
+
+        while (self.current() == null) {
+            self.iterations += 1;
+            self.rotate();
+
+            if (self.iterations > 3) {
+                return null;
+            }
+        }
+
+        const curr = self.current();
+        const current_side = self.side;
+        self.rotate();
+        self.iterations += 1;
+        if (curr) |current_ety| {
+            return .{ .entity = current_ety, .side = current_side };
+        }
+
+        return null;
+    }
+};
 
 fn createFog(reg: *ecs.Registry, tile_ety: ecs.Entity, cfg: *const loot.LootCfg) ecs.Entity {
     const fog_ety = reg.create();
@@ -197,8 +264,6 @@ fn createCharacterTween(reg: *ecs.Registry, char_ety: ecs.Entity, from: f32, to:
     });
     reg.add(tween_ety, cmp.CharacterMoveTween { .char_entity = char_ety, .axis = axis });
 }
-
-const XY = struct { x: i32, y: i32 };
 
 fn getLootAlpha(from: XY, to: XY, cfg: *const loot.LootCfg) ?u8 {
     const dx = to.x - from.x;
@@ -516,15 +581,48 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
 }
 
 pub fn character(reg: *ecs.Registry) void {
-    var anim_restore_view = reg.view(.{ rcmp.TweenComplete, cmp.CharacterMoveTween }, .{});
-    var anim_restore_iter = anim_restore_view.entityIterator();
-    while (anim_restore_iter.next()) |entity| {
+    var tweencomplete_view = reg.view(.{ rcmp.TweenComplete, cmp.CharacterMoveTween }, .{});
+    var tweencomplete_iter = tweencomplete_view.entityIterator();
+    while (tweencomplete_iter.next()) |entity| {
         const tween = reg.get(cmp.CharacterMoveTween, entity);
-        if (tween.reset_anim) {
-            const char = reg.get(cmp.Character, tween.char_entity);
+        reg.addOrReplace(tween.char_entity, cmp.StepCharacterMove {});
+    }
+
+    var movechar_view = reg.view(.{ cmp.Character, cmp.StepCharacterMove, cmp.CharacterMovePath, rcmp.Parent }, .{});
+    var movechar_iter = movechar_view.entityIterator();
+    while (movechar_iter.next()) |entity| {
+        reg.remove(cmp.StepCharacterMove, entity);
+
+        const path = reg.get(cmp.CharacterMovePath, entity);
+        const char_parent = reg.get(rcmp.Parent, entity);
+        const loot_start = reg.tryGet(cmp.LootStart, char_parent.entity) orelse continue;
+
+        if (path.current_pos >= path.path.path.items.len - 1) {
+            const char = reg.get(cmp.Character, entity);
             var imgs = [_]ecs.Entity { char.idle_image, char.l_image, char.u_image, char.r_image, char.d_image };
             showAnimation(&imgs, 0, reg);
+
+            var opener_view = reg.view(.{ cmp.Opener, rcmp.Disabled }, .{});
+            var opener_iter = opener_view.entityIterator();
+            while (opener_iter.next()) |opener_ety| {
+                reg.remove(rcmp.Disabled, opener_ety);
+            }
+
+            reg.addOrReplace(path.path.path.items[path.current_pos].tile, cmp.Open {});
+
+            path.path.deinit();
+            reg.remove(cmp.CharacterMovePath, entity);
+            continue;
         }
+
+        const prev_pos = path.current_pos;
+        path.current_pos += 1;
+
+        moveCharacter(reg, 
+            path.path.path.items[prev_pos].tile,
+            path.path.path.items[path.current_pos].tile,
+            &loot_start.cfg_json.value);
+        
     }
 }
 
@@ -549,68 +647,6 @@ pub fn freeLootStart(reg: *ecs.Registry) void {
         loot_start.cfg_json.deinit();
     }
 }
-
-const ConnectionIterator = struct {
-    const Self = @This();
-
-    reg: *ecs.Registry,
-    tile_ety: ecs.Entity,
-    side: loot.Side,
-    iterations: usize,
-
-    pub fn init(reg: *ecs.Registry, tile_ety: ecs.Entity) Self {
-        return .{
-            .reg = reg,
-            .tile_ety = tile_ety,
-            .side = loot.Side.LEFT,
-            .iterations = 0,
-        };
-    }
-
-    fn current(self: *Self) ?ecs.Entity {
-        const tile = self.reg.get(cmp.Tile, self.tile_ety);
-        return switch (self.side) {
-            .LEFT => tile.l,
-            .UP => tile.u,
-            .RIGHT => tile.r,
-            .DOWN => tile.d,
-        };
-    }
-
-    fn rotate(self: *Self) void {
-        self.side = switch (self.side) {
-            .LEFT => loot.Side.UP,
-            .UP => loot.Side.RIGHT,
-            .RIGHT => loot.Side.DOWN,
-            .DOWN => loot.Side.LEFT,
-        };
-    }
-
-    pub fn next(self: *Self) ?struct { entity: ecs.Entity, side: loot.Side } {
-        if (self.iterations > 3) {
-            return null;
-        }
-
-        while (self.current() == null) {
-            self.iterations += 1;
-            self.rotate();
-
-            if (self.iterations > 3) {
-                return null;
-            }
-        }
-
-        const curr = self.current();
-        const current_side = self.side;
-        self.rotate();
-        self.iterations += 1;
-        if (curr) |current_ety| {
-            return .{ .entity = current_ety, .side = current_side };
-        }
-
-        return null;
-    }
-};
 
 fn cleanupFog(reg: *ecs.Registry, tile_fog: *cmp.TileFog, entity: ecs.Entity) void {
     reg.addOrReplace(tile_fog.entity, ccmp.Destroyed {});
@@ -677,25 +713,96 @@ fn cleanupLoot(
     reg.remove(cmp.TileLoot, entity);
 }
 
-pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !void {
+fn tileDistance(a: loot.TileInfo, b: loot.TileInfo) usize {
+    const a_tile = a.reg.get(cmp.Tile, a.tile);
+    const b_tile = b.reg.get(cmp.Tile, b.tile);
+    const x = a_tile.x - b_tile.x;
+    const y = a_tile.y - b_tile.y;
+    return @intCast(x * x + y * y);
+}
+
+pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items, allocator: std.mem.Allocator) !void {
     var click_view = reg.view(.{ gcmp.ButtonClicked, cmp.Opener }, .{});
     var click_iter = click_view.entityIterator();
     while (click_iter.next()) |entity| {
         if (reg.assure(cmp.CharacterMoveTween).len() > 0) {
             continue;
         }
-
+        
         const opener = reg.getConst(cmp.Opener, entity);
-        reg.addOrReplace(opener.tile, cmp.Open {});
+
+        var char_iter = reg.entityIterator(cmp.Character);
+        while (char_iter.next()) |char_ety| {
+            reg.addOrReplace(char_ety, cmp.MoveCharacterTo { .tile = opener.tile });
+        }
+    }
+
+    var moveto_view = reg.view(.{ cmp.MoveCharacterTo, cmp.Character }, .{});
+    var moveto_iter = moveto_view.entityIterator();
+    while (moveto_iter.next()) |entity| {
+        const move = reg.get(cmp.MoveCharacterTo, entity);
+        const target_tile_ety = move.tile;
+        reg.remove(cmp.MoveCharacterTo, entity);
+        
+        const char = reg.get(cmp.Character, entity);
+
+        const Pathfinder = astar.Astar(loot.TileInfo, tileDistance);
+
+        var pf = Pathfinder.init(.{ .reg = reg, .tile = char.tile }, allocator);
+        defer pf.deinit();
+
+        var neighbours = std.ArrayList(loot.TileInfo).init(allocator);
+        defer neighbours.deinit();
+
+        var result = try pf.pathFind(
+            .{ .reg = reg, .tile = char.tile },
+            .{ .reg = reg, .tile = target_tile_ety });
+        while (result == .neighbors) {
+            const pos = result.neighbors;
+            neighbours.clearRetainingCapacity();
+
+            var it = ConnectionIterator.init(reg, pos.tile);
+            while (it.next()) |neighbour_entry| {
+                if (
+                    reg.has(cmp.Visited, neighbour_entry.entity)
+                    or neighbour_entry.entity == target_tile_ety
+                ) {
+                    try neighbours.append(.{ .reg = reg, .tile = neighbour_entry.entity });
+                }
+            }
+
+            result = try pf.step(neighbours.items);
+        }
+
+        switch (result) {
+            .done => |*path| {
+                if (path.path.items.len > 1) {
+                    reg.add(entity, cmp.CharacterMovePath { .current_pos = 0, .path = path.* });
+                    reg.add(entity, cmp.StepCharacterMove {});
+                    
+                    var opener_iter = reg.entityIterator(cmp.Opener);
+                    while (opener_iter.next()) |opener_ety| {
+                        reg.addOrReplace(opener_ety, rcmp.Disabled {});
+                    }
+                } else {
+                    path.deinit();
+                    reg.addOrReplace(target_tile_ety, cmp.Open {});
+                }
+            },
+            .no_path => return Error.CannotFindPath,
+            .neighbors => return Error.WrongPathfinderState,
+        }
     }
 
     var view = reg.view(.{ cmp.Open, cmp.Tile, rcmp.Parent }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const open = reg.get(cmp.Open, entity);
+        const is_free = open.free;
+        reg.remove(cmp.Open, entity);
+
         const parent = reg.getConst(rcmp.Parent, entity);
-        const loot_start = if (reg.tryGetConst(cmp.LootStart, parent.entity)) |loot_start|
-            loot_start else continue;
+        const loot_start = reg.tryGetConst(cmp.LootStart, parent.entity) orelse continue;
         
         const cfg = loot_start.cfg_json.value;
         const cost_property = cfg.cost.property;
@@ -703,14 +810,14 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
         const step_cost = cfg.cost.cost;
         
         if (!reg.has(cmp.Visited, entity)) {
-            if (stamina < step_cost and !open.free) {
+            if (stamina < step_cost and !is_free) {
                 game.selectNextScene(reg);
                 continue;
             }
             
             reg.add(entity, cmp.Visited {});
 
-            if (!open.free) {
+            if (!is_free) {
                 try props.add(cost_property, -step_cost);
             }
         }
@@ -720,31 +827,15 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
         }
 
         if (reg.tryGet(cmp.TileOpener, entity)) |tile_opener| {
-            const opener = reg.getConst(cmp.Opener, tile_opener.entity);
             cleanupOpener(reg, tile_opener, entity);
-
-            var source_connection_iter = ConnectionIterator.init(reg, opener.source_tile);
-            while (source_connection_iter.next()) |source_neighbour_entry| {
-                if (reg.tryGet(cmp.TileOpener, source_neighbour_entry.entity)) |source_neighbour_opener| {
-                    cleanupOpener(reg, source_neighbour_opener, source_neighbour_entry.entity);
-
-                    if (
-                        !reg.has(cmp.TileFog, source_neighbour_entry.entity)
-                        and !reg.has(cmp.Visited, source_neighbour_entry.entity)
-                    ) {
-                        reg.add(source_neighbour_entry.entity, cmp.TileFog {
-                            .entity = createFog(reg, source_neighbour_entry.entity, &cfg),
-                        });
-                    }
-                }
-            }
-
-            moveCharacter(reg, opener.source_tile, entity, &cfg);
         }
 
         var connection_iter = ConnectionIterator.init(reg, entity);
         while (connection_iter.next()) |neighbour_entry| {
-            if (!reg.has(cmp.TileOpener, neighbour_entry.entity)) {
+            if (
+                !reg.has(cmp.TileOpener, neighbour_entry.entity)
+                and !reg.has(cmp.Visited, neighbour_entry.entity)
+            ) {
                 reg.add(neighbour_entry.entity, cmp.TileOpener {
                     .entity = createOpenable(reg, neighbour_entry.entity, entity, &cfg, neighbour_entry.side),
                 });
@@ -757,7 +848,5 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items) !v
 
             cleanupLoot(reg, tile_loot, entity, items.item_list_cfg);
         }
-
-        reg.remove(cmp.Open, entity);
     }
 }

@@ -82,6 +82,16 @@ fn addEcs(
     exe.root_module.addImport("zig-ecs", ecs.module("zig-ecs"));
 }
 
+fn addAstar(
+    b: *std.Build,
+    exe: *std.Build.Step.Compile,
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode
+) void {
+    const astar = b.dependency("zig_astar", .{ .target = target, .optimize = optimize });
+    exe.root_module.addImport("zig-astar", astar.module("zig-astar"));
+}
+
 pub fn build(b: *std.Build) !void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
@@ -103,6 +113,7 @@ pub fn build(b: *std.Build) !void {
     addAssetsOption(b, exe, target, optimize) catch |e| { std.log.err("ERROR: Cannot load asset: {!}", .{ e }); };
     addRaylib(b, exe, target, optimize);
     addEcs(b, exe, target, optimize);
+    addAstar(b, exe, target, optimize);
 
     b.installArtifact(exe);
 

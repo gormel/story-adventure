@@ -14,7 +14,7 @@ fea: "new" sign in gameover statistisc for items
 fea: layout text (H/V/HV)
 fea: game completion background
 
-ref: loot - move buttons on border unopened tiles (path find!)
+ref: dependency injection to systems + pre-create filters on system register
 ref: x5 items, x5 monsters (x3 grades for each)
 * double axes - rage weapon
 * turtue - armored enemy

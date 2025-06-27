@@ -16,5 +16,9 @@
             .url = "https://github.com/prime31/zig-ecs/archive/d0af139e204a420a3dd596c1f2f5e267a7438b9e.tar.gz",
             .hash = "1220c7a81c710e6458456aa503dc7baca7b3e57a5e6c99832933a382a3c0335f206c",
         },
-    }
+        .zig_astar = .{
+            .url = "git+https://github.com/gormel/zig_astar/?ref=update_014#f42250463f3428a3019668596aa3c6dcfcf563e8",
+            .hash = "zig_astar-0.0.0-klHTjskpAADx_Po7FokIy4XgMv_VYdPcEuRcoJ_gRpCH",
+        },
+    },
 }

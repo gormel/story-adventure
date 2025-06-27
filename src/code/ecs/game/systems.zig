@@ -422,7 +422,7 @@ pub fn updateGameplayCustoms(
     try itemtemplate.updateGui(reg, items, allocator);
 
     try loot.rollItem(reg, items, rnd);
-    try loot.openTile(reg, props, items);
+    try loot.openTile(reg, props, items, allocator);
     loot.character(reg);
     loot.gui(reg);
 

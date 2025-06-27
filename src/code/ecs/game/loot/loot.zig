@@ -17,6 +17,8 @@ pub const Side = enum {
     DOWN,
 };
 
+pub const TileInfo = struct { tile: ecs.Entity, reg: *ecs.Registry };
+
 pub const TileCfg = struct {
     weight: f64,
     atlas: []const u8,
