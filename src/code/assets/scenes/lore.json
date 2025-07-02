@@ -1,0 +1,43 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "image": {
+            "atlas": "atlases/gui.json",
+            "image": "panel-dark-689x242"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 59, "y": 53 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "panel-light-571x138"
+                },
+                "tags": [  ],
+                "children": [
+                    {
+                        "position": { "x": 37, "y": 24 },
+                        "text": { "size": 24, "text": "[LORE_TEXT]" },
+                        "tags": [ "lore-text" ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 637, "y": 202 },
+                "tags": [  ],
+                "children": [
+                    {
+                        "position": { "x": 0, "y": 0 },
+                        "image": {
+                            "atlas": "atlases/gui.json",
+                            "image": "mouse-icon"
+                        },
+                        "tags": [ "lore-mouse-icon" ],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

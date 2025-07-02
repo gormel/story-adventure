@@ -2,6 +2,7 @@ const std = @import("std");
 const ecs = @import("zig-ecs");
 const pr = @import("../../../engine/properties.zig");
 const combat = @import("combat.zig");
+const lore = @import("../lore/lore.zig");
 
 pub const CfgOwner = struct { cfg_json: std.json.Parsed(combat.CombatCfg) };
 
@@ -9,6 +10,7 @@ pub const StrategyList = struct {};
 pub const StrategyRoot = struct { locked: ecs.Entity, strategy_id: []const u8, list: ecs.Entity };
 pub const StrategyButton = struct { strategy_id: []const u8 };
 pub const UpdateStrategyLocked = struct {};
+pub const LoreScene = struct { cfg: std.json.Parsed(lore.LoreCfg) };
 
 pub const Character = struct { props: pr.Properties, view: ecs.Entity };
 pub const Hero = struct {};

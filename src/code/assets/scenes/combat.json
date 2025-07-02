@@ -39,5 +39,10 @@
         "position": { "x": 0, "y": 0 },
         "tags": [ "combat-logic" ],
         "children": []
+    },
+    {
+        "position": { "x": 168, "y": 203 },
+        "tags": [ "combat-lore-root" ],
+        "children": []
     }
 ]

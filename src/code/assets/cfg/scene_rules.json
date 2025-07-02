@@ -8,7 +8,7 @@
     {
         "current_scene": "gameplaystart",
         "result_scene": "combat",
-        "weight": 1,
+        "weight": 0.001,
         "params": []
     },
     {

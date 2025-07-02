@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const ecs = @import("zig-ecs");
 const shop = @import("shop.zig");
+const lore = @import("../lore/lore.zig");
 
 pub const StallSceneSetup = struct { position: usize, shop_scene: ecs.Entity };
 pub const StallSceneItems = struct { item_scenes: []ecs.Entity, allocator: std.mem.Allocator };
@@ -10,6 +11,7 @@ pub const StallSceneRerollCost = struct { text: ecs.Entity };
 pub const ItemSceneSetup = struct { item: []const u8, shop_scene: ecs.Entity };
 pub const ItemSceneSoldPanel = struct { panel: ecs.Entity };
 pub const ItemSceneRoot = struct { root: ecs.Entity };
+pub const LoreScene = struct { cfg: std.json.Parsed(lore.LoreCfg) };
 
 pub const CreateStall = struct { position: usize, shop_scene: ecs.Entity };
 pub const SetStallName = struct { stall_scene: ecs.Entity };

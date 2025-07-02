@@ -1,7 +1,21 @@
 [
     {
+        "position": { "x": 0, "y": 0 },
+        "image": {
+            "atlas": "atlases/mainmenu-bg.json",
+            "image": "mainmenu-bg"
+        },
+        "tags": [  ],
+        "children": []
+    },
+    {
         "position": { "x": 30, "y": 30 },
-        "tags": [ "init-gameplay-start" ],
+        "tags": [ "gameplaystart-init" ],
+        "children": []
+    },
+    {
+        "position": { "x": 168, "y": 203 },
+        "tags": [ "gameplaystart-lore-root" ],
         "children": []
     }
 ]

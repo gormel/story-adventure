@@ -53,5 +53,10 @@
         "position": { "x": 292, "y": 184 },
         "tags": [ "shop-itempopup-root" ],
         "children": []
+    },
+    {
+        "position": { "x": 168, "y": 203 },
+        "tags": [ "shop-lore-root" ],
+        "children": []
     }
 ]

@@ -29,6 +29,7 @@ const iteminfo = @import("iteminfo/systems.zig");
 const itemcollection = @import("itemcollection/systems.zig");
 const shop = @import("shop/systems.zig");
 const itemtemplate = @import("itemtemplate/systems.zig");
+const lore = @import("lore/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -380,6 +381,7 @@ pub fn initGameplayCustoms(
     mainmenu.initGui(reg);
 
     try gameplaystart.initSwitch(reg, allocator);
+    lore.initGui(reg);
 
     hud.initViews(reg);
 
@@ -388,6 +390,7 @@ pub fn initGameplayCustoms(
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
 
+    try combat.initLore(reg, allocator);
     try combat.initStrategy(reg, props, allocator);
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
@@ -416,6 +419,8 @@ pub fn updateGameplayCustoms(
 ) !void {
     try mainmenu.gui(reg, props, change, allocator);
     try gameplaystart.doSwitch(reg, items, allocator);
+    try gameplaystart.updateLore(reg, allocator);
+    try lore.loreText(reg, allocator, dt);
     hud.syncViews(reg, props, allocator);
     try hud.gui(reg, allocator);
 
@@ -425,6 +430,7 @@ pub fn updateGameplayCustoms(
     try loot.openTile(reg, props, items, allocator);
     loot.character(reg);
     loot.gui(reg);
+    loot.updateLore(reg);
 
     try combat.attack(reg, allocator);
     combat.updateStrategy(reg, props);
@@ -433,10 +439,12 @@ pub fn updateGameplayCustoms(
     combat.charMessageRoot(reg);
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, rnd, allocator);
+    combat.updateLore(reg);
 
     shop.scene(reg);
     try shop.stall(reg, allocator, items, rnd, props);
     try shop.item(reg, allocator, items, props);
+    shop.updateLore(reg);
 
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
     try gameover.gui(reg, props, allocator);

@@ -3,10 +3,12 @@ const ecs = @import("zig-ecs");
 const astar = @import("zig-astar");
 const loot = @import("loot.zig");
 const rcmp = @import("../../render/components.zig");
+const lore = @import("../lore/lore.zig");
 
 pub const LootStart = struct { cfg_json: std.json.Parsed(loot.LootCfg) };
 
 pub const ItemCollector = struct {};
+pub const LoreScene = struct { cfg: std.json.Parsed(lore.LoreCfg) };
 
 pub const Tile = struct {
     fog: ?ecs.Entity = null,

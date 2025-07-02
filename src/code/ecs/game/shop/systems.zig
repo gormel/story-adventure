@@ -13,6 +13,7 @@ const main_menu = @import("../mainmenu/mainmenu.zig");
 const iteminfo = @import("../iteminfo/iteminfo.zig");
 const shop = @import("shop.zig");
 const itemtemplate = @import("../itemtemplate/itemtemplate.zig");
+const lore = @import("../lore/lore.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -20,8 +21,10 @@ const rcmp = @import("../../render/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
 const iicmp = @import("../iteminfo/components.zig");
+const lcmp = @import("../lore/components.zig");
 
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/shop.json");
+const cfg_lore_text = @embedFile("../../../assets/cfg/scene_lore/shop.json");
 
 const ItemError = error {
     ItemDoesnotExist,
@@ -60,6 +63,14 @@ pub fn initShop(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 
         if (utils.containsTag(init.tags, "shop-stall-root-4")) {
             reg.add(entity, cmp.CreateStall { .position = 4, .shop_scene = init.scene });
+        }
+
+        if (utils.containsTag(init.tags, "shop-lore-root")) {
+            const cfg_json = try std.json.parseFromSlice(lore.LoreCfg, allocator, cfg_lore_text, .{});
+
+            const panel = try lore.loadScene(reg, allocator, cfg_json.value);
+            reg.addOrReplace(panel, rcmp.AttachTo { .target = entity });
+            reg.add(panel, cmp.LoreScene { .cfg = cfg_json });
         }
     }
 }
@@ -125,6 +136,19 @@ pub fn scene(reg: *ecs.Registry) void {
     var next_iter = next_view.entityIterator();
     while (next_iter.next()) |_| {
         game.selectNextScene(reg);
+    }
+}
+
+pub fn updateLore(reg: *ecs.Registry) void {
+    var continue_view = reg.view(.{ lcmp.Continue, cmp.LoreScene }, .{});
+    var continue_iter = continue_view.entityIterator();
+    while (continue_iter.next()) |entity| {
+        reg.remove(lcmp.Continue, entity);
+
+        const lore_scene = reg.get(cmp.LoreScene, entity);
+        defer lore_scene.cfg.deinit();
+
+        reg.add(entity, ccmp.Destroyed {});
     }
 }
 

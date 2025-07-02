@@ -10,15 +10,18 @@ const rutils = @import("../../render/utils.zig");
 const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
+const lore = @import("../lore/lore.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
 const rcmp = @import("../../render/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
+const lcmp = @import("../lore/components.zig");
 
 const combat = @import("combat.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/combat.json");
+const cfg_lore_text = @embedFile("../../../assets/cfg/scene_lore/combat.json");
 
 const STRATEGY_ICON_SIZE = 64;
 const STRATEGY_ICON_PADDING = 5;
@@ -73,6 +76,21 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
     return root_ety;
 }
 
+pub fn initLore(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var init_iter = reg.entityIterator(scmp.InitGameObject);
+    while (init_iter.next()) |entity| {
+        const init = reg.get(scmp.InitGameObject, entity);
+
+        if (utils.containsTag(init.tags, "combat-lore-root")) {
+            const cfg_json = try std.json.parseFromSlice(lore.LoreCfg, allocator, cfg_lore_text, .{});
+
+            const panel = try lore.loadScene(reg, allocator, cfg_json.value);
+            reg.addOrReplace(panel, rcmp.AttachTo { .target = entity });
+            reg.add(panel, cmp.LoreScene { .cfg = cfg_json });
+        }
+    }
+}
+
 pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
     var init_view = reg.view(.{ scmp.InitGameObject }, .{});
     var init_iter = init_view.entityIterator();
@@ -98,6 +116,18 @@ pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.me
                 .distance = STRATEGY_ICON_SIZE + STRATEGY_ICON_PADDING,
             });
         }
+    }
+}
+
+pub fn updateLore(reg: *ecs.Registry) void {
+    var continue_view = reg.view(.{ lcmp.Continue, cmp.LoreScene }, .{});
+    var continue_iter = continue_view.entityIterator();
+    while (continue_iter.next()) |entity| {
+        reg.remove(lcmp.Continue, entity);
+        const scene = reg.get(cmp.LoreScene, entity);
+        defer scene.cfg.deinit();
+
+        reg.addOrReplace(entity, ccmp.Destroyed {});
     }
 }
 

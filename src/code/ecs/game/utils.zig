@@ -95,6 +95,10 @@ var scenes = &.{
         .name = "itemtemplate",
         .text = @embedFile("../../assets/scenes/itemtemplate.json"),
     },
+    .{
+        .name = "lore",
+        .text = @embedFile("../../assets/scenes/lore.json"),
+    },
 };
 
 pub fn destroyAll(comptime Component: type, reg: *ecs.Registry) void {

@@ -10,6 +10,7 @@ pub const ColorButton = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
 pub const ColorButtonText = rl.Color { .r = 99, .g = 44, .b = 14, .a = 255 };
 pub const ColorLabelBg = rl.Color { .r = 56, .g = 122, .b = 223, .a = 255 };
 pub const ColorLabelText = rl.Color { .r = 51, .g = 58, .b = 115, .a = 255 };
+pub const ColorDialogueText = rl.Color { .r = 99, .g = 44, .b = 14, .a = 255 };
 
 pub const SizeFieldOffset = 10;
 pub const SizeFieldTitle = rl.Rectangle { .x = 0, .y = 0, .width = 100, .height = 20 };

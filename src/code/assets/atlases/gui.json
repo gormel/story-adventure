@@ -60,28 +60,28 @@
         {
             "name": "defence-strategy",
             "x": 747,
-            "y": 357,
+            "y": 358,
             "w": 64,
             "h": 64
         },
         {
             "name": "double-attack-strategy",
             "x": 811,
-            "y": 357,
+            "y": 358,
             "w": 64,
             "h": 64
         },
         {
             "name": "attack-strategy",
             "x": 683,
-            "y": 357,
+            "y": 358,
             "w": 64,
             "h": 64
         },
         {
             "name": "shread-strategy",
             "x": 875,
-            "y": 357,
+            "y": 358,
             "w": 64,
             "h": 64
         },
@@ -161,6 +161,27 @@
             "y": 315,
             "w": 32,
             "h": 32
+        },
+        {
+            "name": "panel-dark-689x242",
+            "x": 505,
+            "y": 572,
+            "w": 689,
+            "h": 242
+        },
+        {
+            "name": "panel-light-571x138",
+            "x": 708,
+            "y": 422,
+            "w": 571,
+            "h": 138
+        },
+        {
+            "name": "mouse-icon",
+            "x": 1103,
+            "y": 301,
+            "w": 16,
+            "h": 16
         }
     ],
     "animations": []

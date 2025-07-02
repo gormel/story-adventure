@@ -1,4 +1,3 @@
-fea: game intro + scene story intro
 fea: charge device, charge artifacts, consumables
 
 fea: trap scene
@@ -13,6 +12,10 @@ fea: combat concede
 fea: "new" sign in gameover statistisc for items
 fea: layout text (H/V/HV)
 fea: game completion background
+fea: game start background
+fea: lkey
+fea: logging
+fea: analitycs
 
 ref: dependency injection to systems + pre-create filters on system register
 ref: x5 items, x5 monsters (x3 grades for each)

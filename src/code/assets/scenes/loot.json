@@ -38,5 +38,10 @@
                 "children": []
             }
         ]
+    },
+    {
+        "position": { "x": 168, "y": 203 },
+        "tags": [ "loot-lore-root" ],
+        "children": []
     }
 ]

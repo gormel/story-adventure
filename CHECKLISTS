@@ -9,3 +9,14 @@ item:
 monster:
 * image to atlas
 * combat.json - 'enemy' part
+
+scene:
+* figma prototype
+* assets/scenes/scenename.json
+* assets/cfg/scene_customs/scenename.json
+* assets/cfg/scene_lore/scenename.json
+* add scene file ref to ecs/game/utils.zig
+* ecs/game/scenename/components.zig
+* ecs/game/scenename/scenename.zig
+* ecs/game/scenename/systems.zig
+* include to ecs/game/systems.zig
