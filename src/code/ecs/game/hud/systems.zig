@@ -55,6 +55,11 @@ pub fn initViews(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "hud-popup-root")) {
             reg.add(entity, cmp.PopupRoot {});
         }
+
+        if (utils.containsTag(init.tags, "warp-charges-view")) {
+            reg.add(entity, cmp.WarpChargeView {});
+            reg.add(entity, cmp.SyncView {});
+        }
     }
 }
 
@@ -137,6 +142,11 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
         if (std.mem.eql(u8, changed.name, "armor")) {
             addSync(cmp.ArmorView, reg);
         }
+        
+        if (std.mem.eql(u8, changed.name, "warp-charges")) {
+            std.debug.print("DEBUG: charges changed\n", .{});
+            addSync(cmp.WarpChargeView, reg);
+        }
     }
 
     syncProperty(cmp.HealthView, "health", reg, props, allocator, selectValueOfMax);
@@ -145,6 +155,7 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
     syncProperty(cmp.StoreRerollView, "store-reroll", reg, props, allocator, selectValue);
     syncProperty(cmp.AttackView, "attack", reg, props, allocator, selectValue);
     syncProperty(cmp.ArmorView, "armor", reg, props, allocator, selectValue);
+    syncProperty(cmp.WarpChargeView, "warp-charges", reg, props, allocator, selectValue);
 }
 
 pub fn gui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {

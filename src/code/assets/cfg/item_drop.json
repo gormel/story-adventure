@@ -136,5 +136,11 @@
         "weight": 0.2,
         "groups": [ "any", "consumable", "epic" ],
         "condition": {}
+    },
+    {
+        "item": "warp-charge",
+        "weight": 0.5,
+        "groups": [ "any", "ammo", "rare" ],
+        "condition": {}
     }
 ]

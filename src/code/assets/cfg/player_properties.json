@@ -16,5 +16,6 @@
     "heavy_attack": 0.0,
     "double_attack": 0.0,
 
-    "store-reroll": 3.0
+    "store-reroll": 3.0,
+    "warp-charges": 5.0
 }

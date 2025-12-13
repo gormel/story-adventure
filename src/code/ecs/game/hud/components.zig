@@ -4,6 +4,7 @@ pub const GoldView = struct {};
 pub const ArmorView = struct {};
 pub const AttackView = struct {};
 pub const StoreRerollView = struct {};
+pub const WarpChargeView = struct {};
 
 pub const SyncView = struct {};
 

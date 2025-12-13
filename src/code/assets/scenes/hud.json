@@ -14,7 +14,7 @@
         "children": []
     },
     {
-        "position": { "x": 642, "y": -176 },
+        "position": { "x": 576, "y": -176 },
         "image": {
             "atlas": "atlases/gui.json",
             "image": "itemcollection-grid-bg"
@@ -102,6 +102,27 @@
                 "position": { "x": 35, "y": 8 },
                 "text": { "size": 16, "text": "0" },
                 "tags": [ "store-reroll-view" ],
+                "children": []
+            }
+        ]
+    },
+    {
+        "position": { "x": 584, "y": 11 },
+        "tags": [],
+        "children": [
+            {
+                "position": { "x": 0, "y": 0 },
+                "image": {
+                    "atlas": "atlases/items.json",
+                    "image": "warp-charge"
+                },
+                "tags": [],
+                "children": []
+            },
+            {
+                "position": { "x": 35, "y": 8 },
+                "text": { "size": 16, "text": "0" },
+                "tags": [ "warp-charges-view" ],
                 "children": []
             }
         ]

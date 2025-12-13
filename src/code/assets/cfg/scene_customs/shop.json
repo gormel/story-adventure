@@ -43,7 +43,8 @@
         "spear-epic": 4000,
         "heavy-spear-cmn": 30,
         "heavy-spear-rare": 300,
-        "heavy-spear-epic": 3000
+        "heavy-spear-epic": 3000,
+        "warp-charge": 50
     },
     "money_property": "gold",
     "reroll_cost": {

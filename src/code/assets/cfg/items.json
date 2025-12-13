@@ -259,5 +259,17 @@
         "one_time_parameters": {
             "store-reroll": 5
         }
+    },
+    "warp-charge": {
+        "view": {
+            "atlas": "atlases/items.json",
+            "image": "warp-charge",
+            "name": "Warp Charge",
+            "description": "Allows you to travel to the next island"
+        },
+        "parameters": {},
+        "one_time_parameters": {
+            "warp-charges": 1
+        }
     }
 }

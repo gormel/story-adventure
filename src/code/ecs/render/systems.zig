@@ -39,6 +39,8 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
                 .flipbook = flipbook,
             });
         } else {
+            const err = std.io.getStdErr().writer();
+            try err.print("ERROR: Cannot load sprite or flipbook \"{s}\" from atlas \"{s}\"\n", .{ res_c.image, res_c.atlas });
             return Error.CannotLoadSpriteOrFlipbook;
         }
         
