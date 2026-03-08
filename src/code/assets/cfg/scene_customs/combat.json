@@ -275,5 +275,8 @@
     "strategy_locked_icon": {
         "atlas": "atlases/gui.json",
         "image": "strategy-locked"
+    },
+    "concede_lose": {
+        "health": 20
     }
 }

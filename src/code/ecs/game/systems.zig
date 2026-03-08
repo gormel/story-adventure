@@ -30,6 +30,7 @@ const itemcollection = @import("itemcollection/systems.zig");
 const shop = @import("shop/systems.zig");
 const itemtemplate = @import("itemtemplate/systems.zig");
 const lore = @import("lore/systems.zig");
+const combatstats = @import("combatstats/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -391,11 +392,14 @@ pub fn initGameplayCustoms(
     loot.initGui(reg);
 
     try combat.initLore(reg, allocator);
+    combat.initStats(reg);
     try combat.initStrategy(reg, props, allocator);
     try combat.initPlayer(reg, allocator, props);
     try combat.initEnemy(reg, allocator, props, rnd);
     combat.initCharMsgRoot(reg);
     combat.initState(reg);
+
+    combatstats.initState(reg);
 
     try shop.initShop(reg, allocator);
     try shop.initStall(reg);
@@ -440,6 +444,9 @@ pub fn updateGameplayCustoms(
     try combat.checkDeath(reg);
     try combat.combatState(reg, props, rnd, allocator);
     combat.updateLore(reg);
+    combat.combatStats(reg);
+
+    combatstats.complete(reg);
 
     shop.scene(reg);
     try shop.stall(reg, allocator, items, rnd, props);

@@ -45,3 +45,6 @@ pub const CombatStateDeathCompleteRequest = struct {};
 
 pub const Dead = struct {};
 pub const DeathTween = struct { character: ecs.Entity };
+
+pub const CombatStatsRoot = struct {};
+pub const CombatStatsScene = struct {};

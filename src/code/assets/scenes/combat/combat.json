@@ -44,5 +44,10 @@
         "position": { "x": 168, "y": 203 },
         "tags": [ "combat-lore-root" ],
         "children": []
+    },
+    {
+        "position": { "x": 170, "y": 108 },
+        "tags": [ "combat-combatstats-root" ],
+        "children": []
     }
 ]

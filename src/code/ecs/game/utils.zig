@@ -57,7 +57,11 @@ var scenes = &.{
     },
     .{
         .name = "combat",
-        .text = @embedFile("../../assets/scenes/combat.json"),
+        .text = @embedFile("../../assets/scenes/combat/combat.json"),
+    },
+    .{
+        .name = "combatstats",
+        .text = @embedFile("../../assets/scenes/combat/combatstats.json"),
     },
     .{
         .name = "gameover",

@@ -1,0 +1,39 @@
+[
+    {
+        "position": { "x": 0, "y": 0 },
+        "image": {
+            "atlas": "atlases/gui.json",
+            "image": "popup_bg"
+        },
+        "tags": [  ],
+        "children": [
+            {
+                "position": { "x": 182, "y": 40 },
+                "text": { "size": 36, "text": "Combat Complete" },
+                "tags": [ "combatstats-title-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 261, "y": 369 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "button-160x32"
+                },
+                "tags": [ "button", "combatstats-button-complete" ],
+                "children": [
+                    {
+                        "position": { "x": 61, "y": 10 },
+                        "text": { "size": 15, "text": "Continue" },
+                        "tags": [ "button-text" ],
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "position": { "x": 121, "y": 75 },
+                "tags": [ "combatstats-iteminfo-root" ],
+                "children": []
+            }
+        ]
+    }
+]

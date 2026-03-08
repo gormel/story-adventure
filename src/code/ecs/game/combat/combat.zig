@@ -69,4 +69,5 @@ pub const CombatCfg = struct {
     armor_prop: []const u8,
     hp_prop: []const u8,
     strategy_locked_icon: ImageViewCfg,
+    concede_lose: std.json.ArrayHashMap(f64),
 };

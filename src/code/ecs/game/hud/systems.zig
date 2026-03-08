@@ -144,7 +144,6 @@ pub fn syncViews(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.A
         }
         
         if (std.mem.eql(u8, changed.name, "warp-charges")) {
-            std.debug.print("DEBUG: charges changed\n", .{});
             addSync(cmp.WarpChargeView, reg);
         }
     }

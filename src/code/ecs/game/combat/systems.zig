@@ -11,6 +11,7 @@ const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
 const lore = @import("../lore/lore.zig");
+const combatstats = @import("../combatstats/combatstats.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -18,6 +19,7 @@ const rcmp = @import("../../render/components.zig");
 const ccmp = @import("../../core/components.zig");
 const gcmp = @import("../components.zig");
 const lcmp = @import("../lore/components.zig");
+const cscmp = @import("../combatstats/components.zig");
 
 const combat = @import("combat.zig");
 const cfg_text = @embedFile("../../../assets/cfg/scene_customs/combat.json");
@@ -87,6 +89,17 @@ pub fn initLore(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
             const panel = try lore.loadScene(reg, allocator, cfg_json.value);
             reg.addOrReplace(panel, rcmp.AttachTo { .target = entity });
             reg.add(panel, cmp.LoreScene { .cfg = cfg_json });
+        }
+    }
+}
+
+pub fn initStats(reg: *ecs.Registry) void {
+    var init_iter = reg.entityIterator(scmp.InitGameObject);
+    while (init_iter.next()) |entity| {
+        const init = reg.get(scmp.InitGameObject, entity);
+
+        if (utils.containsTag(init.tags, "combat-combatstats-root")) {
+            reg.add(entity, cmp.CombatStatsRoot {});
         }
     }
 }
@@ -779,7 +792,12 @@ pub fn combatState(
 
         reg.remove(cmp.CombatStateDeathCompleteRequest, entity);
 
-        game.selectNextScene(reg);
+        var root_iter = reg.entityIterator(cmp.CombatStatsRoot);
+        while (root_iter.next()) |root_ety| {
+            const complete_scene = try combatstats.loadScene(reg, allocator);
+            reg.add(complete_scene, cmp.CombatStatsScene {});
+            reg.addOrReplace(complete_scene, rcmp.AttachTo { .target = root_ety });
+        }
     }
 
     var enemyattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackFailedRequest }, .{});
@@ -800,5 +818,15 @@ pub fn combatState(
         reg.remove(cmp.CombatStateAttackFailedRequest, entity);
         reg.remove(cmp.CombatStatePlayerAttack, entity);
         reg.add(entity, cmp.CombatStatePlayerIdle {});
+    }
+}
+
+pub fn combatStats(reg: *ecs.Registry) void {
+    var continue_view = reg.view(.{ cmp.CombatStatsScene, cscmp.Continue }, .{});
+    var continue_iter = continue_view.entityIterator();
+    while (continue_iter.next()) |entity| {
+        game.selectNextScene(reg);
+
+        reg.remove(cscmp.Continue, entity);
     }
 }
