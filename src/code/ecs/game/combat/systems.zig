@@ -209,6 +209,7 @@ pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.P
 
             reg.add(entity, cmp.Hero {});
             reg.add(entity, cmp.Character { .props = props.*, .view = sprite_ety });
+            reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
         }
     }
 }
@@ -272,6 +273,7 @@ pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Pr
 
                 reg.add(entity, cmp.Enemy { .cfg = enemy_cfg });
                 reg.add(entity, cmp.Character { .props = enemy_props, .view = sprite_ety  });
+                reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
             }
         }
     }
@@ -423,13 +425,15 @@ fn getPropValue(reg: *ecs.Registry, property: []const u8, character: ecs.Entity)
 }
 
 pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
-    var attack_view = reg.view(.{ cmp.Character, cmp.Attack, cmp.CfgOwner }, .{ cmp.Dead });
+    var attack_view = reg.view(.{ cmp.Character, cmp.Attack, cmp.CfgOwner, cmp.CharacterStats }, .{ cmp.Dead });
     var attack_iter = attack_view.entityIterator();
     while (attack_iter.next()) |entity| {
         const cfg = reg.get(cmp.CfgOwner, entity);
         var char = reg.get(cmp.Character, entity);
         const attk = reg.get(cmp.Attack, entity);
+        const stats = reg.get(cmp.CharacterStats, entity);
         var target_char = reg.get(cmp.Character, attk.target);
+        var target_stats = reg.get(cmp.CharacterStats, attk.target);
 
         const cfg_json = cfg.cfg_json.value;
         
@@ -446,6 +450,9 @@ pub fn attack(reg: *ecs.Registry, allocator:std.mem.Allocator) !void {
                 const armor = getPropValue(reg, cfg_json.armor_prop, attk.target);
                 const raw_dmg = getPropValue(reg, cfg_json.attack_prop, entity);
                 const dmg = @max(raw_dmg - armor, 1);
+
+                stats.dmgdealt += dmg;
+                target_stats.dmgtaken += dmg;
 
                 try target_char.props.add(cfg_json.hp_prop, -dmg);
                 reg.addOrReplace(attk.target, cmp.CheckDeath {});
@@ -715,7 +722,7 @@ pub fn combatState(
         if (reg.has(cmp.Dead, enemy_ety)) {
             reg.remove(cmp.CombatStateAttackCompleteRequest, entity);
             reg.remove(cmp.CombatStatePlayerAttack, entity);
-            reg.add(entity, cmp.CombatStateEnemyDead { .enemy = enemy_ety });
+            reg.add(entity, cmp.CombatStateEnemyDead { .enemy = enemy_ety, .hero = hero_ety });
             continue;
         }
         
@@ -784,6 +791,8 @@ pub fn combatState(
     while (enemy_dead_iter.next()) |entity| {
         const state = reg.get(cmp.CombatStateEnemyDead, entity);
         var enemy = reg.get(cmp.Enemy, state.enemy);
+        const cfg = reg.get(cmp.CfgOwner, state.enemy);
+        const stats = reg.get(cmp.CharacterStats, state.hero);
 
         var iter = enemy.cfg.reward.map.iterator();
         while (iter.next()) |kv| {
@@ -792,12 +801,19 @@ pub fn combatState(
 
         reg.remove(cmp.CombatStateDeathCompleteRequest, entity);
 
+        const gold = enemy.cfg.reward.map.get(cfg.cfg_json.value.stats_gold_prop) orelse 0;
+
         var root_iter = reg.entityIterator(cmp.CombatStatsRoot);
         while (root_iter.next()) |root_ety| {
-            const complete_scene = try combatstats.loadScene(reg, allocator);
+            const complete_scene = try combatstats.loadScene(reg, allocator, .{
+                .gold = gold,
+                .dmgdealt = stats.dmgdealt,
+                .dmgtaken = stats.dmgtaken,
+            });
             reg.add(complete_scene, cmp.CombatStatsScene {});
             reg.addOrReplace(complete_scene, rcmp.AttachTo { .target = root_ety });
         }
+
     }
 
     var enemyattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackFailedRequest }, .{});

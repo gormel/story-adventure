@@ -13,6 +13,7 @@ pub const UpdateStrategyLocked = struct {};
 pub const LoreScene = struct { cfg: std.json.Parsed(lore.LoreCfg) };
 
 pub const Character = struct { props: pr.Properties, view: ecs.Entity };
+pub const CharacterStats = struct { dmgdealt: f64, dmgtaken: f64 };
 pub const Hero = struct {};
 pub const Enemy = struct { cfg: combat.EnemyCfg };
 pub const CreateCharMsgRoot = struct {};
@@ -40,7 +41,7 @@ pub const CombatStateEnemyAttack = struct {};
 pub const CombatStateAttackCompleteRequest = struct { source_char: ecs.Entity };
 pub const CombatStateAttackFailedRequest = struct {};
 pub const CombatStatePlayerDead = struct {};
-pub const CombatStateEnemyDead = struct { enemy: ecs.Entity };
+pub const CombatStateEnemyDead = struct { enemy: ecs.Entity, hero: ecs.Entity };
 pub const CombatStateDeathCompleteRequest = struct {};
 
 pub const Dead = struct {};

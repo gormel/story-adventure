@@ -446,6 +446,7 @@ pub fn updateGameplayCustoms(
     combat.updateLore(reg);
     combat.combatStats(reg);
 
+    try combatstats.combatStat(reg, allocator);
     combatstats.complete(reg);
 
     shop.scene(reg);

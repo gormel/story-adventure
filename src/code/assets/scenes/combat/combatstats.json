@@ -14,6 +14,48 @@
                 "children": []
             },
             {
+                "position": { "x": 135, "y": 133 },
+                "text": { "size": 15, "text": "Gold:" },
+                "tags": [ "combatstats-parameter-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 175, "y": 131 },
+                "text": { "size": 15, "text": "" },
+                "tags": [ "combatstats-parameter-text", "combatstats-gold-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 129, "y": 160 },
+                "text": { "size": 15, "text": "Items:" },
+                "tags": [ "combatstats-parameter-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 66, "y": 204 },
+                "text": { "size": 15, "text": "Damage Taken:" },
+                "tags": [ "combatstats-parameter-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 175, "y": 204 },
+                "text": { "size": 15, "text": "" },
+                "tags": [ "combatstats-parameter-text", "combatstats-dmgtaken-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 71, "y": 223 },
+                "text": { "size": 15, "text": "Damage Dealt:" },
+                "tags": [ "combatstats-parameter-text" ],
+                "children": []
+            },
+            {
+                "position": { "x": 175, "y": 223 },
+                "text": { "size": 15, "text": "" },
+                "tags": [ "combatstats-parameter-text", "combatstats-dmgdealt-text" ],
+                "children": []
+            },
+            {
                 "position": { "x": 261, "y": 369 },
                 "image": {
                     "atlas": "atlases/gui.json",

@@ -30,6 +30,38 @@ pub fn initState(reg: *ecs.Registry) void {
         if (utils.containsTag(init.tags, "combatstats-title-text")) {
             reg.add(entity, rcmp.SetTextColor { .color = gui_setup.ColorPanelTitle });
         }
+
+        if (utils.containsTag(init.tags, "combatstats-parameter-text")) {
+            reg.add(entity, rcmp.SetTextColor { .color = gui_setup.ColorPanelInfo });
+        }
+
+        if (utils.containsTag(init.tags, "combatstats-gold-text")) {
+            const setup = reg.get(cmp.SceneSetup, init.scene);
+            reg.add(entity, cmp.InitCombatStat { .value = setup.gold });
+        }
+
+        if (utils.containsTag(init.tags, "combatstats-dmgtaken-text")) {
+            const setup = reg.get(cmp.SceneSetup, init.scene);
+            reg.add(entity, cmp.InitCombatStat { .value = setup.dmgtaken });
+        }
+
+        if (utils.containsTag(init.tags, "combatstats-dmgdealt-text")) {
+            const setup = reg.get(cmp.SceneSetup, init.scene);
+            reg.add(entity, cmp.InitCombatStat { .value = setup.dmgdealt });
+        }
+    }
+}
+
+pub fn combatStat(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var init_view = reg.view(.{ cmp.InitCombatStat, rcmp.Text }, .{});
+    var init_iter = init_view.entityIterator();
+    while (init_iter.next()) |entity| {
+        const init = reg.get(cmp.InitCombatStat, entity);
+        const value = init.value;
+        reg.remove(cmp.InitCombatStat, entity);
+
+        const txt = try std.fmt.allocPrintZ(allocator, "{d}", .{ value });
+        reg.add(entity, rcmp.SetTextValue { .text = txt, .free = true });
     }
 }
 
