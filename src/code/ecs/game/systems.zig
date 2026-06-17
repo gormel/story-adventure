@@ -442,11 +442,12 @@ pub fn updateGameplayCustoms(
     combat.deathEffectComplete(reg);
     combat.charMessageRoot(reg);
     try combat.checkDeath(reg);
-    try combat.combatState(reg, props, rnd, allocator);
+    try combat.combatState(reg, props, rnd, items, allocator);
     combat.updateLore(reg);
     combat.combatStats(reg);
 
     try combatstats.combatStat(reg, allocator);
+    try combatstats.itemList(reg, allocator);
     combatstats.complete(reg);
 
     shop.scene(reg);

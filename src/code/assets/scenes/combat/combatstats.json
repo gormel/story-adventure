@@ -32,6 +32,15 @@
                 "children": []
             },
             {
+                "position": { "x": 175, "y": 150 },
+                "image": {
+                    "atlas": "atlases/gui.json",
+                    "image": "popup_panel_bg"
+                },
+                "tags": [ "combatstats-itemlist-root" ],
+                "children": []
+            },
+            {
                 "position": { "x": 66, "y": 204 },
                 "text": { "size": 15, "text": "Damage Taken:" },
                 "tags": [ "combatstats-parameter-text" ],

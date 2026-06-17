@@ -29,11 +29,12 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var image_iter = image_view.entityIterator();
     while (image_iter.next()) |entity| {
         const res_c = reg.get(cmp.ImageResource, entity);
-        if (res.loadSprite(res_c.atlas, res_c.image) catch null) |sprite| {
+        var silent_res = res.silent();
+        if (silent_res.loadSprite(res_c.atlas, res_c.image) catch null) |sprite| {
             reg.add(entity, cmp.Sprite {
                 .sprite = sprite,
             });
-        } else if (res.loadFlipbook(res_c.atlas, res_c.image) catch null) |flipbook| {
+        } else if (silent_res.loadFlipbook(res_c.atlas, res_c.image) catch null) |flipbook| {
             reg.add(entity, cmp.Flipbook {
                 .time = flipbook.duration,
                 .flipbook = flipbook,

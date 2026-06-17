@@ -21,6 +21,7 @@ pub const Resources = struct {
     atlases: std.StringHashMap(Atlas),
     assets: std.StringHashMap([]const u8),
     allocator: std.mem.Allocator,
+    verb: bool,
 
     pub fn init(allocator: std.mem.Allocator) !Resources {
         var assetmap = std.StringHashMap([]const u8).init(allocator);
@@ -33,6 +34,17 @@ pub const Resources = struct {
             .atlases = std.StringHashMap(Atlas).init(allocator),
             .assets = assetmap,
             .fonts = std.StringHashMap(std.AutoHashMap(i32, rl.Font)).init(allocator),
+            .verb = false,
+        };
+    }
+
+    pub fn silent(self: *Resources) Resources {
+        return Resources {
+            .allocator = self.allocator,
+            .atlases = self.atlases,
+            .assets = self.assets,
+            .fonts = self.fonts,
+            .verb = true,
         };
     }
 
@@ -50,8 +62,10 @@ pub const Resources = struct {
             return assetdata;
         }
 
-        const err = std.io.getStdErr().writer();
-        try err.print("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
+        if (self.verb) {
+            const err = std.io.getStdErr().writer();
+            try err.print("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
+        }
         return Error.AssetFileNotFound;
     }
 
@@ -122,8 +136,10 @@ pub const Resources = struct {
             }
         }
 
-        const err = std.io.getStdErr().writer();
-        try err.print("ERROR: Cannot load sprite \"{s}\" from atlas \"{s}\"\n", .{ sprite_name, atlas_path });
+        if (self.verb) {
+            const err = std.io.getStdErr().writer();
+            try err.print("ERROR: Cannot load sprite \"{s}\" from atlas \"{s}\"\n", .{ sprite_name, atlas_path });
+        }
         return Error.SpriteNotFound;
     }
 
@@ -146,9 +162,11 @@ pub const Resources = struct {
                 };
             }
         }
-
-        const err = std.io.getStdErr().writer();
-        try err.print("ERROR: Cannot load animation \"{s}\" from atlas \"{s}\"\n", .{ flipbook_name, atlas_path });
+        
+        if (self.verb) {
+            const err = std.io.getStdErr().writer();
+            try err.print("ERROR: Cannot load animation \"{s}\" from atlas \"{s}\"\n", .{ flipbook_name, atlas_path });
+        }
         return Error.AnimationNotFound;
     }
 

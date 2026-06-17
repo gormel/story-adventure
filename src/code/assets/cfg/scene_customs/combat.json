@@ -260,7 +260,8 @@
             },
             "condition": {},
             "reward": {
-                "gold": 150
+                "gold": 150,
+                "potion-hp-rare": 1
             },
             "weight": 1
         }

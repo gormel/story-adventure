@@ -49,3 +49,4 @@ pub const DeathTween = struct { character: ecs.Entity };
 
 pub const CombatStatsRoot = struct {};
 pub const CombatStatsScene = struct {};
+pub const CombatStatsItems = struct { items: std.StringArrayHashMap(f64) };

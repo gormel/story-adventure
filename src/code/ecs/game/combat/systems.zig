@@ -187,6 +187,14 @@ pub fn freeCombat(reg: *ecs.Registry) void {
         var list = reg.get(cmp.CharacterModifyList, entity);
         list.entities.deinit();
     }
+    
+    var statsitems_view = reg.view(.{ ccmp.Destroyed, cmp.CombatStatsItems }, .{});
+    var statsitems_iter = statsitems_view.entityIterator();
+    while (statsitems_iter.next()) |entity| {
+        const items = reg.get(cmp.CombatStatsItems, entity);
+
+        items.items.deinit();
+    }
 }
 
 pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties) !void {
@@ -688,6 +696,7 @@ pub fn combatState(
     reg: *ecs.Registry,
     props: *pr.Properties,
     rnd: *std.Random,
+    items: *itm.Items,
     allocator: std.mem.Allocator
 ) !void {
     var idle_view = reg.view(.{ cmp.CombatState, cmp.CombatStatePlayerIdle }, .{ cmp.CombatStatePlayerAttack });
@@ -794,9 +803,14 @@ pub fn combatState(
         const cfg = reg.get(cmp.CfgOwner, state.enemy);
         const stats = reg.get(cmp.CharacterStats, state.hero);
 
+        var items_get = std.StringArrayHashMap(f64).init(allocator);
         var iter = enemy.cfg.reward.map.iterator();
         while (iter.next()) |kv| {
             try props.add(kv.key_ptr.*, kv.value_ptr.*);
+
+            if (items.item_list_cfg.map.get(kv.key_ptr.*)) |_| {
+                try items_get.put(kv.key_ptr.*, kv.value_ptr.*);
+            }
         }
 
         reg.remove(cmp.CombatStateDeathCompleteRequest, entity);
@@ -805,15 +819,17 @@ pub fn combatState(
 
         var root_iter = reg.entityIterator(cmp.CombatStatsRoot);
         while (root_iter.next()) |root_ety| {
+            reg.addOrReplace(root_ety, cmp.CombatStatsItems { .items = items_get });
+
             const complete_scene = try combatstats.loadScene(reg, allocator, .{
                 .gold = gold,
                 .dmgdealt = stats.dmgdealt,
                 .dmgtaken = stats.dmgtaken,
+                .items = items_get,
             });
             reg.add(complete_scene, cmp.CombatStatsScene {});
             reg.addOrReplace(complete_scene, rcmp.AttachTo { .target = root_ety });
         }
-
     }
 
     var enemyattackfailed_view = reg.view(.{ cmp.CombatState, cmp.CombatStateEnemyAttack, cmp.CombatStateAttackFailedRequest }, .{});

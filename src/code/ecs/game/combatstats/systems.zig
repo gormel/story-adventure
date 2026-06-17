@@ -10,6 +10,7 @@ const rutils = @import("../../render/utils.zig");
 const pr = @import("../../../engine/properties.zig");
 const itm = @import("../../../engine/items.zig");
 const rr = @import("../../../engine/rollrate.zig");
+const itemtemplate = @import("../itemtemplate/itemtemplate.zig");
 
 const cmp = @import("components.zig");
 const scmp = @import("../../scene/components.zig");
@@ -49,6 +50,14 @@ pub fn initState(reg: *ecs.Registry) void {
             const setup = reg.get(cmp.SceneSetup, init.scene);
             reg.add(entity, cmp.InitCombatStat { .value = setup.dmgdealt });
         }
+
+        if (utils.containsTag(init.tags, "combatstats-itemlist-root")) {
+            reg.add(entity, cmp.CreateItemList { .scene = init.scene });
+        }
+
+        if (utils.containsTag(init.tags, "combatstats-iteminfo-root")) {
+            reg.add(entity, cmp.ItemInfoRoot {});
+        }
     }
 }
 
@@ -62,6 +71,46 @@ pub fn combatStat(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
 
         const txt = try std.fmt.allocPrintZ(allocator, "{d}", .{ value });
         reg.add(entity, rcmp.SetTextValue { .text = txt, .free = true });
+    }
+}
+
+pub fn itemList(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+    var create_iter = reg.entityIterator(cmp.CreateItemList);
+    while (create_iter.next()) |entity| {
+        const create = reg.get(cmp.CreateItemList, entity);
+        const setup = reg.get(cmp.SceneSetup, create.scene);
+        reg.remove(cmp.CreateItemList, entity);
+        
+        const root_ety = reg.create();
+        reg.add(root_ety, rcmp.Position { .x = 5, .y = 5 });
+        reg.add(root_ety, rcmp.AttachTo { .target = entity });
+        reg.add(root_ety, gcmp.LayoutChildren {
+            .axis = gcmp.LayoutAxis.Horizontal,
+            .pivot = gcmp.LayoutPivot.Begin,
+            .distance = 32 + 5,
+        });
+
+        var item_iter = setup.items.iterator();
+        while (item_iter.next()) |kv| {
+            const item_count = kv.value_ptr.*;
+            if (item_count > 0) {
+                var root_iter = reg.entityIterator(cmp.ItemInfoRoot);
+                const item_ety = try itemtemplate.loadScene(reg, allocator, kv.key_ptr.*, root_iter.next());
+                reg.addOrReplace(item_ety, rcmp.AttachTo { .target = root_ety });
+
+                if (item_count > 1) {
+                    const text_ety = reg.create();
+                    reg.add(text_ety, rcmp.Text {
+                        .color = gui_setup.ColorLabelText,
+                        .size = gui_setup.SizeText,
+                        .free = true,
+                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ item_count }),
+                    });
+                    reg.add(text_ety, rcmp.Position { .x = 20, .y = 22 });
+                    reg.add(text_ety, rcmp.AttachTo { .target = item_ety });
+                }
+            }
+        }
     }
 }
 
