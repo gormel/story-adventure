@@ -78,7 +78,7 @@ fn createStrategyBtn(reg: *ecs.Registry, parent: ecs.Entity, cfg: *combat.Combat
     return root_ety;
 }
 
-pub fn initLore(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
+pub fn initGui(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var init_iter = reg.entityIterator(scmp.InitGameObject);
     while (init_iter.next()) |entity| {
         const init = reg.get(scmp.InitGameObject, entity);
@@ -90,45 +90,159 @@ pub fn initLore(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
             reg.addOrReplace(panel, rcmp.AttachTo { .target = entity });
             reg.add(panel, cmp.LoreScene { .cfg = cfg_json });
         }
-    }
-}
-
-pub fn initStats(reg: *ecs.Registry) void {
-    var init_iter = reg.entityIterator(scmp.InitGameObject);
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
 
         if (utils.containsTag(init.tags, "combat-combatstats-root")) {
             reg.add(entity, cmp.CombatStatsRoot {});
         }
+        
+        if (utils.containsTag(init.tags, "combat-strategy-container")) {
+            reg.add(entity, cmp.CreateStrategyList {});
+        }
+        
+        if (utils.containsTag(init.tags, "combat-hero-root")) {
+            reg.add(entity, cmp.CreateHero {});
+        }
+        
+        if (utils.containsTag(init.tags, "combat-charmessage-root")) {
+            reg.add(entity, cmp.CreateCharMsgRoot {});
+        }
+        
+        if (utils.containsTag(init.tags, "combat-enemy-root")) {
+            reg.add(entity, cmp.CreateEnemy {});
+        }
+        
+        if (utils.containsTag(init.tags, "combat-logic")) {
+            reg.add(entity, cmp.CombatState {});
+            reg.add(entity, cmp.CombatStatePlayerIdle {});
+        }
+        
+        if (utils.containsTag(init.tags, "combat-escape-btn")) {
+            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+            reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
+            reg.add(entity, cmp.EscapeBtn {});
+        }
     }
 }
 
-pub fn initStrategy(reg: *ecs.Registry, props: *pr.Properties, allocator: std.mem.Allocator) !void {
-    var init_view = reg.view(.{ scmp.InitGameObject }, .{});
-    var init_iter = init_view.entityIterator();
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "combat-strategy-container")) {
-            var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
-                .{ .ignore_unknown_fields = true });
-            
-            reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
-            reg.add(entity, cmp.StrategyList {});
+pub fn escapeButton(reg: *ecs.Registry, props: *pr.Properties) !void {
+    var click_view = reg.view(.{ gcmp.ButtonClicked, cmp.EscapeBtn, cmp.CfgOwner }, .{});
+    var click_iter = click_view.entityIterator();
+    while (click_iter.next()) |entity| {
+        const cfg_cmp = reg.get(cmp.CfgOwner, entity);
+        const cfg = cfg_cmp.cfg_json.value;
+        const price = cfg.concede_lose.map;
 
-            var strategy_iter = cfg_json.value.strategy.map.iterator();
-            while (strategy_iter.next()) |kv| {
-                if (condition.check(kv.value_ptr.condition, props) or DEBUG_ALL_STRATEGYS) {
-                    _ = createStrategyBtn(reg, entity, &cfg_json.value, kv.key_ptr.*);
-                }
+        var canPay = true;
+        var check_it = price.iterator();
+        while (check_it.next()) |kv| {
+            const owned = props.get(kv.key_ptr.*);
+            if (owned < kv.value_ptr.*) {
+                canPay = false;
+                break;
+            }
+        }
+
+        if (!canPay) {
+            continue;
+        }
+
+        var pay_it = price.iterator();
+        while (pay_it.next()) |kv| {
+            try props.add(kv.key_ptr.*, -kv.value_ptr.*);
+        }
+
+        game.selectNextScene(reg);
+    }
+}
+
+pub fn createEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties, rnd: *std.Random) !void {
+    var create_iter = reg.entityIterator(cmp.CreateEnemy);
+    while (create_iter.next()) |entity| {
+        reg.remove(cmp.CreateEnemy, entity);
+
+        const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
+        reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
+        reg.addOrReplace(entity, rcmp.Scale { .x = -1, .y = 1 });
+        reg.addOrReplace(entity, rcmp.UpdateGlobalTransform {});
+
+        var to_select_size: usize = 0;
+        var to_select = try allocator.alloc(combat.EnemyCfg, cfg_json.value.enemy.len);
+        defer allocator.free(to_select);
+        for (cfg_json.value.enemy) |enemy_cfg| {
+            if (condition.check(enemy_cfg.condition, props)) {
+                to_select[to_select_size] = enemy_cfg;
+                to_select_size += 1;
+            }
+        }
+
+        if (rr.select(combat.EnemyCfg, "weight", to_select[0..to_select_size], rnd)) |enemy_cfg| {
+            var enemy_props = pr.Properties.initSilent(allocator, reg);
+            var prop_iter = enemy_cfg.params.map.iterator();
+            while (prop_iter.next()) |kv| {
+                try enemy_props.create(kv.key_ptr.*, kv.value_ptr.*);
             }
 
-            reg.add(entity, gcmp.LayoutChildren {
-                .axis = gcmp.LayoutAxis.Vertical,
-                .pivot = gcmp.LayoutPivot.Center,
-                .distance = STRATEGY_ICON_SIZE + STRATEGY_ICON_PADDING,
+            const sprite_ety = reg.create();
+            reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
+            reg.add(sprite_ety, rcmp.ImageResource {
+                .atlas = enemy_cfg.view.atlas,
+                .image = enemy_cfg.view.idle,
             });
+            reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
+
+            reg.add(entity, cmp.Enemy { .cfg = enemy_cfg });
+            reg.add(entity, cmp.Character { .props = enemy_props, .view = sprite_ety  });
+            reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
         }
+    }
+}
+
+pub fn createHero(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties) !void {
+    var create_iter = reg.entityIterator(cmp.CreateHero);
+    while (create_iter.next()) |entity| {
+        reg.remove(cmp.CreateHero, entity);
+
+        const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
+            .{ .ignore_unknown_fields = true });
+        reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
+
+        const sprite_ety = reg.create();
+        reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
+        reg.add(sprite_ety, rcmp.ImageResource {
+            .atlas = cfg_json.value.hero_view.atlas,
+            .image = cfg_json.value.hero_view.idle,
+        });
+        reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
+
+        reg.add(entity, cmp.Hero {});
+        reg.add(entity, cmp.Character { .props = props.*, .view = sprite_ety });
+        reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
+    }
+}
+
+pub fn createStrategyList(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties) !void {
+    var create_iter = reg.entityIterator(cmp.CreateStrategyList);
+    while (create_iter.next()) |entity| {
+        reg.remove(cmp.CreateStrategyList, entity);
+
+        var cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
+            .{ .ignore_unknown_fields = true });
+        
+        reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
+        reg.add(entity, cmp.StrategyList {});
+
+        var strategy_iter = cfg_json.value.strategy.map.iterator();
+        while (strategy_iter.next()) |kv| {
+            if (condition.check(kv.value_ptr.condition, props) or DEBUG_ALL_STRATEGYS) {
+                _ = createStrategyBtn(reg, entity, &cfg_json.value, kv.key_ptr.*);
+            }
+        }
+
+        reg.add(entity, gcmp.LayoutChildren {
+            .axis = gcmp.LayoutAxis.Vertical,
+            .pivot = gcmp.LayoutPivot.Center,
+            .distance = STRATEGY_ICON_SIZE + STRATEGY_ICON_PADDING,
+        });
     }
 }
 
@@ -145,6 +259,7 @@ pub fn updateLore(reg: *ecs.Registry) void {
 }
 
 pub fn updateStrategy(reg: *ecs.Registry, props: *pr.Properties) void {
+    //todo: update unavaliable cost
     var updatelocked_view = reg.view(.{ cmp.UpdateStrategyLocked, cmp.StrategyRoot }, .{});
     var updatelocked_iter = updatelocked_view.entityIterator();
     while (updatelocked_iter.next()) |entity| {
@@ -197,41 +312,6 @@ pub fn freeCombat(reg: *ecs.Registry) void {
     }
 }
 
-pub fn initPlayer(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties) !void {
-    var init_view = reg.view(.{ scmp.InitGameObject }, .{});
-    var init_iter = init_view.entityIterator();
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "combat-hero-root")) {
-            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text,
-                .{ .ignore_unknown_fields = true });
-            reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
-
-            const sprite_ety = reg.create();
-            reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
-            reg.add(sprite_ety, rcmp.ImageResource {
-                .atlas = cfg_json.value.hero_view.atlas,
-                .image = cfg_json.value.hero_view.idle,
-            });
-            reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
-
-            reg.add(entity, cmp.Hero {});
-            reg.add(entity, cmp.Character { .props = props.*, .view = sprite_ety });
-            reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
-        }
-    }
-}
-
-pub fn initCharMsgRoot(reg: *ecs.Registry) void {
-    var init_iter = reg.entityIterator(scmp.InitGameObject);
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "combat-charmessage-root")) {
-            reg.add(entity, cmp.CreateCharMsgRoot {});
-        }
-    }
-}
-
 pub fn charMessageRoot(reg: *ecs.Registry) void {
     var create_view = reg.view(.{ cmp.CreateCharMsgRoot, rcmp.Parent }, .{});
     var create_iter = create_view.entityIterator();
@@ -240,50 +320,6 @@ pub fn charMessageRoot(reg: *ecs.Registry) void {
 
         reg.addOrReplace(parent.entity, cmp.CharMsgRoot { .root = entity });
         reg.remove(cmp.CreateCharMsgRoot, entity);
-    }
-}
-
-pub fn initEnemy(reg: *ecs.Registry, allocator: std.mem.Allocator, props: *pr.Properties, rnd: *std.Random) !void {
-    var init_view = reg.view(.{ scmp.InitGameObject }, .{});
-    var init_iter = init_view.entityIterator();
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "combat-enemy-root")) {
-            const cfg_json = try std.json.parseFromSlice(combat.CombatCfg, allocator, cfg_text, .{ .ignore_unknown_fields = true });
-            reg.add(entity, cmp.CfgOwner { .cfg_json = cfg_json });
-            reg.addOrReplace(entity, rcmp.Scale { .x = -1, .y = 1 });
-            reg.addOrReplace(entity, rcmp.UpdateGlobalTransform {});
-
-            var to_select_size: usize = 0;
-            var to_select = try allocator.alloc(combat.EnemyCfg, cfg_json.value.enemy.len);
-            defer allocator.free(to_select);
-            for (cfg_json.value.enemy) |enemy_cfg| {
-                if (condition.check(enemy_cfg.condition, props)) {
-                    to_select[to_select_size] = enemy_cfg;
-                    to_select_size += 1;
-                }
-            }
-
-            if (rr.select(combat.EnemyCfg, "weight", to_select[0..to_select_size], rnd)) |enemy_cfg| {
-                var enemy_props = pr.Properties.initSilent(allocator, reg);
-                var prop_iter = enemy_cfg.params.map.iterator();
-                while (prop_iter.next()) |kv| {
-                    try enemy_props.create(kv.key_ptr.*, kv.value_ptr.*);
-                }
-
-                const sprite_ety = reg.create();
-                reg.add(sprite_ety, rcmp.ImagePivot { .x = 0.5, .y = 0.5 });
-                reg.add(sprite_ety, rcmp.ImageResource {
-                    .atlas = enemy_cfg.view.atlas,
-                    .image = enemy_cfg.view.idle,
-                });
-                reg.add(sprite_ety, rcmp.AttachTo { .target = entity });
-
-                reg.add(entity, cmp.Enemy { .cfg = enemy_cfg });
-                reg.add(entity, cmp.Character { .props = enemy_props, .view = sprite_ety  });
-                reg.add(entity, cmp.CharacterStats { .dmgdealt = 0, .dmgtaken = 0 });
-            }
-        }
     }
 }
 
@@ -657,18 +693,6 @@ pub fn checkDeath(reg: *ecs.Registry) !void {
         }
 
         reg.remove(cmp.CheckDeath, entity);
-    }
-}
-
-pub fn initState(reg: *ecs.Registry) void {
-    var init_view = reg.view(.{ scmp.InitGameObject }, .{});
-    var init_iter = init_view.entityIterator();
-    while (init_iter.next()) |entity| {
-        const init = reg.get(scmp.InitGameObject, entity);
-        if (utils.containsTag(init.tags, "combat-logic")) {
-            reg.add(entity, cmp.CombatState {});
-            reg.add(entity, cmp.CombatStatePlayerIdle {});
-        }
     }
 }
 

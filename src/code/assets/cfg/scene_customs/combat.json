@@ -279,6 +279,7 @@
         "image": "strategy-locked"
     },
     "concede_lose": {
-        "health": 20
+        "health": 20,
+        "stamina": 15
     }
 }

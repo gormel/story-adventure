@@ -29,22 +29,25 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
     var image_iter = image_view.entityIterator();
     while (image_iter.next()) |entity| {
         const res_c = reg.get(cmp.ImageResource, entity);
-        var silent_res = res.silent();
-        if (silent_res.loadSprite(res_c.atlas, res_c.image) catch null) |sprite| {
+        const cached_verb = res.verb;
+        res.verb = false;
+        if (res.loadSprite(res_c.atlas, res_c.image) catch null) |sprite| {
             reg.add(entity, cmp.Sprite {
                 .sprite = sprite,
             });
-        } else if (silent_res.loadFlipbook(res_c.atlas, res_c.image) catch null) |flipbook| {
+        } else if (res.loadFlipbook(res_c.atlas, res_c.image) catch null) |flipbook| {
             reg.add(entity, cmp.Flipbook {
                 .time = flipbook.duration,
                 .flipbook = flipbook,
             });
         } else {
+            res.verb = cached_verb;
             const err = std.io.getStdErr().writer();
             try err.print("ERROR: Cannot load sprite or flipbook \"{s}\" from atlas \"{s}\"\n", .{ res_c.image, res_c.atlas });
             return Error.CannotLoadSpriteOrFlipbook;
         }
         
+        res.verb = cached_verb;
         reg.remove(cmp.ImageResource, entity);
     }
 

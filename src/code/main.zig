@@ -122,7 +122,7 @@ pub fn main() !void {
         try game_systems.inputCapture(&reg, &input_stack);
         game_systems.initButton(&reg);
 
-        try game_systems.initGameplayCustoms(&reg, &props, arena, &rnd);
+        try game_systems.initGameplayCustoms(&reg, arena, &rnd);
         //init obj systems end
         scene_systems.completeLoadScene(&reg);
 

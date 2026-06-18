@@ -1,6 +1,4 @@
-fea: charge device, charge artifacts, consumables
-* combat completion screen + disable travel icon in combat
-* combat concede
+fea: charge device, charge artifacts, consumables, scene change animation
 
 fea: trap scene
 
@@ -8,6 +6,7 @@ fea: unique monster attack
 fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 fea: combat location to fill free space
+fea: hud prop value change animations
 
 fea: "new" sign in gameover statistisc for items
 fea: layout text (H/V/HV)
@@ -24,6 +23,9 @@ ref: x5 items, x5 monsters (x3 grades for each)
 * fish
 * snake
 * rat
+ref: привести тэги к общему виду
+ref: btn mouse over - mouse out anim
+ref: cfg dependency injection
 
 fix: loot hero move animations: up-down
 fix: плавающий; предмет не сохранился в коллекции

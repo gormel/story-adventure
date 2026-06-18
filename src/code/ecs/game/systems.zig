@@ -375,7 +375,6 @@ pub fn changeScene(
 
 pub fn initGameplayCustoms(
     reg: *ecs.Registry,
-    props: *pr.Properties,
     allocator: std.mem.Allocator,
     rnd: *std.Random
 ) !void {
@@ -391,13 +390,7 @@ pub fn initGameplayCustoms(
     try loot.initLoot(reg, allocator, rnd);
     loot.initGui(reg);
 
-    try combat.initLore(reg, allocator);
-    combat.initStats(reg);
-    try combat.initStrategy(reg, props, allocator);
-    try combat.initPlayer(reg, allocator, props);
-    try combat.initEnemy(reg, allocator, props, rnd);
-    combat.initCharMsgRoot(reg);
-    combat.initState(reg);
+    try combat.initGui(reg, allocator);
 
     combatstats.initState(reg);
 
@@ -436,7 +429,11 @@ pub fn updateGameplayCustoms(
     loot.gui(reg);
     loot.updateLore(reg);
 
+    try combat.createStrategyList(reg, allocator, props);
+    try combat.createHero(reg, allocator, props);
+    try combat.createEnemy(reg, allocator, props, rnd);
     try combat.attack(reg, allocator);
+    try combat.escapeButton(reg, props);
     combat.updateStrategy(reg, props);
     try combat.attackEffectComplete(reg, allocator, dt);
     combat.deathEffectComplete(reg);

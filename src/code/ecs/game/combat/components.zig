@@ -6,6 +6,10 @@ const lore = @import("../lore/lore.zig");
 
 pub const CfgOwner = struct { cfg_json: std.json.Parsed(combat.CombatCfg) };
 
+pub const CreateStrategyList = struct {};
+pub const CreateHero = struct {};
+pub const CreateEnemy = struct {};
+
 pub const StrategyList = struct {};
 pub const StrategyRoot = struct { locked: ecs.Entity, strategy_id: []const u8, list: ecs.Entity };
 pub const StrategyButton = struct { strategy_id: []const u8 };
@@ -50,3 +54,5 @@ pub const DeathTween = struct { character: ecs.Entity };
 pub const CombatStatsRoot = struct {};
 pub const CombatStatsScene = struct {};
 pub const CombatStatsItems = struct { items: std.StringArrayHashMap(f64) };
+
+pub const EscapeBtn = struct {};

@@ -34,16 +34,6 @@ pub const Resources = struct {
             .atlases = std.StringHashMap(Atlas).init(allocator),
             .assets = assetmap,
             .fonts = std.StringHashMap(std.AutoHashMap(i32, rl.Font)).init(allocator),
-            .verb = false,
-        };
-    }
-
-    pub fn silent(self: *Resources) Resources {
-        return Resources {
-            .allocator = self.allocator,
-            .atlases = self.atlases,
-            .assets = self.assets,
-            .fonts = self.fonts,
             .verb = true,
         };
     }

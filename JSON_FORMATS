@@ -36,6 +36,9 @@ scene:
     }
 ]
 
+scene related ui tag:
+"scene-function-(btn|root|bg|text)"
+
 scene_rules:
 [
     {
