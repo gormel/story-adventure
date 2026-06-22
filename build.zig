@@ -8,35 +8,38 @@ fn addAssetsOption(
 ) !void {
     var options = b.addOptions();
 
-    var files = std.ArrayList([]const u8).init(b.allocator);
-    defer files.deinit();
+    var files = try std.ArrayList([]const u8).initCapacity(b.allocator, 4);
+    defer files.deinit(b.allocator);
 
-    var filedatas = std.ArrayList([]const u8).init(b.allocator);
-    defer filedatas.deinit();
+    var filedatas = try std.ArrayList([]const u8).initCapacity(b.allocator, 4);
+    defer filedatas.deinit(b.allocator);
 
-    var buf: [std.fs.max_path_bytes]u8 = undefined;
-    const path = try std.fs.cwd().realpath("src/code/assets", buf[0..]);
+    const path = std.Build.LazyPath { .cwd_relative = "src/code/assets" };
 
-    var dir = try std.fs.openDirAbsolute(path, .{ .iterate = true });
-    defer dir.close();
+    var threaded: std.Io.Threaded = .init(b.allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
+    var dir = try std.Io.Dir.openDirAbsolute(io, path.getPath(b), .{ .iterate = true });
+    defer dir.close(io);
 
     var it = try dir.walk(b.allocator);
-    while (try it.next()) |entry| {
+    while (try it.next(io)) |entry| {
         if (entry.kind != .file) {
             continue;
         }
 
-        const fp = try entry.dir.openFile(entry.basename, .{});
-        defer fp.close();
+        const fp = try entry.dir.openFile(io, entry.basename, .{});
+        defer fp.close(io);
         
-        const meta = try fp.metadata();
-        const fbuf: [] u8 = try b.allocator.alloc(u8, meta.size());
+        const stat = try fp.stat(io);
+        const fbuf: [] u8 = try b.allocator.alloc(u8, stat.size);
         defer b.allocator.free(fbuf);
 
-        const read = try fp.readAll(fbuf);
+        const read = try entry.dir.readFile(io, entry.basename, fbuf);
 
-        try files.append(b.dupe(entry.path));
-        try filedatas.append(b.dupe(fbuf[0..read]));
+        try files.append(b.allocator, b.dupe(entry.path));
+        try filedatas.append(b.allocator, b.dupe(read));
     }
 
     options.addOption([]const []const u8, "filenames", files.items);
@@ -67,7 +70,7 @@ fn addRaylib(
     const raygui = raylib_dep.module("raygui"); // raygui module
     const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
-    exe.linkLibrary(raylib_artifact);
+    exe.root_module.linkLibrary(raylib_artifact);
     exe.root_module.addImport("raylib", raylib);
     exe.root_module.addImport("raygui", raygui);
 }
@@ -98,9 +101,11 @@ pub fn build(b: *std.Build) !void {
 
     const exe = b.addExecutable(.{
         .name = "story-adventure",
-        .root_source_file = b.path("src/code/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/code/main.zig"),
+            .target = target,
+            .optimize = optimize
+        }),
     });
 
     const strip = b.option(

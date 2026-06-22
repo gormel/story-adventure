@@ -9,16 +9,16 @@
     .version = "0.1.0",
     .dependencies = .{
         .raylib_zig = .{
-            .url = "git+https://github.com/not-nik/raylib-zig?ref=devel#d4fc514d54a3b37b9b3e4f4983f611c3469e8c2a",
-            .hash = "122004d31a0d92b6bb9ad12aafc70264793b93fd37b712d907e71909d6a45db6be01",
+            .url = "git+https://github.com/not-nik/raylib-zig?ref=devel#97be2c7ae646a2f09856604b138c427c0af1b952",
+            .hash = "raylib_zig-6.0.0-KE8REDJ4BQBu7lKwYNt6R4j5ywPeS37zqW6zrtjCcRwH",
         },
         .zig_ecs = .{
-            .url = "https://github.com/prime31/zig-ecs/archive/d0af139e204a420a3dd596c1f2f5e267a7438b9e.tar.gz",
-            .hash = "1220c7a81c710e6458456aa503dc7baca7b3e57a5e6c99832933a382a3c0335f206c",
+            .url = "https://github.com/prime31/zig-ecs/archive/d3a429a157a0502ff4b3b2fa9389251bffca269e.tar.gz",
+            .hash = "entt-1.0.0-qJPtbEjuAgBGugkES3DQsThMbIilGXJhTqgcpp121VDK",
         },
         .zig_astar = .{
-            .url = "git+https://github.com/gormel/zig_astar/?ref=update_014#f42250463f3428a3019668596aa3c6dcfcf563e8",
-            .hash = "zig_astar-0.0.0-klHTjskpAADx_Po7FokIy4XgMv_VYdPcEuRcoJ_gRpCH",
+            .url = "git+https://github.com/gormel/zig_astar/?ref=update_016#c4c23fbf88896d9b95b7c3aefc263408bf3a7581",
+            .hash = "zig_astar-0.0.0-klHTjgoqAACgXDgqXEQ2FmN0sFIqUZA80e9ehaHDjrRo",
         },
     },
 }
