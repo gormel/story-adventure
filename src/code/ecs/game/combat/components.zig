@@ -53,6 +53,6 @@ pub const DeathTween = struct { character: ecs.Entity };
 
 pub const CombatStatsRoot = struct {};
 pub const CombatStatsScene = struct {};
-pub const CombatStatsItems = struct { items: std.StringArrayHashMap(f64) };
+pub const CombatStatsItems = struct { items: std.array_hash_map.String(f64) };
 
 pub const EscapeBtn = struct {};

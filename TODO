@@ -6,7 +6,8 @@ fea: unique monster attack
 fea: dexterity (max dex attacks first)
 fea: weapon with spatial resource requirement to spatial attack (bow + arrows|magic staff + madic crystals)
 fea: combat location to fill free space
-fea: hud prop value change animations
+fea: hud prop value change animations (icon scale, text color to green/red)
+fea: next scene selection by user (scene selection scene)
 
 fea: "new" sign in gameover statistisc for items
 fea: layout text (H/V/HV)
@@ -29,6 +30,8 @@ ref: cfg dependency injection
 
 fix: loot hero move animations: up-down
 fix: плавающий; предмет не сохранился в коллекции
+fix: при быстром проклике дилога, сцена иногда скипается
+fix: lore scene считается в статистику
 
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure

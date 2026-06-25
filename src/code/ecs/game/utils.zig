@@ -102,6 +102,9 @@ var scenes = &.{
     .{
         .name = "lore",
         .text = @embedFile("../../assets/scenes/lore.json"),
+    },.{
+        .name = "chargegameover",
+        .text = @embedFile("../../assets/scenes/chargegameover.json"),
     },
 };
 
@@ -175,8 +178,7 @@ pub fn loadScene(
         }
     }
 
-    var err = std.io.getStdErr().writer();
-    try err.print("ERROR: Cannot find scene \"{s}\".\n", .{ name });
+    std.log.err("ERROR: Cannot find scene \"{s}\".\n", .{ name });
 
     return Error.UnknownScene;
 }

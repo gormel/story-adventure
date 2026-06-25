@@ -102,7 +102,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
                         .color = gui_setup.ColorLabelText,
                         .size = gui_setup.SizeText,
                         .free = true,
-                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ item_count }),
+                        .text = try std.fmt.allocPrintSentinel(allocator, "{d}", .{ item_count }, 0),
                     });
                     reg.add(text_ety, rcmp.Position { .x = 20, .y = 22 });
                     reg.add(text_ety, rcmp.AttachTo { .target = item_ety });
@@ -119,7 +119,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
         reg.remove(cmp.SetDepthText, entity);
 
         const depth = props.get("scene_depth");
-        const depthText = try std.fmt.allocPrintZ(allocator, "{d}", .{ depth });
+        const depthText = try std.fmt.allocPrintSentinel(allocator, "{d}", .{ depth }, 0);
         reg.add(entity, rcmp.SetTextValue {
             .free = true,
             .text = depthText,
@@ -132,7 +132,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, items_cfg: *itm.ItemListCf
         reg.remove(cmp.SetSlainText, entity);
 
         const slain = props.get("kill_count");
-        const slainText = try std.fmt.allocPrintZ(allocator, "{d}", .{ slain });
+        const slainText = try std.fmt.allocPrintSentinel(allocator, "{d}", .{ slain }, 0);
         reg.add(entity, rcmp.SetTextValue {
             .free = true,
             .text = slainText,

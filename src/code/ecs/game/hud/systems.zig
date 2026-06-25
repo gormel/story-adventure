@@ -73,7 +73,7 @@ fn addSync(comptime ComponentT: type, reg: *ecs.Registry) void {
 
 fn selectValue(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8 {
     const value = props.get(name);
-    return std.fmt.allocPrintZ(allocator, "{d:.0}", .{ value }) catch "0" ++ .{ 0 };
+    return std.fmt.allocPrintSentinel(allocator, "{d:.0}", .{ value }, 0) catch "0" ++ .{ 0 };
 }
 
 fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.Allocator) [:0]const u8 {
@@ -83,7 +83,7 @@ fn selectValueOfMax(props: *pr.Properties, name: []const u8, allocator: std.mem.
         max = setup.max.map.get(name) orelse max;
     }
     
-    return std.fmt.allocPrintZ(allocator, "{d:.0} / {d:.0}", .{ value, max }) catch "0 / 0" ++ .{ 0 };
+    return std.fmt.allocPrintSentinel(allocator, "{d:.0} / {d:.0}", .{ value, max }, 0) catch "0 / 0" ++ .{ 0 };
 }
 
 fn syncProperty(

@@ -14,7 +14,7 @@ fn addAssetsOption(
     var filedatas = try std.ArrayList([]const u8).initCapacity(b.allocator, 4);
     defer filedatas.deinit(b.allocator);
 
-    const path = std.Build.LazyPath { .cwd_relative = "src/code/assets" };
+    const path = b.path("src/code/assets/");
 
     var threaded: std.Io.Threaded = .init(b.allocator, .{});
     defer threaded.deinit();
@@ -115,7 +115,7 @@ pub fn build(b: *std.Build) !void {
     ) orelse false;
     exe.root_module.strip = strip;
 
-    addAssetsOption(b, exe, target, optimize) catch |e| { std.log.err("ERROR: Cannot load asset: {!}", .{ e }); };
+    addAssetsOption(b, exe, target, optimize) catch |e| { std.log.err("ERROR: Cannot load asset: {any}", .{ e }); };
     addRaylib(b, exe, target, optimize);
     addEcs(b, exe, target, optimize);
     addAstar(b, exe, target, optimize);

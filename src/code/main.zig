@@ -40,12 +40,16 @@ pub fn main() !void {
     defer arena_allocator.deinit();
     const arena = arena_allocator.allocator();
 
+    var threaded: std.Io.Threaded = .init(allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
     var res = try rs.Resources.init(arena);
 
     var reg = ecs.Registry.init(arena);
     defer reg.deinit();
 
-    var input_stack = is.InputStack.init(arena);
+    var input_stack = try is.InputStack.init(arena);
     defer input_stack.deinit();
 
     var propsetup_json = try std.json.parseFromSlice(pr.Setup, arena, propsetup_text, .{ .ignore_unknown_fields = true });
@@ -75,11 +79,12 @@ pub fn main() !void {
         &item_progress_cfg_json.value,
         &props, arena);
 
-    var pcg = std.Random.Pcg.init(@as(u64, @intCast(std.time.timestamp())));
-    //var pcg = std.rand.Pcg.init(123456789);
+    var pcg = std.Random.Pcg.init(@as(u64, @intCast(std.Io.Clock.now(.real, io).toSeconds())));
     var rnd = pcg.random();
 
-    var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ .ignore_unknown_fields = true });
+    var rules_json = try std.json.parseFromSlice(sc.Rules, arena, rules_text, .{ 
+        .ignore_unknown_fields = true,
+    });
     defer rules_json.deinit();
     var rules = rules_json.value;
 
@@ -96,12 +101,14 @@ pub fn main() !void {
     render_systems.initFont(&reg, &res);
     //game init systems end
 
-    var timer = try std.time.Timer.start();
+    //var timer = try std.time.Timer.start();
+    var now = std.Io.Timestamp.now(io, .real);
     // Main game loop
     while (!rl.windowShouldClose()) { // Detect window close button or ESC key
-        
-        const dt = @as(f32, @floatFromInt(timer.read())) / @as(f32, @floatFromInt(std.time.ns_per_s));
-        timer.reset();
+        const n_now = std.Io.Timestamp.now(io, .real);
+        const frame = now.durationTo(n_now);
+        const dt = @as(f32, @floatFromInt(frame.nanoseconds)) / @as(f32, @floatFromInt(std.time.ns_per_s));
+        now = n_now;
 
         //debug logic
         
@@ -149,10 +156,10 @@ pub fn main() !void {
         rl.endDrawing();
 
         //destroy triggers
-        try game_systems.freeGameplayCustoms(&reg);
+        try game_systems.freeGameplayCustoms(&reg, arena);
         game_systems.freeInputCapture(&reg, &input_stack);
         render_systems.freeFlipbook(&reg);
-        try render_systems.destroyChildren(&reg);
+        try render_systems.destroyChildren(&reg, arena);
         core_systems.destroy(&reg);
     }
 

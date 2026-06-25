@@ -31,6 +31,7 @@ const shop = @import("shop/systems.zig");
 const itemtemplate = @import("itemtemplate/systems.zig");
 const lore = @import("lore/systems.zig");
 const combatstats = @import("combatstats/systems.zig");
+const chargegameover = @import("chargegameover/systems.zig");
 
 const BUTTON_ANIM_DELAY = 0.2;
 const BUTTON_ANIM_SCALE = 1.1;
@@ -330,7 +331,7 @@ pub fn changeScene(
     rnd: *std.Random,
     allocator: std.mem.Allocator
 ) !void {
-    var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene }, .{});
+    var view = reg.view(.{ cmp.GameplayScene, cmp.NextGameplayScene, cmp.CoreGameplayScene }, .{});
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
         const scene = reg.get(cmp.GameplayScene, entity);
@@ -341,7 +342,7 @@ pub fn changeScene(
         defer allocator.free(rules_to_roll);
         for (rules.*) |rule| {
             if (
-                checkNames(rule.current_scene, scene_name)
+                (rule.current_scene == null or checkNames(rule.current_scene, scene_name))
                 and checkCondition(rule.params, props)
             ) {
                 rules_to_roll[rule_count] = rule;
@@ -362,10 +363,11 @@ pub fn changeScene(
                     try applyExitChangeProps(change_item, props);
                 }
 
-                _ = try game.loadScene(reg, allocator, ok_roll.result_scene, .{
+                const new_scene = try game.loadScene(reg, allocator, ok_roll.result_scene, .{
                     .props = props,
                     .change = change,
                 });
+                reg.add(new_scene, cmp.CoreGameplayScene {});
             }
         }
         
@@ -397,6 +399,8 @@ pub fn initGameplayCustoms(
     try shop.initShop(reg, allocator);
     try shop.initStall(reg);
     try shop.initItem(reg);
+
+    chargegameover.initScene(reg);
 
     gamestats.initGui(reg);
     gameover.initGui(reg);
@@ -452,6 +456,8 @@ pub fn updateGameplayCustoms(
     try shop.item(reg, allocator, items, props);
     shop.updateLore(reg);
 
+    try chargegameover.logic(reg, allocator);
+
     try gamestats.gui(reg, props, items.item_list_cfg, allocator);
     try gameover.gui(reg, props, allocator);
     try gamemenu.gui(reg, allocator);
@@ -459,9 +465,9 @@ pub fn updateGameplayCustoms(
     try itemcollection.gui(reg, items.item_list_cfg, items.item_progress_cfg, props, allocator);
 }
 
-pub fn freeGameplayCustoms(reg: *ecs.Registry) !void {
+pub fn freeGameplayCustoms(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     loot.freeLootStart(reg);
-    combat.freeCombat(reg);
+    combat.freeCombat(reg, allocator);
     shop.free(reg);
 }
 

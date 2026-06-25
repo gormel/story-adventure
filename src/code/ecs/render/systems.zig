@@ -42,8 +42,7 @@ pub fn loadResource(reg: *ecs.Registry, res: *rs.Resources) !void {
             });
         } else {
             res.verb = cached_verb;
-            const err = std.io.getStdErr().writer();
-            try err.print("ERROR: Cannot load sprite or flipbook \"{s}\" from atlas \"{s}\"\n", .{ res_c.image, res_c.atlas });
+            std.log.err("ERROR: Cannot load sprite or flipbook \"{s}\" from atlas \"{s}\"\n", .{ res_c.image, res_c.atlas });
             return Error.CannotLoadSpriteOrFlipbook;
         }
         
@@ -167,7 +166,7 @@ fn topoSort(reg: *ecs.Registry, entity: ecs.Entity, out_list: *std.ArrayList(ecs
         try queue.enqueue(entity);
     }
     while (queue.dequeue()) |cur_entity| {
-        try out_list.append(cur_entity);
+        try out_list.append(allocator, cur_entity);
         if (reg.tryGet(cmp.Children, cur_entity)) |children| {
             for (children.children.items) |child_entity| {
                 if (!reg.has(cmp.Disabled, child_entity)) {
@@ -216,14 +215,14 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         if (attach.target) |target_entity| {
             reg.add(entity, cmp.Parent { .entity = target_entity });
             if (reg.tryGet(cmp.Children, target_entity)) |parent_children| {
-                try parent_children.children.append(entity);
+                try parent_children.children.append(allocator, entity);
                 std.sort.heap(ecs.Entity, parent_children.children.items,
                     reg, gameObjectRenderOrderLessThan);
             } else {
                 var parent_children = cmp.Children {
-                    .children = std.ArrayList(ecs.Entity).init(allocator)
+                    .children = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4)
                 };
-                try parent_children.children.append(entity);
+                try parent_children.children.append(allocator, entity);
                 
                 reg.add(target_entity, parent_children);
             }
@@ -621,7 +620,7 @@ pub fn freeFlipbook(reg: *ecs.Registry) void {
     }
 }
 
-pub fn destroyChildren(reg: *ecs.Registry) !void {
+pub fn destroyChildren(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var parent_view = reg.view(.{ Destroyed, cmp.Parent }, .{ });
     var parent_iter = parent_view.entityIterator();
     while (parent_iter.next()) |entity| {
@@ -636,7 +635,7 @@ pub fn destroyChildren(reg: *ecs.Registry) !void {
             reg.add(child_entity, DestroyNextFrame {});
             reg.removeIfExists(cmp.Parent, child_entity);
         }
-        children.children.deinit();
+        children.children.deinit(allocator);
         reg.remove(cmp.Children, entity);
     }
 }
@@ -911,13 +910,13 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
 }
 
 pub fn render(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
-    var roots = std.ArrayList(ecs.Entity).init(allocator);
-    defer roots.deinit();
+    var roots = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4);
+    defer roots.deinit(allocator);
 
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });
     var iter = view.entityIterator();
     while (iter.next()) |entity| {
-        try roots.append(entity);
+        try roots.append(allocator, entity);
     }
 
     if (roots.items.len > 0) {

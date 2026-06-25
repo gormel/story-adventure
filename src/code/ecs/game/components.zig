@@ -20,6 +20,7 @@ pub const GameoverScene = struct {};
 pub const TemplateInstanceScene = struct {};
 pub const SetInputCaptureScene = struct {};
 pub const InputCaptureScene = struct {};
+pub const CoreGameplayScene = struct {};
 
 pub const GameState = struct {};
 pub const GameStateMenu = struct { menu_scene: ?ecs.Entity };

@@ -66,6 +66,7 @@ pub fn gui(reg: *ecs.Registry, props: *pr.Properties, change: *game.ScenePropCha
             .props = props,
             .change = change,
         });
+        reg.add(scene_ety, gcmp.CoreGameplayScene {});
         reg.addOrReplace(scene_ety, rcmp.Order { .order = game.RenderLayers.GAMEPLAY });
     }
 

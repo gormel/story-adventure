@@ -15,9 +15,9 @@ pub const Properties = struct {
     const Self = @This();
     reg: *ecs.Registry,
     allocator: std.mem.Allocator,
-    map: std.StringArrayHashMap(f64),
-    initial: std.StringArrayHashMap(f64),
-    loaded: std.StringArrayHashMap(f64),
+    map: std.array_hash_map.String(f64),
+    initial: std.array_hash_map.String(f64),
+    loaded: std.array_hash_map.String(f64),
     silent: bool,
     setup: ?*Setup,
 
@@ -28,9 +28,9 @@ pub const Properties = struct {
         return .{
             .reg = reg,
             .allocator = allocator,
-            .map = std.StringArrayHashMap(f64).init(allocator),
-            .initial = std.StringArrayHashMap(f64).init(allocator),
-            .loaded = std.StringArrayHashMap(f64).init(allocator),
+            .map = std.array_hash_map.String(f64).empty,
+            .initial = std.array_hash_map.String(f64).empty,
+            .loaded = std.array_hash_map.String(f64).empty,
             .silent = false,
             .setup = setup,
             
@@ -43,9 +43,9 @@ pub const Properties = struct {
         return .{
             .reg = reg,
             .allocator = allocator,
-            .map = std.StringArrayHashMap(f64).init(allocator),
-            .initial = std.StringArrayHashMap(f64).init(allocator),
-            .loaded = std.StringArrayHashMap(f64).init(allocator),
+            .map = std.array_hash_map.String(f64).empty,
+            .initial = std.array_hash_map.String(f64).empty,
+            .loaded = std.array_hash_map.String(f64).empty,
             .silent = true,
             .setup = null,
 
@@ -55,8 +55,8 @@ pub const Properties = struct {
     }
 
     pub fn deinit(self: *Self) void {
-        self.map.deinit();
-        self.initial.deinit();
+        self.map.deinit(self.allocator);
+        self.initial.deinit(self.allocator);
 
         if (self.loadedJson) |json| {
             json.deinit();
@@ -77,7 +77,7 @@ pub const Properties = struct {
 
     pub fn create(self: *Self, name: []const u8, value: f64) !void {
         try self.set(name, value);
-        try self.initial.put(name, value);
+        try self.initial.put(self.allocator, name, value);
     }
 
     pub fn set(self: *Self, name: []const u8, value: f64) !void {
@@ -93,7 +93,7 @@ pub const Properties = struct {
             }
         }
         
-        try self.map.put(name, actual);
+        try self.map.put(self.allocator, name, actual);
 
         if (!self.silent) {
             const entity = self.reg.create();
@@ -126,28 +126,30 @@ pub const Properties = struct {
 
     pub fn save(self: *Self) !void {
         if (self.setup) |setup| {
-            var saveobj = std.json.ObjectMap.init(self.allocator);
-            defer saveobj.deinit();
+            var saveobj = std.json.ObjectMap.empty;
+            defer saveobj.deinit(self.allocator);
 
             for (setup.save) |propname| {
                 if (self.map.get(propname)) |propvalue| {
-                    try saveobj.put(propname, std.json.Value { .float = propvalue });
+                    try saveobj.put(self.allocator, propname, std.json.Value { .float = propvalue });
                 }
             }
+
+            var out = std.Io.Writer.Allocating.init(self.allocator);
+            defer out.deinit();
+            var ws = std.json.Stringify {
+                .writer = &out.writer,
+                .options = .{}
+            };
 
             var savemap = try std.json.ArrayHashMap(f64)
                 .jsonParseFromValue(self.allocator, std.json.Value { .object = saveobj }, .{});
             
-            var strlist = std.ArrayList(u8).init(self.allocator);
-            defer strlist.deinit();
+            var strlist = try std.ArrayList(u8).initCapacity(self.allocator, 4);
+            defer strlist.deinit(self.allocator);
 
-            const strwriter = strlist.writer();
-            var jwriter = std.json.WriteStream(@TypeOf(strwriter), .checked_to_arbitrary_depth)
-                .init(self.allocator, strwriter, .{});
-            defer jwriter.deinit();
-
-            try savemap.jsonStringify(&jwriter);
-            const jsontext = try std.fmt.allocPrintZ(self.allocator, "{s}", .{ strlist.items });
+            try savemap.jsonStringify(&ws);
+            const jsontext = try std.fmt.allocPrintSentinel(self.allocator, "{s}", .{ strlist.items }, 0);
             defer self.allocator.free(jsontext);
 
             _ = rl.saveFileText(SAVE_FILENAME, jsontext);
@@ -171,7 +173,7 @@ pub const Properties = struct {
             var it = self.loadedJson.?.value.map.iterator();
             while (it.next()) |kv| {
                 try self.set(kv.key_ptr.*, kv.value_ptr.*);
-                try self.loaded.put(kv.key_ptr.*, kv.value_ptr.*);
+                try self.loaded.put(self.allocator, kv.key_ptr.*, kv.value_ptr.*);
             }
         }
     }

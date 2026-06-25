@@ -69,7 +69,7 @@ pub fn combatStat(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
         const value = init.value;
         reg.remove(cmp.InitCombatStat, entity);
 
-        const txt = try std.fmt.allocPrintZ(allocator, "{d}", .{ value });
+        const txt = try std.fmt.allocPrintSentinel(allocator, "{d}", .{ value }, 0);
         reg.add(entity, rcmp.SetTextValue { .text = txt, .free = true });
     }
 }
@@ -104,7 +104,7 @@ pub fn itemList(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
                         .color = gui_setup.ColorLabelText,
                         .size = gui_setup.SizeText,
                         .free = true,
-                        .text = try std.fmt.allocPrintZ(allocator, "{d}", .{ item_count }),
+                        .text = try std.fmt.allocPrintSentinel(allocator, "{d}", .{ item_count }, 0),
                     });
                     reg.add(text_ety, rcmp.Position { .x = 20, .y = 22 });
                     reg.add(text_ety, rcmp.AttachTo { .target = item_ety });

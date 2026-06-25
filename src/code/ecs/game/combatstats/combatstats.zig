@@ -7,7 +7,7 @@ const cmp = @import("components.zig");
 
 pub const SCENE_NAME = "combatstats";
 
-pub const CombatStats = struct { gold: f64, dmgtaken: f64, dmgdealt: f64, items: std.StringArrayHashMap(f64) };
+pub const CombatStats = struct { gold: f64, dmgtaken: f64, dmgdealt: f64, items: std.array_hash_map.String(f64) };
 
 pub fn loadScene(
         reg: *ecs.Registry,

@@ -53,8 +53,7 @@ pub const Resources = struct {
         }
 
         if (self.verb) {
-            const err = std.io.getStdErr().writer();
-            try err.print("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
+            std.log.err("ERROR: Asset \"{s}\" not found.\n", .{ normalized_asset_path });
         }
         return Error.AssetFileNotFound;
     }
@@ -127,8 +126,7 @@ pub const Resources = struct {
         }
 
         if (self.verb) {
-            const err = std.io.getStdErr().writer();
-            try err.print("ERROR: Cannot load sprite \"{s}\" from atlas \"{s}\"\n", .{ sprite_name, atlas_path });
+            std.log.err("ERROR: Cannot load sprite \"{s}\" from atlas \"{s}\"\n", .{ sprite_name, atlas_path });
         }
         return Error.SpriteNotFound;
     }
@@ -154,8 +152,7 @@ pub const Resources = struct {
         }
         
         if (self.verb) {
-            const err = std.io.getStdErr().writer();
-            try err.print("ERROR: Cannot load animation \"{s}\" from atlas \"{s}\"\n", .{ flipbook_name, atlas_path });
+            std.log.err("ERROR: Cannot load animation \"{s}\" from atlas \"{s}\"\n", .{ flipbook_name, atlas_path });
         }
         return Error.AnimationNotFound;
     }

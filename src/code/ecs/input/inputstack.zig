@@ -8,15 +8,15 @@ pub const InputStack = struct {
     stack: EntityStack,
     allocator: std.mem.Allocator,
 
-    pub fn init(allocator: std.mem.Allocator) InputStack {
+    pub fn init(allocator: std.mem.Allocator) !InputStack {
         return InputStack {
-            .stack = EntityStack.init(allocator),
+            .stack = try EntityStack.initCapacity(allocator, 4),
             .allocator = allocator,
         };
     }
 
-    pub fn deinit(self: Self) void {
-        self.stack.deinit();
+    pub fn deinit(self: *Self) void {
+        self.stack.deinit(self.allocator);
     }
 
     pub fn push(self: *Self, entity: ecs.Entity) !void {
@@ -24,7 +24,7 @@ pub const InputStack = struct {
             _ = self.stack.orderedRemove(at);
         }
         
-        try self.stack.append(entity);
+        try self.stack.append(self.allocator, entity);
     }
 
     pub fn remove(self: *Self, entity: ecs.Entity) void {

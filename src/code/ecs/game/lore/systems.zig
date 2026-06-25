@@ -66,7 +66,7 @@ pub fn loreText(reg: *ecs.Registry, allocator: std.mem.Allocator, dt: f32) !void
         reg.addOrReplace(entity, cmp.LoreBlockState {
             .last_char = 0,
             .timer = 0,
-            .full_text = scene.cfg.text[load.block],
+            .full_text = scene.cfg.text[block],
         });
         reg.addOrReplace(entity, cmp.ForwardLoreBlock {});
     }
@@ -132,7 +132,7 @@ pub fn loreText(reg: *ecs.Registry, allocator: std.mem.Allocator, dt: f32) !void
         const state = reg.get(cmp.LoreBlockState, entity);
 
         const new_slice = state.full_text[0..state.last_char];
-        const new_text = try std.fmt.allocPrintZ(allocator, "{s}", .{ new_slice });
+        const new_text = try std.fmt.allocPrintSentinel(allocator, "{s}", .{ new_slice }, 0);
         reg.add(entity, rcmp.SetTextValue { .text = new_text, .free = true });
     }
 }

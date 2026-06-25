@@ -2,7 +2,6 @@
     "*": {
         "enter": {},
         "exit": {
-            "charge": -1,
             "scene_depth": 1,
             "scene_cup": -1
         }
@@ -11,13 +10,16 @@
         "enter": {
             "health": 10
         },
-        "exit": {}
+        "exit": {
+            "warp-charges": -1
+        }
     },
     "combat": {
         "enter": {
             "stamina": 10
         },
         "exit": {
+            "warp-charges": -1,
             "kill_count": 1
         }
     },
@@ -26,6 +28,8 @@
             "health": 10,
             "stamina": 10
         },
-        "exit": {}
+        "exit": {
+            "warp-charges": -1
+        }
     }
 }

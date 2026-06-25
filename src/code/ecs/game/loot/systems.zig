@@ -485,8 +485,8 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
             defer index.deinit();
 
             const LootRoll = struct { entity: ecs.Entity, weight: f64 = 1 };
-            var loot_roll_table = std.ArrayList(LootRoll).init(allocator);
-            defer loot_roll_table.deinit();
+            var loot_roll_table = try std.ArrayList(LootRoll).initCapacity(allocator, 4);
+            defer loot_roll_table.deinit(allocator);
 
             const center = Point {
                 .x = @intCast(@divFloor(index.size_x, 2)),
@@ -494,9 +494,9 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                 .is_center = true,
                 .parent = null,
             };
-            var stack = std.ArrayList(Point).init(allocator);
-            defer stack.deinit();
-            try stack.append(center);
+            var stack = try std.ArrayList(Point).initCapacity(allocator, 4);
+            defer stack.deinit(allocator);
+            try stack.append(allocator, center);
             while (stack.pop()) |at| {
                 if (try index.rollTile(at.x, at.y)) |tile_cfg| {
                     if (index.add(at.x, at.y, tile_cfg)) {
@@ -524,7 +524,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                             reg.add(tile_ety, cmp.Open { .free = true });
                             createCharacter(reg, entity, tile_ety, &cfg);
                         } else {
-                            try loot_roll_table.append(LootRoll { .entity = tile_ety });
+                            try loot_roll_table.append(allocator, LootRoll { .entity = tile_ety });
                         }
 
                         if (at.parent) |parent| {
@@ -535,7 +535,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
 
                         var it = loot.OffsetIterator.init(tile_cfg);
                         while (it.next()) |dxdy| {
-                            try stack.append(Point {
+                            try stack.append(allocator, Point {
                                 .x = at.x + dxdy.dx,
                                 .y = at.y + dxdy.dy,
                                 .parent = .{
@@ -772,11 +772,11 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items, al
 
         const Pathfinder = astar.Astar(loot.TileInfo, tileDistance);
 
-        var pf = Pathfinder.init(.{ .reg = reg, .tile = char.tile }, allocator);
+        var pf = try Pathfinder.init(.{ .reg = reg, .tile = char.tile }, allocator);
         defer pf.deinit();
 
-        var neighbours = std.ArrayList(loot.TileInfo).init(allocator);
-        defer neighbours.deinit();
+        var neighbours = try std.ArrayList(loot.TileInfo).initCapacity(allocator, 4);
+        defer neighbours.deinit(allocator);
 
         var result = try pf.pathFind(
             .{ .reg = reg, .tile = char.tile },
@@ -791,7 +791,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items, al
                     reg.has(cmp.Visited, neighbour_entry.entity)
                     or neighbour_entry.entity == target_tile_ety
                 ) {
-                    try neighbours.append(.{ .reg = reg, .tile = neighbour_entry.entity });
+                    try neighbours.append(allocator, .{ .reg = reg, .tile = neighbour_entry.entity });
                 }
             }
 

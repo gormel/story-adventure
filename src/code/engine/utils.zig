@@ -31,20 +31,20 @@ pub fn matchParams(allocator: std.mem.Allocator, template: []const u8, params: *
     const parse_state = enum { LOOK, COLLECT };
     var state: parse_state = .LOOK;
     var caret: usize = 0;
-    var pieces = std.ArrayList([]const u8).init(allocator);
-    defer pieces.deinit();
-    var tofree = std.ArrayList([]const u8).init(allocator);
-    defer tofree.deinit();
+    var pieces = try std.ArrayList([]const u8).initCapacity(allocator, 4);
+    defer pieces.deinit(allocator);
+    var tofree = try std.ArrayList([]const u8).initCapacity(allocator, 4);
+    defer tofree.deinit(allocator);
     while (true) {
         switch (state) {
             .LOOK => {
                 if (std.mem.indexOfPos(u8, template, caret, "${")) |found_caret| {
-                    try pieces.append(template[caret..found_caret]);
+                    try pieces.append(allocator, template[caret..found_caret]);
                     state = .COLLECT;
                     caret = found_caret + 2;
                 } else {
                     if (caret < template.len) {
-                        try pieces.append(template[caret..]);
+                        try pieces.append(allocator, template[caret..]);
                     }
                     break;
                 }
@@ -54,12 +54,12 @@ pub fn matchParams(allocator: std.mem.Allocator, template: []const u8, params: *
                     const param = template[caret..found_caret];
                     if (params.map.get(param)) |pvalue| {
                         const strvalue = try std.fmt.allocPrint(allocator, "{d}", .{ pvalue });
-                        try pieces.append(strvalue);
-                        try tofree.append(strvalue);
+                        try pieces.append(allocator, strvalue);
+                        try tofree.append(allocator, strvalue);
                     } else {
                         const strvalue = try std.mem.concat(allocator, u8, &.{ "${", param, "}" });
-                        try pieces.append(strvalue);
-                        try tofree.append(strvalue);
+                        try pieces.append(allocator, strvalue);
+                        try tofree.append(allocator, strvalue);
                     }
 
                     state = .LOOK;
@@ -102,17 +102,17 @@ pub fn formatPrice(num: f64, allocator: std.mem.Allocator, options: PriceFormatO
         const show_num = num / @as(f64, @floatFromInt(try std.math.powi(i64, 1000, @intCast(postfix_idx))));
 
         if (show_num > 99) {
-            return try std.fmt.allocPrintZ(allocator, "{s}{d:.0}{s}",
-                .{ price_prefix, show_num, postfixes[postfix_idx] });
+            return try std.fmt.allocPrintSentinel(allocator, "{s}{d:.0}{s}",
+                .{ price_prefix, show_num, postfixes[postfix_idx] }, 0);
         }
         else if (show_num > 9) {
-            return try std.fmt.allocPrintZ(allocator, "{s}{d:.1}{s}",
-                .{ price_prefix, show_num, postfixes[postfix_idx] });
+            return try std.fmt.allocPrintSentinel(allocator, "{s}{d:.1}{s}",
+                .{ price_prefix, show_num, postfixes[postfix_idx] }, 0);
         }
 
-        return try std.fmt.allocPrintZ(allocator, "{s}{d:.2}{s}",
-            .{ price_prefix, show_num, postfixes[postfix_idx] });
+        return try std.fmt.allocPrintSentinel(allocator, "{s}{d:.2}{s}",
+            .{ price_prefix, show_num, postfixes[postfix_idx] }, 0);
     }
 
-    return try std.fmt.allocPrintZ(allocator, "{s}{d}", .{ price_prefix, num });
+    return try std.fmt.allocPrintSentinel(allocator, "{s}{d}", .{ price_prefix, num }, 0);
 }

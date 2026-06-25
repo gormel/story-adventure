@@ -3,19 +3,37 @@
         "current_scene": "gameplaystart",
         "result_scene": "loot",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "gameplaystart",
         "result_scene": "combat",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "loot",
         "result_scene": "combat",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "loot",
@@ -26,6 +44,11 @@
                 "name": "gold",
                 "operator": "GT",
                 "value": 0
+            },
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
             }
         ]
     },
@@ -33,13 +56,25 @@
         "current_scene": "combat",
         "result_scene": "combat",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "combat",
         "result_scene": "loot",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "combat",
@@ -50,6 +85,11 @@
                 "name": "gold",
                 "operator": "GT",
                 "value": 0
+            },
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
             }
         ]
     },
@@ -57,12 +97,36 @@
         "current_scene": "shop",
         "result_scene": "loot",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
     },
     {
         "current_scene": "shop",
         "result_scene": "combat",
         "weight": 1,
-        "params": []
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "GT",
+                "value": 0
+            }
+        ]
+    },
+    {
+        "current_scene": null,
+        "result_scene": "chargegameover",
+        "weight": 1,
+        "params": [
+            {
+                "name": "warp-charges",
+                "operator": "LE",
+                "value": 0
+            }
+        ]
     }
 ]

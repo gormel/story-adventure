@@ -4,7 +4,6 @@
     "gold": 0.0,
     "attack": 10.0,
     "armor": 0.0,
-    "charge": 1.0,
     
     "scene_depth": 0.0,
     "kill_count": 0.0,
@@ -17,5 +16,5 @@
     "double_attack": 0.0,
 
     "store-reroll": 3.0,
-    "warp-charges": 5.0
+    "warp-charges": 1.0
 }

@@ -17,8 +17,8 @@
             .hash = "entt-1.0.0-qJPtbEjuAgBGugkES3DQsThMbIilGXJhTqgcpp121VDK",
         },
         .zig_astar = .{
-            .url = "git+https://github.com/gormel/zig_astar/?ref=update_016#c4c23fbf88896d9b95b7c3aefc263408bf3a7581",
-            .hash = "zig_astar-0.0.0-klHTjgoqAACgXDgqXEQ2FmN0sFIqUZA80e9ehaHDjrRo",
+            .url = "git+https://github.com/gormel/zig_astar/?ref=update_016#34b5ce3bf130d6602f69bd631600dbf3c8c3f696",
+            .hash = "zig_astar-0.0.0-klHTjh0tAAAgLehfzk-O9bprosr_wxsf-7xLUsGU14uK",
         },
     },
 }

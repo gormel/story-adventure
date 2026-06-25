@@ -281,7 +281,7 @@ pub fn updateStrategy(reg: *ecs.Registry, props: *pr.Properties) void {
     }
 }
 
-pub fn freeCombat(reg: *ecs.Registry) void {
+pub fn freeCombat(reg: *ecs.Registry, allocator: std.mem.Allocator) void {
     var cfg_view = reg.view(.{ cmp.CfgOwner, ccmp.Destroyed }, .{});
     var cfg_iter = cfg_view.entityIterator();
     while (cfg_iter.next()) |entity| {
@@ -300,7 +300,7 @@ pub fn freeCombat(reg: *ecs.Registry) void {
     var modify_iter = modify_view.entityIterator();
     while (modify_iter.next()) |entity| {
         var list = reg.get(cmp.CharacterModifyList, entity);
-        list.entities.deinit();
+        list.entities.deinit(allocator);
     }
     
     var statsitems_view = reg.view(.{ ccmp.Destroyed, cmp.CombatStatsItems }, .{});
@@ -308,7 +308,7 @@ pub fn freeCombat(reg: *ecs.Registry) void {
     while (statsitems_iter.next()) |entity| {
         const items = reg.get(cmp.CombatStatsItems, entity);
 
-        items.items.deinit();
+        items.items.deinit(allocator);
     }
 }
 
@@ -440,10 +440,10 @@ fn createModify(reg: *ecs.Registry, source: ecs.Entity, modify: std.json.ArrayHa
 
 fn addModify(reg: *ecs.Registry, target: ecs.Entity, source: ecs.Entity, modify: std.json.ArrayHashMap(f64), allocator: std.mem.Allocator) !void {
     if (reg.tryGet(cmp.CharacterModifyList, target)) |modify_list| {
-        try modify_list.entities.append(createModify(reg, source, modify));
+        try modify_list.entities.append(allocator, createModify(reg, source, modify));
     } else {
-        var entities = std.ArrayList(ecs.Entity).init(allocator);
-        try entities.append(createModify(reg, source, modify));
+        var entities = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4);
+        try entities.append(allocator, createModify(reg, source, modify));
 
         reg.add(target, cmp.CharacterModifyList {
             .entities = entities
@@ -578,7 +578,7 @@ fn createDamageEffect(reg: *ecs.Registry, char_ety: ecs.Entity, dmg: f64, alloca
     const scale = reg.get(rcmp.GlobalScale, char_ety);
 
     if (reg.tryGet(cmp.CharMsgRoot, char_ety)) |root| {
-        const dmg_text = try std.fmt.allocPrintZ(allocator, "-{d:.0} HP", .{ dmg });
+        const dmg_text = try std.fmt.allocPrintSentinel(allocator, "-{d:.0} HP", .{ dmg }, 0);
         const message = reg.create();
         reg.add(message, gcmp.CreateMessage {
             .parent = root.root,
@@ -827,13 +827,13 @@ pub fn combatState(
         const cfg = reg.get(cmp.CfgOwner, state.enemy);
         const stats = reg.get(cmp.CharacterStats, state.hero);
 
-        var items_get = std.StringArrayHashMap(f64).init(allocator);
+        var items_get = std.array_hash_map.String(f64).empty;
         var iter = enemy.cfg.reward.map.iterator();
         while (iter.next()) |kv| {
             try props.add(kv.key_ptr.*, kv.value_ptr.*);
 
             if (items.item_list_cfg.map.get(kv.key_ptr.*)) |_| {
-                try items_get.put(kv.key_ptr.*, kv.value_ptr.*);
+                try items_get.put(allocator, kv.key_ptr.*, kv.value_ptr.*);
             }
         }
 
