@@ -8,10 +8,10 @@ fn addAssetsOption(
 ) !void {
     var options = b.addOptions();
 
-    var files = try std.ArrayList([]const u8).initCapacity(b.allocator, 4);
+    var files = std.ArrayList([]const u8).empty;
     defer files.deinit(b.allocator);
 
-    var filedatas = try std.ArrayList([]const u8).initCapacity(b.allocator, 4);
+    var filedatas = std.ArrayList([]const u8).empty;
     defer filedatas.deinit(b.allocator);
 
     const path = b.path("src/code/assets/");

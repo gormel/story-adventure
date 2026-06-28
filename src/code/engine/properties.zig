@@ -145,7 +145,7 @@ pub const Properties = struct {
             var savemap = try std.json.ArrayHashMap(f64)
                 .jsonParseFromValue(self.allocator, std.json.Value { .object = saveobj }, .{});
             
-            var strlist = try std.ArrayList(u8).initCapacity(self.allocator, 4);
+            var strlist = std.ArrayList(u8).empty;
             defer strlist.deinit(self.allocator);
 
             try savemap.jsonStringify(&ws);

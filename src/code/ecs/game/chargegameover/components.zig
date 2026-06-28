@@ -1,1 +1,1 @@
-pub const InitGameover = struct {};
+pub const InitGameover = struct { counter: i32 };

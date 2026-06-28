@@ -10,7 +10,7 @@ pub const InputStack = struct {
 
     pub fn init(allocator: std.mem.Allocator) !InputStack {
         return InputStack {
-            .stack = try EntityStack.initCapacity(allocator, 4),
+            .stack = EntityStack.empty,
             .allocator = allocator,
         };
     }

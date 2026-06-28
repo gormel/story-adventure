@@ -111,7 +111,7 @@ pub fn main() !void {
         now = n_now;
 
         //debug logic
-        
+
         //debug logic end
 
         input_systems.capture(&reg, dt, input_stack);

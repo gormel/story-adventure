@@ -485,7 +485,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
             defer index.deinit();
 
             const LootRoll = struct { entity: ecs.Entity, weight: f64 = 1 };
-            var loot_roll_table = try std.ArrayList(LootRoll).initCapacity(allocator, 4);
+            var loot_roll_table = std.ArrayList(LootRoll).empty;
             defer loot_roll_table.deinit(allocator);
 
             const center = Point {
@@ -494,7 +494,7 @@ pub fn initLoot(reg: *ecs.Registry, allocator: std.mem.Allocator, rnd: *std.Rand
                 .is_center = true,
                 .parent = null,
             };
-            var stack = try std.ArrayList(Point).initCapacity(allocator, 4);
+            var stack = std.ArrayList(Point).empty;
             defer stack.deinit(allocator);
             try stack.append(allocator, center);
             while (stack.pop()) |at| {
@@ -775,7 +775,7 @@ pub fn openTile(reg: *ecs.Registry, props: *pr.Properties, items: *itm.Items, al
         var pf = try Pathfinder.init(.{ .reg = reg, .tile = char.tile }, allocator);
         defer pf.deinit();
 
-        var neighbours = try std.ArrayList(loot.TileInfo).initCapacity(allocator, 4);
+        var neighbours = std.ArrayList(loot.TileInfo).empty;
         defer neighbours.deinit(allocator);
 
         var result = try pf.pathFind(

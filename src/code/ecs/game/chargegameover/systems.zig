@@ -22,7 +22,7 @@ pub fn initScene(reg: *ecs.Registry) void {
         const init = reg.get(scmp.InitGameObject, entity);
 
         if (utils.containsTag(init.tags, "chargegameover-init")) {
-            reg.add(entity, cmp.InitGameover {});
+            reg.add(entity, cmp.InitGameover { .counter = 1 });
         }
     }
 }
@@ -30,8 +30,13 @@ pub fn initScene(reg: *ecs.Registry) void {
 pub fn logic(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
     var init_iter = reg.entityIterator(cmp.InitGameover);
     while (init_iter.next()) |entity| {
-        reg.remove(cmp.InitGameover, entity);
+        var init = reg.get(cmp.InitGameover, entity);
+        if (init.counter > 0) {
+            init.counter -= 1;
+            continue;
+        }
 
+        reg.remove(cmp.InitGameover, entity);
         try game.gameOver(reg, allocator);
     }
 }

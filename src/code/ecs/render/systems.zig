@@ -220,7 +220,7 @@ pub fn attachTo(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
                     reg, gameObjectRenderOrderLessThan);
             } else {
                 var parent_children = cmp.Children {
-                    .children = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4)
+                    .children = std.ArrayList(ecs.Entity).empty
                 };
                 try parent_children.children.append(allocator, entity);
                 
@@ -910,7 +910,7 @@ fn renderObjects(reg: *ecs.Registry, entity: ecs.Entity, parent_scissor_rect: ?r
 }
 
 pub fn render(reg: *ecs.Registry, allocator: std.mem.Allocator) !void {
-    var roots = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4);
+    var roots = std.ArrayList(ecs.Entity).empty;
     defer roots.deinit(allocator);
 
     var view = reg.view(.{ cmp.GlobalPosition, cmp.GlobalRotation, cmp.GlobalScale }, .{ cmp.Parent });

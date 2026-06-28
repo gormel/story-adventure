@@ -31,9 +31,9 @@ pub fn matchParams(allocator: std.mem.Allocator, template: []const u8, params: *
     const parse_state = enum { LOOK, COLLECT };
     var state: parse_state = .LOOK;
     var caret: usize = 0;
-    var pieces = try std.ArrayList([]const u8).initCapacity(allocator, 4);
+    var pieces = std.ArrayList([]const u8).empty;
     defer pieces.deinit(allocator);
-    var tofree = try std.ArrayList([]const u8).initCapacity(allocator, 4);
+    var tofree = std.ArrayList([]const u8).empty;
     defer tofree.deinit(allocator);
     while (true) {
         switch (state) {

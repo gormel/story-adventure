@@ -442,7 +442,7 @@ fn addModify(reg: *ecs.Registry, target: ecs.Entity, source: ecs.Entity, modify:
     if (reg.tryGet(cmp.CharacterModifyList, target)) |modify_list| {
         try modify_list.entities.append(allocator, createModify(reg, source, modify));
     } else {
-        var entities = try std.ArrayList(ecs.Entity).initCapacity(allocator, 4);
+        var entities = std.ArrayList(ecs.Entity).empty;
         try entities.append(allocator, createModify(reg, source, modify));
 
         reg.add(target, cmp.CharacterModifyList {
