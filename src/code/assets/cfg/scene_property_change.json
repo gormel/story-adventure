@@ -2,8 +2,7 @@
     "*": {
         "enter": {},
         "exit": {
-            "scene_depth": 1,
-            "scene_cup": -1
+            "scene_depth": 1
         }
     },
     "loot": {
@@ -30,6 +29,13 @@
         },
         "exit": {
             "warp-charges": -1
+        }
+    },
+    "chargegameover": {
+        "enter": {
+            "scene_depth": -1
+        },
+        "exit": {
         }
     }
 }

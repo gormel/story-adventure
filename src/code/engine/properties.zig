@@ -4,6 +4,18 @@ const rl = @import("raylib");
 const cmp = @import("../ecs/game/components.zig");
 
 const SAVE_FILENAME = "props.json";
+const DEBUG_LOG_PROPERTIES = false;
+
+fn logChange(comptime fmt: []const u8, params: anytype) !void {
+    if (!DEBUG_LOG_PROPERTIES) {
+        return;
+    }
+
+    const gpa = std.debug.getDebugInfoAllocator();
+    const txt = try std.fmt.allocPrint(gpa, fmt, params);
+    defer gpa.free(txt);
+    std.log.debug("prop change {s}", .{ txt });
+}
 
 pub const Setup = struct {
     min: std.json.ArrayHashMap(f64),
@@ -99,6 +111,8 @@ pub const Properties = struct {
             const entity = self.reg.create();
             self.reg.add(entity, cmp.TriggerPlayerPropertyChanged { .name = name });
         }
+        
+        try logChange("set {s} = {d}", .{name, value});
     }
 
     pub fn add(self: *Self, name: []const u8, value: f64) !void {

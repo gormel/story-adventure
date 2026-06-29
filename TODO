@@ -31,7 +31,6 @@ ref: cfg dependency injection
 fix: loot hero move animations: up-down
 fix: плавающий; предмет не сохранился в коллекции
 fix: при быстром проклике дилога, сцена иногда скипается
-fix: lore scene считается в статистику
 
 
 https://www.figma.com/design/Pos8PFWECr1NXRYwPIXk9a/story-adventure
